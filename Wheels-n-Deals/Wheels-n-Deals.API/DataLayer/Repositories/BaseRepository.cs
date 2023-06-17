@@ -36,6 +36,7 @@ public class BaseRepository<T> where T : BaseEntity
         if (_dbSet == null) return null;
         if (entity.Id == Guid.Empty)
         {
+            entity.Id = Guid.NewGuid();
             var idExists = await _dbSet.AnyAsync(e => e.Id == entity.Id);
             while (idExists)
             {

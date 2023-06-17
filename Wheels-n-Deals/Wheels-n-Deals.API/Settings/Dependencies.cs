@@ -59,12 +59,15 @@ public class Dependencies
     private static void AddRepositories(IServiceCollection services)
     {
         services.AddScoped<UserRepository>();
+        services.AddScoped<VehicleRepository>();
+        services.AddScoped<FeaturesRepository>();
         services.AddScoped<UnitOfWork>();
     }
 
     private static void AddServices(IServiceCollection services)
     {
         services.AddScoped<AuthorizationService>();
+        services.AddScoped<VehicleService>();
         services.AddScoped<UserService>();
     }
 }

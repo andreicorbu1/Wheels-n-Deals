@@ -14,7 +14,19 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .Property(u => u.RoleType)
             .HasConversion<string>();
+        modelBuilder.Entity<Features>()
+            .Property(feature => feature.FuelType)
+            .HasConversion<string>();
+        modelBuilder.Entity<Features>()
+            .Property(feature => feature.Gearbox)
+            .HasConversion<string>();
+        modelBuilder.Entity<Vehicle>()
+            .Property(vehicle => vehicle.TechnicalState)
+            .HasConversion<string>();
+
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<Features> Features { get; set; }
 }

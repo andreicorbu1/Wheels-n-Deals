@@ -5,12 +5,16 @@ namespace Wheels_n_Deals.API.DataLayer;
 public class UnitOfWork
 {
     public UserRepository Users { get; }
+    public VehicleRepository Vehicles { get; }
+    public FeaturesRepository Features { get; }
 
     private readonly AppDbContext _dbContext;
 
-    public UnitOfWork(AppDbContext dbContext, UserRepository users)
+    public UnitOfWork(AppDbContext dbContext, UserRepository users, VehicleRepository vehicles, FeaturesRepository features)
     {
         Users = users;
+        Vehicles = vehicles;
+        Features = features;
         _dbContext = dbContext;
     }
 
