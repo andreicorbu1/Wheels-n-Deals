@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Wheels_n_Deals.API.DataLayer;
@@ -11,9 +12,11 @@ using Wheels_n_Deals.API.DataLayer;
 namespace Wheels_n_Deals.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230618195130_UpdatedVehicleAndFeatures")]
+    partial class UpdatedVehicleAndFeatures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,14 +105,11 @@ namespace Wheels_n_Deals.API.Migrations
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", b =>
                 {
-                    b.Property<string>("VinNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Guid>("FeatureId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("FeatureId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Make")
@@ -135,10 +135,18 @@ namespace Wheels_n_Deals.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("VinNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<long>("Year")
                         .HasColumnType("bigint");
 
-                    b.HasKey("VinNumber");
+                    b.HasKey("Id");
+
+                    b.HasIndex("VinNumber")
+                        .IsUnique();
 
                     b.ToTable("Vehicles");
                 });

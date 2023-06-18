@@ -42,7 +42,7 @@ public class UserService
         if (Enum.TryParse(registerDto.RoleType, true, out roleType)) user.RoleType = roleType;
 
         var id = await _unitOfWork.Users.Insert(user) ?? Guid.Empty;
-        _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChanges();
 
         return id;
     }
@@ -65,7 +65,9 @@ public class UserService
         user.LastName = updateDto.LastName;
         user.HashedPassword = AuthService.HashPassword(updateDto.Password);
 
-        return await _unitOfWork.Users.Update(user);
+        var userUpdated = await _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveChanges();
+        return userUpdated;
     }
 
     public async Task<string> Validate(LoginDto loginDto)

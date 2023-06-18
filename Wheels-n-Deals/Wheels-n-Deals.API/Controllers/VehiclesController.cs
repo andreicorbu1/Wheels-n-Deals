@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wheels_n_Deals.API.DataLayer.Dtos;
@@ -86,5 +86,88 @@ public class VehiclesController : ControllerBase
         var vehicles = await VehicleService.GetAllVehicles();
 
         return Ok(vehicles);
+    }
+
+    /// <summary>
+    /// Get Vehicle from VIN
+    /// </summary>
+    /// <remarks>
+    /// Retrieves vehicle information by the provided VIN (Vehicle Identification Number).
+    /// No authentication required.
+    /// </remarks>
+    /// <param name="vin">The VIN of the vehicle to retrieve</param>
+    /// <returns>
+    /// 200 - Successful retrieval
+    ///   - Content-Type: application/json
+    ///   - Body: VehicleDto
+    ///
+    /// 404 - Not Found
+    ///
+    /// 500 - Unexpected error
+    /// </returns>
+    [HttpGet("{vin}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VehicleDto))]
+    [ProducesDefaultResponseType]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetVehicleFromVin([FromRoute] string vin)
+    {
+        var vehicle = await VehicleService.GetVehicleFromVin(vin);
+
+        if (vehicle != null)
+        {
+            return Ok(vehicle);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Delete Vehicles you own. Or if you are an administrator you can delete others vehicles.
+    /// </summary>
+    /// <remarks>
+    /// Deletes a vehicle by the provided VIN (Vehicle Identification Number).
+    /// Requires authorization.
+    /// </remarks>
+    /// <param name="vin">The VIN of the vehicle to delete</param>
+    /// <returns>
+    /// 200 - Vehicle deleted successfully
+    ///   - Content-Type: application/json
+    ///   - Body: VehicleDto
+    ///
+    /// 401 - Unauthorized
+    ///
+    /// 500 - Unexpected error
+    ///
+    /// 404 - Not Found
+    /// </returns>
+    [HttpDelete("{vin}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VehicleDto))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    [Authorize]
+    public async Task<IActionResult> DeleteVehicle([FromRoute] string vin)
+    {
+        var vehicle = await VehicleService.GetVehicleFromVin(vin);
+
+        if (vehicle != null)
+        {
+            if (User.IsInRole("Administrator") ||
+            (User.IsInRole("Seller") && vehicle?.Owner.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            {
+                var deleted = await VehicleService.DeleteVehicle(vin);
+                if (deleted)
+                    return Ok(vehicle);
+                else return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
+        return NotFound();
     }
 }

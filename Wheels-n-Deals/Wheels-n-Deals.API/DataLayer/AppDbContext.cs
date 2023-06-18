@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Wheels_n_Deals.API.DataLayer.Entities;
 
 namespace Wheels_n_Deals.API.DataLayer;
@@ -23,7 +23,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Vehicle>()
             .Property(vehicle => vehicle.TechnicalState)
             .HasConversion<string>();
-
+        modelBuilder.Entity<Vehicle>()
+            .HasIndex(v => v.VinNumber)
+            .IsUnique();
     }
 
     public DbSet<User> Users { get; set; }

@@ -98,7 +98,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <remarks>
     /// Retrieves user information by the provided user ID.
-    /// Requires authorization.
+    /// Does not require authorization.
     /// </remarks>
     /// <param name="id">The ID of the user to retrieve</param>
     /// <returns>
@@ -106,13 +106,11 @@ public class UsersController : ControllerBase
     ///   - Content-Type: application/json
     ///   - Body: UserDto
     ///
-    /// 401 - Unauthorized
-    ///
     /// 404 - Not Found
     ///   - Content-Type: text/plain
     ///   - Body: User with ID {id} was not found!
     /// </returns>
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -120,15 +118,8 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (User.IsInRole("Administrator") || (userIdClaim != null && id.ToString() == userIdClaim))
-        {
-            var user = await UserService.GetUserById(id);
-            if (user == null) return NotFound($"User with id {id} was not found!");
-            return Ok(user.ToUserDto());
-        }
-
-        return Unauthorized();
+        var user = await UserService.GetUserById(id);
+        if (user == null) return NotFound($"User with id {id} was not found!");
+        return Ok(user.ToUserDto());
     }
 }

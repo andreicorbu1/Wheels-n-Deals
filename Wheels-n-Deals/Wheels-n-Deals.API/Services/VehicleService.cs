@@ -1,4 +1,5 @@
-﻿using Wheels_n_Deals.API.DataLayer;
+using Microsoft.AspNetCore.Mvc;
+using Wheels_n_Deals.API.DataLayer;
 using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
 using Wheels_n_Deals.API.DataLayer.Enums;
@@ -37,6 +38,7 @@ public class VehicleService
         var vehicle = CreateVehicleObject(addVehicleDto, price, featureId, technicalState);
 
         var id = await _unitOfWork.Vehicles.Insert(vehicle) ?? Guid.Empty;
+        await _unitOfWork.SaveChanges();
         return id;
     }
 
@@ -78,6 +80,18 @@ public class VehicleService
         return featureId;
     }
 
+    public async Task<bool> DeleteVehicle(string vin)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
+        if(vehicle != null)
+        {
+            var result = await _unitOfWork.Vehicles.Remove(vehicle.Id) != null;
+            await _unitOfWork.SaveChanges();
+            return result;
+        }
+        return false;
+    }
+
     private static Vehicle CreateVehicleObject(AddVehicleDto addVehicleDto, float price, Guid featureId, State technicalState)
     {
         var vehicle = new Vehicle()
@@ -104,12 +118,32 @@ public class VehicleService
 
         foreach (var vehicle in vehicles)
         {
-            var ownerId = await _unitOfWork.Users.GetById(vehicle.OwnerId);
-            var features = await _unitOfWork.Features.GetById(vehicle.FeatureId);
-            var vehicleDto = vehicle.ToVehicleDto(ownerId, features);
+            var (owner, features) = await GetOwnerAndFeaturesObject(vehicle);
+            var vehicleDto = vehicle.ToVehicleDto(owner, features);
             vehicleDtos.Add(vehicleDto);
         }
 
         return vehicleDtos;
+    }
+    
+    public async Task<VehicleDto> GetVehicleFromVin(string vin)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
+        if(vehicle == null)
+        {
+            return null;
+        }
+
+        var (owner, features) = await GetOwnerAndFeaturesObject(vehicle);
+
+        return vehicle.ToVehicleDto(owner, features);
+    }
+
+    private async Task<Tuple<User?, Features?>> GetOwnerAndFeaturesObject(Vehicle vehicle)
+    {
+        var owner = await _unitOfWork.Users.GetById(vehicle.OwnerId);
+        var features = await _unitOfWork.Features.GetById(vehicle.FeatureId);
+
+        return new Tuple<User?, Features?>(owner, features);
     }
 }
