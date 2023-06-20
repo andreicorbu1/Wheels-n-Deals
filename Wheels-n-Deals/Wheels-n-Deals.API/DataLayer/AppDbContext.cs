@@ -26,6 +26,12 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Vehicle>()
             .HasIndex(v => v.VinNumber)
             .IsUnique();
+        modelBuilder.Entity<Vehicle>()
+            .Navigation(v => v.Owner)
+            .AutoInclude();
+        modelBuilder.Entity<Vehicle>()
+            .Navigation(v => v.Features)
+            .AutoInclude();
     }
 
     public DbSet<User> Users { get; set; }

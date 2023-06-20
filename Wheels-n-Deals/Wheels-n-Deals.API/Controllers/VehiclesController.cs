@@ -1,7 +1,9 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.Dtos;
+using Wheels_n_Deals.API.DataLayer.Entities;
 using Wheels_n_Deals.API.Services;
 
 namespace Wheels_n_Deals.API.Controllers;
@@ -44,7 +46,12 @@ public class VehiclesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleDto addVehicleDto)
     {
-        Guid ownerId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+        var idClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (idClaim == null)
+        {
+            return Unauthorized();
+        }
+        Guid ownerId = Guid.Parse(idClaim.Value);
         if (User.IsInRole("Administrator") || User.IsInRole("Seller"))
         {
             addVehicleDto.OwnerId = ownerId;
@@ -78,7 +85,7 @@ public class VehiclesController : ControllerBase
     /// </returns>
     [HttpGet("getall")]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<VehicleDto>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vehicle>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
     public async Task<IActionResult> GetAllVehicles()
@@ -155,7 +162,7 @@ public class VehiclesController : ControllerBase
         if (vehicle != null)
         {
             if (User.IsInRole("Administrator") ||
-            (User.IsInRole("Seller") && vehicle?.Owner.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            (User.IsInRole("Seller") && vehicle?.Owner?.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
             {
                 var deleted = await VehicleService.DeleteVehicle(vin);
                 if (deleted)
@@ -169,5 +176,105 @@ public class VehiclesController : ControllerBase
         }
 
         return NotFound();
+    }
+
+    /// <summary>
+    /// Update Vehicle (Patch)
+    /// </summary>
+    /// <remarks>
+    /// Updates a vehicle partially by applying a JSON Patch document.
+    /// Requires authorization.
+    /// </remarks>
+    /// <param name="vehicleId">The ID of the vehicle to update</param>
+    /// <param name="patchedVehicle">The JSON Patch document containing the partial updates</param>
+    /// <returns>
+    /// 200 - Vehicle updated successfully
+    ///   - Content-Type: application/json
+    ///   - Body: Vehicle
+    ///
+    /// 404 - Not Found
+    ///   - Content-Type: text/plain
+    ///   - Body: Vehicle with ID {vehicleId} was not found
+    ///
+    /// 401 - Unauthorized
+    /// </returns>
+    [HttpPatch("{vehicleId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Vehicle))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> UpdateVehiclePatch([FromRoute] Guid vehicleId, [FromBody] JsonPatchDocument<Vehicle> patchedVehicle)
+    {
+        var vehicle = await VehicleService.GetVehicle(vehicleId);
+
+        if (vehicle != null)
+        {
+            if (User.IsInRole("Administrator") ||
+            (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            {
+                var updatedVehicle = await VehicleService.UpdateVehiclePatch(vehicleId, patchedVehicle);
+
+                if (updatedVehicle == null)
+                {
+                    return NotFound("Vehicle with id vehicleId was not found");
+                }
+
+                return Ok(updatedVehicle);
+            }
+            else
+            {
+                return Unauthorized();
+            }
+        }
+
+        return NotFound($"Vehicle with id {vehicleId} was not found");
+    }
+
+    /// <summary>
+    /// Update Vehicle
+    /// </summary>
+    /// <remarks>
+    /// Updates a vehicle with the provided information.
+    /// Requires authorization.
+    /// </remarks>
+    /// <param name="updatedVehicle">The updated vehicle information</param>
+    /// <returns>
+    /// 200 - Vehicle updated successfully
+    ///   - Content-Type: application/json
+    ///   - Body: Vehicle
+    ///
+    /// 400 - Bad Request
+    ///
+    /// 401 - Unauthorized
+    /// </returns>
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Vehicle))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> UpdateVehicle([FromBody] Vehicle updatedVehicle)
+    {
+        var vehicle = await VehicleService.GetVehicle(updatedVehicle.Id);
+
+        if (vehicle != null)
+        {
+            if (User.IsInRole("Administrator") ||
+            (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            {
+
+                var vehicleToUpdate = await VehicleService.UpdateVehicle(updatedVehicle);
+
+                if (vehicleToUpdate == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(vehicleToUpdate);
+            }
+            else
+                return Unauthorized();
+        }
+
+        return BadRequest();
     }
 }

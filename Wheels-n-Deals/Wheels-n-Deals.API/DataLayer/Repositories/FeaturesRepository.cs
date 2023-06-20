@@ -9,7 +9,7 @@ public class FeaturesRepository : BaseRepository<Features>
     {
     }
 
-    public async Task<Guid> GetFeatureIdFromFeatures(string carBody, uint horsePower, string engineSize, GearboxType gearbox,
+    public async Task<Features?> GetFeatureFromFeatures(string carBody, uint horsePower, string engineSize, GearboxType gearbox,
         FuelType fuel)
     {
         var features = await GetAll();
@@ -22,7 +22,7 @@ public class FeaturesRepository : BaseRepository<Features>
                 feature.HorsePower == horsePower &&
                 feature.Gearbox == gearbox
             );
-        return searchedFeature?.Id ?? Guid.Empty;
+        return searchedFeature;
     }
-    
+
 }

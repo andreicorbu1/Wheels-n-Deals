@@ -9,6 +9,6 @@ public class Features : BaseEntity
     public FuelType FuelType { get; set; }
     [MaxLength(50)] public string EngineSize { get; set; } = string.Empty;
     public GearboxType Gearbox { get; set; }
-    [MaxLength(50)] public uint HorsePower { get; set; }
+    public uint HorsePower { get; set; }
 }
 

@@ -16,7 +16,7 @@ public class AuthorizationService
 
     public AuthorizationService(IConfiguration configuration)
     {
-        _securityKey = configuration["JWT:SecurityKey"];
+        _securityKey = configuration["JWT:SecurityKey"] ?? "u6pCOKWZ3pVBHmNcTToOcHddyB74XkP7";
     }
 
     public string GetToken(User user)

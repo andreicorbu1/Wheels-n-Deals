@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 using Wheels_n_Deals.API.DataLayer;
 using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
@@ -29,13 +29,31 @@ public class VehicleService
         var gearboxType = (GearboxType)Enum.Parse(typeof(GearboxType), addVehicleDto.Gearbox, true);
         var technicalState = (State)Enum.Parse(typeof(State), addVehicleDto.TechnicalState, true);
 
-        Guid featureId = await GetOrCreateFeature(addVehicleDto, fuelType, gearboxType);
-        if (featureId == Guid.Empty)
+        Features feature = await GetOrCreateFeature(addVehicleDto, fuelType, gearboxType);
+        if (feature == null)
         {
             return Guid.Empty;
         }
 
-        var vehicle = CreateVehicleObject(addVehicleDto, price, featureId, technicalState);
+        User? owner = await _unitOfWork.Users.GetById(addVehicleDto.OwnerId);
+
+        if (owner == null)
+        {
+            return Guid.Empty;
+        }
+
+        var vehicle = new Vehicle
+        {
+            Make = addVehicleDto.Make,
+            Model = addVehicleDto.Model,
+            Year = addVehicleDto.Year,
+            Mileage = addVehicleDto.Mileage,
+            Features = feature,
+            Owner = owner,
+            VinNumber = addVehicleDto.VinNumber,
+            PriceInEuro = price,
+            TechnicalState = technicalState
+        };
 
         var id = await _unitOfWork.Vehicles.Insert(vehicle) ?? Guid.Empty;
         await _unitOfWork.SaveChanges();
@@ -59,14 +77,14 @@ public class VehicleService
         return _unitOfWork.Vehicles.GetVehicleByVin(vinNumber).Result != null;
     }
 
-    private async Task<Guid> GetOrCreateFeature(AddVehicleDto addVehicleDto, FuelType fuelType, GearboxType gearboxType)
+    private async Task<Features> GetOrCreateFeature(AddVehicleDto addVehicleDto, FuelType fuelType, GearboxType gearboxType)
     {
-        Guid featureId = await _unitOfWork.Features.GetFeatureIdFromFeatures(addVehicleDto.CarBody,
+        Features? feature = await _unitOfWork.Features.GetFeatureFromFeatures(addVehicleDto.CarBody,
             addVehicleDto.HorsePower, addVehicleDto.EngineSize, gearboxType, fuelType);
 
-        if (featureId == Guid.Empty)
+        if (feature == null)
         {
-            var feature = new Features()
+            feature = new Features()
             {
                 CarBody = addVehicleDto.CarBody,
                 Gearbox = gearboxType,
@@ -74,16 +92,16 @@ public class VehicleService
                 FuelType = fuelType,
                 HorsePower = addVehicleDto.HorsePower
             };
-            featureId = await _unitOfWork.Features.Insert(feature) ?? Guid.Empty;
+            await _unitOfWork.Features.Insert(feature);
         }
 
-        return featureId;
+        return feature;
     }
 
     public async Task<bool> DeleteVehicle(string vin)
     {
         var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
-        if(vehicle != null)
+        if (vehicle != null)
         {
             var result = await _unitOfWork.Vehicles.Remove(vehicle.Id) != null;
             await _unitOfWork.SaveChanges();
@@ -92,58 +110,80 @@ public class VehicleService
         return false;
     }
 
-    private static Vehicle CreateVehicleObject(AddVehicleDto addVehicleDto, float price, Guid featureId, State technicalState)
+    public async Task<List<Vehicle>> GetAllVehicles()
     {
-        var vehicle = new Vehicle()
-        {
-            Make = addVehicleDto.Make,
-            Model = addVehicleDto.Model,
-            Year = addVehicleDto.Year,
-            Mileage = addVehicleDto.Mileage,
-            PriceInEuro = price,
-            VinNumber = addVehicleDto.VinNumber,
-            FeatureId = featureId,
-            Id = Guid.Empty,
-            OwnerId = addVehicleDto.OwnerId,
-            TechnicalState = technicalState
-        };
+        return await _unitOfWork.Vehicles.GetAll();
+    }
+
+    public async Task<Vehicle?> GetVehicle(Guid id)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetById(id);
 
         return vehicle;
     }
 
-    public async Task<List<VehicleDto>> GetAllVehicles()
-    {
-        var vehicles = await _unitOfWork.Vehicles.GetAll();
-        var vehicleDtos = new List<VehicleDto>();
-
-        foreach (var vehicle in vehicles)
-        {
-            var (owner, features) = await GetOwnerAndFeaturesObject(vehicle);
-            var vehicleDto = vehicle.ToVehicleDto(owner, features);
-            vehicleDtos.Add(vehicleDto);
-        }
-
-        return vehicleDtos;
-    }
-    
-    public async Task<VehicleDto> GetVehicleFromVin(string vin)
+    public async Task<VehicleDto?> GetVehicleFromVin(string vin)
     {
         var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
-        if(vehicle == null)
+
+        if (vehicle == null)
         {
             return null;
         }
 
-        var (owner, features) = await GetOwnerAndFeaturesObject(vehicle);
-
-        return vehicle.ToVehicleDto(owner, features);
+        return vehicle.ToVehicleDto();
     }
 
-    private async Task<Tuple<User?, Features?>> GetOwnerAndFeaturesObject(Vehicle vehicle)
+    public async Task<VehicleDto?> UpdateVehiclePatch(Guid id, JsonPatchDocument<Vehicle> vehiclePatch)
     {
-        var owner = await _unitOfWork.Users.GetById(vehicle.OwnerId);
-        var features = await _unitOfWork.Features.GetById(vehicle.FeatureId);
+        var vehicle = await _unitOfWork.Vehicles.UpdateVehiclePatch(id, vehiclePatch);
 
-        return new Tuple<User?, Features?>(owner, features);
+        if (vehicle == null)
+        {
+            return null;
+        }
+        await _unitOfWork.SaveChanges();
+        return vehicle.ToVehicleDto();
+    }
+
+    public async Task<Vehicle?> UpdateVehicle(Vehicle updatedVehicle)
+    {
+        var vehicleToUpdate = await _unitOfWork.Vehicles.GetById(updatedVehicle.Id);
+
+        if (vehicleToUpdate == null)
+        {
+            return null;
+        }
+
+        var features = updatedVehicle.Features;
+
+        if (features != null)
+        {
+            var existingFeature = await _unitOfWork.Features.GetFeatureFromFeatures(
+                features.CarBody, features.HorsePower, features.EngineSize, features.Gearbox, features.FuelType);
+
+            if (existingFeature != null)
+            {
+                updatedVehicle.Features = existingFeature;
+            }
+            else
+            {
+                var id = await _unitOfWork.Features.Insert(new Features
+                {
+                    CarBody = features.CarBody,
+                    EngineSize = features.EngineSize,
+                    FuelType = features.FuelType,
+                    Gearbox = features.Gearbox,
+                    HorsePower = features.HorsePower,
+                });
+
+                updatedVehicle.Features.Id = id.Value;
+            }
+        }
+
+        await _unitOfWork.Vehicles.Update(updatedVehicle);
+        await _unitOfWork.SaveChanges();
+
+        return updatedVehicle;
     }
 }

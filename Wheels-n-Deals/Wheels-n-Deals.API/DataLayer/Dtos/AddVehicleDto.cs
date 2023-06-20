@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Wheels_n_Deals.API.DataLayer.Enums;
 
 namespace Wheels_n_Deals.API.DataLayer.Dtos;
 

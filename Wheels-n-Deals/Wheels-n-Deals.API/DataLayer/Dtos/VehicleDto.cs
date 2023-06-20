@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Wheels_n_Deals.API.DataLayer.Entities;
-using Wheels_n_Deals.API.DataLayer.Enums;
 
 namespace Wheels_n_Deals.API.DataLayer.Dtos;
 
@@ -19,5 +17,5 @@ public class VehicleDto
     public string EngineSize { get; set; } = string.Empty;
     public string Gearbox { get; set; } = string.Empty;
     public uint HorsePower { get; set; }
-    public UserDto Owner { get; set; }
+    public UserDto? Owner { get; set; }
 }

@@ -66,6 +66,7 @@ public class BaseRepository<T> where T : BaseEntity
 
     public async Task<T> Update(T entity)
     {
+        _appDbContext.ChangeTracker.Clear();
         _dbSet.Update(entity);
         await _appDbContext.SaveChangesAsync();
         return entity;

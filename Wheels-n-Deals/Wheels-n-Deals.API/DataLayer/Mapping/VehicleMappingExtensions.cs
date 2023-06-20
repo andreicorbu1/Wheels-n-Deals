@@ -5,24 +5,28 @@ namespace Wheels_n_Deals.API.DataLayer.Mapping;
 
 public static class VehicleMappingExtensions
 {
-    public static VehicleDto ToVehicleDto(this Vehicle vehicle, User owner, Features features)
+    public static VehicleDto? ToVehicleDto(this Vehicle vehicle)
     {
+        if(vehicle == null)
+        {
+            return null;
+        }
         var vehicleDto = new VehicleDto()
         {
             VinNumber = vehicle.VinNumber,
             Year = vehicle.Year,
             Make = vehicle.Make,
             Model = vehicle.Model,
-            CarBody = features.CarBody,
+            CarBody = vehicle.Features.CarBody,
             Mileage = vehicle.Mileage,
             TechnicalState = vehicle.TechnicalState.ToString(),
-            FuelType = features.FuelType.ToString(),
-            Gearbox = features.Gearbox.ToString(),
-            EngineSize = features.EngineSize,
-            HorsePower = features.HorsePower,
+            FuelType = vehicle.Features.FuelType.ToString(),
+            Gearbox = vehicle.Features.Gearbox.ToString(),
+            EngineSize = vehicle.Features.EngineSize,
+            HorsePower = vehicle.Features.HorsePower,
             PriceInEuro = vehicle.PriceInEuro,
             PriceInRon = vehicle.PriceInRon,
-            Owner = owner.ToUserDto()
+            Owner = vehicle.Owner?.ToUserDto()
         };
 
         return vehicleDto;

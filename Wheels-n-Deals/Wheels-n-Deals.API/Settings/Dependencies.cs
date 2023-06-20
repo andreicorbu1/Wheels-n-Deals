@@ -43,7 +43,7 @@ public class Dependencies
                         Encoding.UTF8.GetBytes(applicationBuilder.Configuration["JWT:SecurityKey"]))
             };
         });
-        applicationBuilder.Services.AddControllers();
+        applicationBuilder.Services.AddControllers().AddNewtonsoftJson();
         applicationBuilder.Services.AddSwaggerGen(c =>
         {
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
