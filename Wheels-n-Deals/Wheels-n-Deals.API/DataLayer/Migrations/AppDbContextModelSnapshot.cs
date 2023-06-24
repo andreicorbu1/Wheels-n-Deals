@@ -22,6 +22,47 @@ namespace Wheels_n_Deals.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Announcement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("County")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("VehicleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Announcements", (string)null);
+                });
+
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Features", b =>
                 {
                     b.Property<Guid>("Id")
@@ -33,10 +74,8 @@ namespace Wheels_n_Deals.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("EngineSize")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<long>("EngineSize")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FuelType")
                         .IsRequired()
@@ -51,7 +90,28 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Features");
+                    b.ToTable("Features", (string)null);
+                });
+
+            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AnnouncementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnnouncementId");
+
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.User", b =>
@@ -96,7 +156,7 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", b =>
@@ -148,7 +208,29 @@ namespace Wheels_n_Deals.API.Migrations
                     b.HasIndex("VinNumber")
                         .IsUnique();
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
+                });
+
+            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Announcement", b =>
+                {
+                    b.HasOne("Wheels_n_Deals.API.DataLayer.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Image", b =>
+                {
+                    b.HasOne("Wheels_n_Deals.API.DataLayer.Entities.Announcement", null)
+                        .WithMany("ImagesUrl")
+                        .HasForeignKey("AnnouncementId");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", b =>
@@ -164,6 +246,11 @@ namespace Wheels_n_Deals.API.Migrations
                     b.Navigation("Features");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Announcement", b =>
+                {
+                    b.Navigation("ImagesUrl");
                 });
 #pragma warning restore 612, 618
         }

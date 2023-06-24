@@ -118,7 +118,16 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
         var user = await UserService.GetUserById(id);
-        if (user == null) return NotFound($"User with id {id} was not found!");
+        if (user is null) return NotFound($"User with id {id} was not found!");
         return Ok(user.ToUserDto());
+    }
+
+    [AllowAnonymous]
+    [HttpGet()]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await UserService.GetUsersAsync();
+
+        return Ok(users);
     }
 }

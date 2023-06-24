@@ -62,6 +62,7 @@ public class Dependencies
         services.AddScoped<VehicleRepository>();
         services.AddScoped<FeaturesRepository>();
         services.AddScoped<UnitOfWork>();
+        services.AddScoped<AnnouncementRepository>();
     }
 
     private static void AddServices(IServiceCollection services)
@@ -69,5 +70,6 @@ public class Dependencies
         services.AddScoped<AuthorizationService>();
         services.AddScoped<VehicleService>();
         services.AddScoped<UserService>();
+        services.AddScoped<AnnouncementService>();
     }
 }

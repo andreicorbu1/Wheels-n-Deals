@@ -14,7 +14,7 @@ public class VehicleDto
     public float PriceInRon { get; set; }
     [MaxLength(50)] public string CarBody { get; set; } = string.Empty;
     public string FuelType { get; set; } = string.Empty;
-    public string EngineSize { get; set; } = string.Empty;
+    public uint EngineSize { get; set; }
     public string Gearbox { get; set; } = string.Empty;
     public uint HorsePower { get; set; }
     public UserDto? Owner { get; set; }

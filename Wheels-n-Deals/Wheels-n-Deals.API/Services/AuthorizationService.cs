@@ -67,12 +67,12 @@ public class AuthorizationService
         }
 
         jwtTokenHandler.ValidateToken(tokenString, tokenValidationParameters, out var validatedToken);
-        return validatedToken != null;
+        return validatedToken is not null;
     }
 
     public string HashPassword(string password)
     {
-        if (password == null) throw new ArgumentNullException(nameof(password));
+        if (password is null) throw new ArgumentNullException(nameof(password));
 
         byte[] salt;
         byte[] subkey;
@@ -90,8 +90,8 @@ public class AuthorizationService
 
     public bool VerifyHashedPassword(string hashedPassword, string password)
     {
-        if (hashedPassword == null) return false;
-        if (password == null) throw new ArgumentNullException(nameof(password));
+        if (hashedPassword is null) return false;
+        if (password is null) throw new ArgumentNullException(nameof(password));
         var hashedPasswordBytes = Convert.FromBase64String(hashedPassword);
 
         if (hashedPasswordBytes.Length != 1 + _SaltSize + _PBKDF2SubkeyLength ||
@@ -116,7 +116,7 @@ public class AuthorizationService
     {
         if (ReferenceEquals(storedSubkey, generatedSubKey)) return true;
 
-        if (storedSubkey == null || generatedSubKey == null || storedSubkey.Length != generatedSubKey.Length)
+        if (storedSubkey is null || generatedSubKey is null || storedSubkey.Length != generatedSubKey.Length)
             return false;
 
         var areSame = true;

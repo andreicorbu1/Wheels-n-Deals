@@ -7,7 +7,7 @@ public static class VehicleMappingExtensions
 {
     public static VehicleDto? ToVehicleDto(this Vehicle vehicle)
     {
-        if(vehicle == null)
+        if (vehicle is null)
         {
             return null;
         }
@@ -31,4 +31,15 @@ public static class VehicleMappingExtensions
 
         return vehicleDto;
     }
+
+    public static List<VehicleDto?> ToListVehicleDto(this List<Vehicle> vehicle) 
+    {
+        var vehicles = new List<VehicleDto?>();
+        foreach(var veh in vehicle)
+        {
+            vehicles.Add(veh.ToVehicleDto());
+        }
+        return vehicles;
+    }
+
 }

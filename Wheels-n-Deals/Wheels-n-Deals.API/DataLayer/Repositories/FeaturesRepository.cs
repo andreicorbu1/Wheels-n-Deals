@@ -9,7 +9,7 @@ public class FeaturesRepository : BaseRepository<Features>
     {
     }
 
-    public async Task<Features?> GetFeatureFromFeatures(string carBody, uint horsePower, string engineSize, GearboxType gearbox,
+    public async Task<Features?> GetFeatureFromFeatures(string carBody, uint horsePower, uint engineSize, GearboxType gearbox,
         FuelType fuel)
     {
         var features = await GetAll();

@@ -22,7 +22,7 @@ public class VehicleRepository : BaseRepository<Vehicle>
     {
         var vehicle = await GetById(id);
 
-        if (vehicle == null)
+        if (vehicle is null)
         {
             return null;
         }

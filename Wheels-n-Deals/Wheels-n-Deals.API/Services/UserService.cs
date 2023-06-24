@@ -2,6 +2,7 @@
 using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
 using Wheels_n_Deals.API.DataLayer.Enums;
+using Wheels_n_Deals.API.Infrastructure.Exceptions;
 
 namespace Wheels_n_Deals.API.Services;
 
@@ -18,11 +19,14 @@ public class UserService
 
     public async Task<Guid> RegisterUser(RegisterDto registerDto)
     {
-        if (registerDto == null)
+        if (registerDto is null)
             return Guid.Empty;
 
         var existingUserWithEmail = _unitOfWork.Users.Any(u => u.Email == registerDto.Email);
-        if (existingUserWithEmail) return Guid.Empty;
+        if (existingUserWithEmail)
+        {
+            throw new ResourceExistingException($"User with email '{registerDto.Email}' already exists!");
+        }
 
         var hashedPassword = AuthService.HashPassword(registerDto.Password);
 
@@ -54,11 +58,15 @@ public class UserService
 
     public async Task<User> UpdateUser(UpdateUserDto updateDto)
     {
-        if (updateDto == null || string.IsNullOrEmpty(updateDto.Email))
+        if (updateDto is null || string.IsNullOrEmpty(updateDto.Email))
             return new User();
         var user = await _unitOfWork.Users.GetUserByEmail(updateDto.Email);
-
-        if (user == null) return new User();
+      
+        if (user is null)
+        {
+            throw new ResourceMissingException($"User with email '{updateDto.Email}' doesn't exist!");
+        }
+      
         user.Address = updateDto.Address;
         user.PhoneNumber = updateDto.PhoneNumber;
         user.FirstName = updateDto.FirstName;
@@ -73,12 +81,23 @@ public class UserService
     public async Task<string> Validate(LoginDto loginDto)
     {
         var user = await _unitOfWork.Users.GetUserByEmail(loginDto.Email);
-        if (user == null) return string.Empty;
+
+        if (user is null)
+        {
+            throw new ResourceMissingException($"User with email '{loginDto.Email}' doesn't exist!");
+        }
 
         var passwordFine =
             await Task.Run(() => AuthService.VerifyHashedPassword(user.HashedPassword, loginDto.Password));
         if (passwordFine) return await Task.Run(() => AuthService.GetToken(user));
 
         return string.Empty;
+    }
+
+    public async Task<List<User>> GetUsersAsync()
+    {
+        var users = await _unitOfWork.Users.GetAll();
+
+        return users;
     }
 }

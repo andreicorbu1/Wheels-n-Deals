@@ -8,13 +8,16 @@ public class UnitOfWork
     public VehicleRepository Vehicles { get; }
     public FeaturesRepository Features { get; }
 
+    public AnnouncementRepository Announcements { get; }
+
     private readonly AppDbContext _dbContext;
 
-    public UnitOfWork(AppDbContext dbContext, UserRepository users, VehicleRepository vehicles, FeaturesRepository features)
+    public UnitOfWork(AppDbContext dbContext, UserRepository users, VehicleRepository vehicles, FeaturesRepository features, AnnouncementRepository announcements)
     {
         Users = users;
         Vehicles = vehicles;
         Features = features;
+        Announcements = announcements;
         _dbContext = dbContext;
     }
 

@@ -14,7 +14,7 @@ public class AddVehicleDto
     [Required][MaxLength(20)] public string PriceCurrency { get; set; } = string.Empty;
     [Required] public float Price { get; set; }
     [Required][MaxLength(50)] public string CarBody { get; set; } = string.Empty;
-    [Required][MaxLength(50)] public string EngineSize { get; set; } = string.Empty;
+    [Required] public uint EngineSize { get; set; }
 
     [Required][MaxLength(50)] public string FuelType { get; set; } = string.Empty;
     [Required][MaxLength(50)] public string Gearbox { get; set; } = string.Empty;

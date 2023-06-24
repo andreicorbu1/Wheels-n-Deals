@@ -4,6 +4,7 @@ using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
 using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Mapping;
+using Wheels_n_Deals.API.Infrastructure.Exceptions;
 
 namespace Wheels_n_Deals.API.Services;
 
@@ -22,7 +23,7 @@ public class VehicleService
 
         if (CheckExistingVehicleByVin(addVehicleDto.VinNumber))
         {
-            return Guid.Empty;
+            throw new ResourceExistingException($"Vehicle with id '{addVehicleDto.VinNumber}' is already existing!");
         }
 
         var fuelType = (FuelType)Enum.Parse(typeof(FuelType), addVehicleDto.FuelType, true);
@@ -30,16 +31,16 @@ public class VehicleService
         var technicalState = (State)Enum.Parse(typeof(State), addVehicleDto.TechnicalState, true);
 
         Features feature = await GetOrCreateFeature(addVehicleDto, fuelType, gearboxType);
-        if (feature == null)
+        if (feature is null)
         {
             return Guid.Empty;
         }
 
         User? owner = await _unitOfWork.Users.GetById(addVehicleDto.OwnerId);
 
-        if (owner == null)
+        if (owner is null)
         {
-            return Guid.Empty;
+            throw new ResourceMissingException($"User with id '{addVehicleDto.OwnerId}' doesn't exist!");
         }
 
         var vehicle = new Vehicle
@@ -74,7 +75,7 @@ public class VehicleService
 
     private bool CheckExistingVehicleByVin(string vinNumber)
     {
-        return _unitOfWork.Vehicles.GetVehicleByVin(vinNumber).Result != null;
+        return _unitOfWork.Vehicles.GetVehicleByVin(vinNumber).Result is not null;
     }
 
     private async Task<Features> GetOrCreateFeature(AddVehicleDto addVehicleDto, FuelType fuelType, GearboxType gearboxType)
@@ -82,7 +83,7 @@ public class VehicleService
         Features? feature = await _unitOfWork.Features.GetFeatureFromFeatures(addVehicleDto.CarBody,
             addVehicleDto.HorsePower, addVehicleDto.EngineSize, gearboxType, fuelType);
 
-        if (feature == null)
+        if (feature is null)
         {
             feature = new Features()
             {
@@ -101,18 +102,114 @@ public class VehicleService
     public async Task<bool> DeleteVehicle(string vin)
     {
         var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
-        if (vehicle != null)
+        var announcements = await _unitOfWork.Announcements.GetAll();
+        if (vehicle is not null)
         {
-            var result = await _unitOfWork.Vehicles.Remove(vehicle.Id) != null;
+            if(announcements is not null)
+            {
+                var announcement = announcements.FirstOrDefault(a => a.Vehicle?.VinNumber == vin);
+                if(announcement is not null)
+                {
+                    await _unitOfWork.Announcements.Remove(announcement.Id);
+                }
+            }
+            var featuresId = vehicle.Features.Id;
+            if((await _unitOfWork.Vehicles.GetAll()).Where(v => v.Features?.Id == featuresId).Count() == 1)
+            {
+                await _unitOfWork.Features.Remove(featuresId);
+            }
+            var result = await _unitOfWork.Vehicles.Remove(vehicle.Id) is not null;
             await _unitOfWork.SaveChanges();
             return result;
         }
         return false;
     }
 
-    public async Task<List<Vehicle>> GetAllVehicles()
+    public async Task<List<Vehicle>> GetVehicles(VehicleFiltersDto? vehicleFilters)
     {
-        return await _unitOfWork.Vehicles.GetAll();
+        var vehicles = await _unitOfWork.Vehicles.GetAll();
+
+        if (vehicleFilters is null)
+            return vehicles;
+
+        if (!string.IsNullOrEmpty(vehicleFilters.Make))
+            vehicles = vehicles
+                .Where(v => v.Make == vehicleFilters.Make)
+                .ToList();
+
+        if (!string.IsNullOrEmpty(vehicleFilters.Model))
+            vehicles = vehicles
+                .Where(v => v.Model == vehicleFilters.Model)
+                .ToList();
+
+        if (!string.IsNullOrEmpty(vehicleFilters.CarBody))
+            vehicles = vehicles
+                .Where(v => v.Features?.CarBody == vehicleFilters.CarBody)
+                .ToList();
+
+        if (!string.IsNullOrEmpty(vehicleFilters.FuelType))
+            vehicles = vehicles
+                .Where(v => v.Features?.FuelType.ToString() == vehicleFilters.FuelType)
+                .ToList();
+
+        if (!string.IsNullOrEmpty(vehicleFilters.Gearbox))
+            vehicles = vehicles
+                .Where(v => v.Features?.Gearbox.ToString() == vehicleFilters.Gearbox)
+                .ToList();
+
+        if (vehicleFilters.MinYear is not null)
+            vehicles = vehicles
+                .Where(v => v.Year >= vehicleFilters.MinYear)
+                .ToList();
+
+        if (vehicleFilters.MaxYear is not null)
+            vehicles = vehicles
+                .Where(v => v.Year <= vehicleFilters.MaxYear)
+                .ToList();
+
+        if (vehicleFilters.MinMileage is not null)
+            vehicles = vehicles
+                .Where(v => v.Mileage >= vehicleFilters.MinMileage)
+                .ToList();
+
+        if (vehicleFilters.MaxMileage is not null)
+            vehicles = vehicles
+                .Where(v => v.Mileage <= vehicleFilters.MaxMileage)
+                .ToList();
+
+        if (vehicleFilters.MinPrice is not null)
+            vehicles = vehicles
+                .Where(v => v.PriceInEuro >= vehicleFilters.MinPrice)
+                .ToList();
+
+        if (vehicleFilters.MaxPrice is not null)
+            vehicles = vehicles
+                .Where(v => v.PriceInEuro <= vehicleFilters.MaxPrice)
+                .ToList();
+
+
+        if (vehicleFilters.MinEngineSize is not null)
+            vehicles = vehicles
+                .Where(v => v.Features?.EngineSize >= vehicleFilters.MinEngineSize)
+                .ToList();
+
+        if (vehicleFilters.MaxEngineSize is not null)
+            vehicles = vehicles
+                .Where(v => v.Features?.EngineSize <= vehicleFilters.MaxEngineSize)
+                .ToList();
+
+        if (vehicleFilters.MinHorsePower is not null)
+            vehicles = vehicles
+                .Where(v => v.Features?.HorsePower >= vehicleFilters.MinHorsePower)
+                .ToList();
+
+        if (vehicleFilters.MaxHorsePower is not null)
+            vehicles = vehicles
+                .Where(v => v.Features?.HorsePower <= vehicleFilters.MaxHorsePower)
+                .ToList();
+
+
+        return vehicles;
     }
 
     public async Task<Vehicle?> GetVehicle(Guid id)
@@ -126,9 +223,9 @@ public class VehicleService
     {
         var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(vin);
 
-        if (vehicle == null)
+        if (vehicle is null)
         {
-            return null;
+            throw new ResourceMissingException($"Vehicle with VIN '{vin}' doesn't exist!");
         }
 
         return vehicle.ToVehicleDto();
@@ -138,9 +235,9 @@ public class VehicleService
     {
         var vehicle = await _unitOfWork.Vehicles.UpdateVehiclePatch(id, vehiclePatch);
 
-        if (vehicle == null)
+        if (vehicle is null)
         {
-            return null;
+            throw new ResourceMissingException($"Vehicle with id '{id}' doesn't exist!");
         }
         await _unitOfWork.SaveChanges();
         return vehicle.ToVehicleDto();
@@ -150,19 +247,19 @@ public class VehicleService
     {
         var vehicleToUpdate = await _unitOfWork.Vehicles.GetById(updatedVehicle.Id);
 
-        if (vehicleToUpdate == null)
+        if (vehicleToUpdate is null)
         {
-            return null;
+            throw new ResourceMissingException($"Vehicle with id '{updatedVehicle.Id}' doesn't exist!");
         }
 
         var features = updatedVehicle.Features;
 
-        if (features != null)
+        if (features is not null)
         {
             var existingFeature = await _unitOfWork.Features.GetFeatureFromFeatures(
                 features.CarBody, features.HorsePower, features.EngineSize, features.Gearbox, features.FuelType);
 
-            if (existingFeature != null)
+            if (existingFeature is not null)
             {
                 updatedVehicle.Features = existingFeature;
             }

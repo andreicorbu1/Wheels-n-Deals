@@ -26,14 +26,14 @@ public class BaseRepository<T> where T : BaseEntity
 
     public async Task<T?> GetById(Guid id)
     {
-        if (_dbSet == null) return null;
+        if (_dbSet is null) return null;
 
         return await _dbSet.FindAsync(id);
     }
 
     public async Task<Guid?> Insert(T entity)
     {
-        if (_dbSet == null) return null;
+        if (_dbSet is null) return null;
         if (entity.Id == Guid.Empty)
         {
             entity.Id = Guid.NewGuid();
@@ -53,10 +53,10 @@ public class BaseRepository<T> where T : BaseEntity
 
     public async Task<T?> Remove(Guid id)
     {
-        if (_dbSet == null) return null;
+        if (_dbSet is null) return null;
 
         var entity = await _dbSet.FindAsync(id);
-        if (entity == null) return null;
+        if (entity is null) return null;
 
         _dbSet.Remove(entity);
         await _appDbContext.SaveChangesAsync();

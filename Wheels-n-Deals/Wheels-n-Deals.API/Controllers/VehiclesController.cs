@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
+using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.Services;
 
 namespace Wheels_n_Deals.API.Controllers;
@@ -46,25 +47,26 @@ public class VehiclesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleDto addVehicleDto)
     {
+        if (!(User.IsInRole("Administrator") || User.IsInRole("seller")))
+        {
+            return Unauthorized();
+        }
+
         var idClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (idClaim == null)
+        if (idClaim is null)
         {
             return Unauthorized();
         }
         Guid ownerId = Guid.Parse(idClaim.Value);
-        if (User.IsInRole("Administrator") || User.IsInRole("Seller"))
-        {
-            addVehicleDto.OwnerId = ownerId;
-            Guid vehicleId = await VehicleService.AddVehicle(addVehicleDto);
-            if (vehicleId == Guid.Empty)
-            {
-                return Conflict("A vehicle with the same VIN already exists!");
-            }
+        addVehicleDto.OwnerId = ownerId;
 
-            return Created($"{vehicleId}", new { VehicleId = vehicleId, Vehicle = addVehicleDto });
+        Guid vehicleId = await VehicleService.AddVehicle(addVehicleDto);
+        if (vehicleId == Guid.Empty)
+        {
+            return Conflict("A vehicle with the same VIN already exists!");
         }
 
-        return Unauthorized();
+        return Created($"{vehicleId}", new { VehicleId = vehicleId, Vehicle = addVehicleDto });
     }
 
     /// <summary>
@@ -83,16 +85,16 @@ public class VehiclesController : ControllerBase
     ///   - Content-Type: application/json
     ///   - Body: Error
     /// </returns>
-    [HttpGet("getall")]
+    [HttpGet()]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vehicle>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> GetAllVehicles()
+    public async Task<IActionResult> GetAllVehicles([FromQuery]VehicleFiltersDto? vehicleFilters)
     {
-        var vehicles = await VehicleService.GetAllVehicles();
+        var vehicles = await VehicleService.GetVehicles(vehicleFilters);
 
-        return Ok(vehicles);
+        return Ok(vehicles.ToListVehicleDto());
     }
 
     /// <summary>
@@ -120,7 +122,7 @@ public class VehiclesController : ControllerBase
     {
         var vehicle = await VehicleService.GetVehicleFromVin(vin);
 
-        if (vehicle != null)
+        if (vehicle is not null)
         {
             return Ok(vehicle);
         }
@@ -159,7 +161,7 @@ public class VehiclesController : ControllerBase
     {
         var vehicle = await VehicleService.GetVehicleFromVin(vin);
 
-        if (vehicle != null)
+        if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
             (User.IsInRole("Seller") && vehicle?.Owner?.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
@@ -199,6 +201,7 @@ public class VehiclesController : ControllerBase
     /// 401 - Unauthorized
     /// </returns>
     [HttpPatch("{vehicleId:guid}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Vehicle))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -207,14 +210,14 @@ public class VehiclesController : ControllerBase
     {
         var vehicle = await VehicleService.GetVehicle(vehicleId);
 
-        if (vehicle != null)
+        if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
             (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
             {
                 var updatedVehicle = await VehicleService.UpdateVehiclePatch(vehicleId, patchedVehicle);
 
-                if (updatedVehicle == null)
+                if (updatedVehicle is null)
                 {
                     return NotFound("Vehicle with id vehicleId was not found");
                 }
@@ -248,6 +251,7 @@ public class VehiclesController : ControllerBase
     /// 401 - Unauthorized
     /// </returns>
     [HttpPut]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Vehicle))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -256,7 +260,7 @@ public class VehiclesController : ControllerBase
     {
         var vehicle = await VehicleService.GetVehicle(updatedVehicle.Id);
 
-        if (vehicle != null)
+        if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
             (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
@@ -264,7 +268,7 @@ public class VehiclesController : ControllerBase
 
                 var vehicleToUpdate = await VehicleService.UpdateVehicle(updatedVehicle);
 
-                if (vehicleToUpdate == null)
+                if (vehicleToUpdate is null)
                 {
                     return BadRequest();
                 }
