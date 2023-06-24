@@ -47,7 +47,7 @@ public class VehiclesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleDto addVehicleDto)
     {
-        if (!(User.IsInRole("Administrator") || User.IsInRole("seller")))
+        if (!(User.IsInRole("Administrator") || User.IsInRole("Seller")))
         {
             return Unauthorized();
         }
