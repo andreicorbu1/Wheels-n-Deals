@@ -13,6 +13,7 @@ public static class VehicleMappingExtensions
         }
         var vehicleDto = new VehicleDto()
         {
+            Id = vehicle.Id,
             VinNumber = vehicle.VinNumber,
             Year = vehicle.Year,
             Make = vehicle.Make,

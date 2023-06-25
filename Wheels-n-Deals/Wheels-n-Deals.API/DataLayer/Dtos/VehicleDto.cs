@@ -4,6 +4,7 @@ namespace Wheels_n_Deals.API.DataLayer.Dtos;
 
 public class VehicleDto
 {
+    public Guid Id { get; set; }
     [MaxLength(50)] public string VinNumber { get; set; } = string.Empty;
     [MaxLength(50)] public string Make { get; set; } = string.Empty;
     [MaxLength(50)] public string Model { get; set; } = string.Empty;

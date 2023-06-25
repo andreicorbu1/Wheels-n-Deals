@@ -1,6 +1,7 @@
 ﻿using Wheels_n_Deals.API.DataLayer;
 using Wheels_n_Deals.API.DataLayer.Dtos;
 using Wheels_n_Deals.API.DataLayer.Entities;
+using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.Infrastructure.Exceptions;
 
@@ -35,7 +36,7 @@ public class AnnouncementService
             throw new ResourceMissingException($"Vehicle with id '{addAnnouncementDto.VinNumber}' doesn't exist");
         }
 
-        if (vehicle?.Owner?.Id != user.Id && vehicle?.Owner?.RoleType != DataLayer.Enums.Role.Administrator)
+        if (vehicle?.Owner?.Id != user.Id && user.RoleType != DataLayer.Enums.Role.Administrator)
         {
             throw new ForbiddenException($"User with id '{user.Id}' doesn't have acces to this operation!");
         }
@@ -100,13 +101,14 @@ public class AnnouncementService
     public async Task<Announcement> UpdateAnnouncement(Guid userId, Guid announcementId, UpdateAnnouncementDto updateDto)
     {
         var existingAnnouncement = await _unitOfWork.Announcements.GetById(announcementId);
+        var user = await _unitOfWork.Users.GetById(userId);
 
         if (existingAnnouncement is null)
         {
             throw new ResourceMissingException($"Announcement with id '{announcementId}' doesn't exist");
         }
 
-        if (existingAnnouncement.User?.Id != userId && existingAnnouncement.User?.RoleType != DataLayer.Enums.Role.Administrator)
+        if (existingAnnouncement.User?.Id != userId && user?.RoleType != DataLayer.Enums.Role.Administrator)
         {
             throw new ForbiddenException($"User with id '{userId}' doesn't have acces to this operation!");
         }
@@ -125,13 +127,14 @@ public class AnnouncementService
     public async Task<bool> DeleteAnnouncement(Guid userId, Guid announcementId)
     {
         var existingAnnouncement = await _unitOfWork.Announcements.GetById(announcementId);
+        var user = await _unitOfWork.Users.GetById(userId);
 
         if (existingAnnouncement is null)
         {
             throw new ResourceMissingException($"Announcement with id '{announcementId}' doesn't exist");
         }
 
-        if (existingAnnouncement.User?.Id != userId && existingAnnouncement.User?.RoleType != DataLayer.Enums.Role.Administrator)
+        if (existingAnnouncement.User?.Id != userId && user?.RoleType != Role.Administrator)
         {
             throw new ForbiddenException($"User with id '{userId}' doesn't have acces to this operation!");
         }
