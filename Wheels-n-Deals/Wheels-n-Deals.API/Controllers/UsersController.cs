@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.Dtos;
+using Wheels_n_Deals.API.DataLayer.Entities;
 using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.Services;
 
@@ -129,5 +132,65 @@ public class UsersController : ControllerBase
         var users = await UserService.GetUsersAsync();
 
         return Ok(users);
+    }
+
+    /// <summary>
+    /// Update User (Patch)
+    /// </summary>
+    /// <remarks>
+    /// Updates a user partially by applying a JSON Patch document.
+    /// Requires authorization.
+    /// </remarks>
+    /// <param name="patchedUser">The JSON Patch document containing the partial updates</param>
+    /// <returns>
+    /// 200 - User updated successfully
+    ///   - Content-Type: application/json
+    ///   - Body: User
+    ///
+    /// 404 - Not Found
+    ///   - Content-Type: text/plain
+    ///   - Body: User with ID {userId} was not found
+    ///
+    /// 401 - Unauthorized
+    /// </returns>
+    [HttpPatch]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateUserPatch([FromBody] JsonPatchDocument<User> patchedUser)
+    {
+        var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            return BadRequest();
+        }
+
+        var updatedUser = await UserService.UpdateUserPatch(Guid.Parse(userId.Value), patchedUser);
+
+        if (updatedUser is null)
+        {
+            return NotFound("Vehicle with id vehicleId was not found");
+        }
+        return Ok(updatedUser);
+    }
+
+    [HttpDelete]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> DeleteUser([FromQuery] Guid userId = default(Guid))
+    {
+        if (User.IsInRole("Seller") || userId == Guid.Empty)
+        {
+            userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        }
+
+        var deleted = await UserService.DeleteUser(userId);
+        if (deleted)
+            return Ok();
+        else
+            return StatusCode(StatusCodes.Status500InternalServerError);
     }
 }

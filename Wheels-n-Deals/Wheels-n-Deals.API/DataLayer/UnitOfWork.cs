@@ -7,18 +7,19 @@ public class UnitOfWork
     public UserRepository Users { get; }
     public VehicleRepository Vehicles { get; }
     public FeaturesRepository Features { get; }
-
     public AnnouncementRepository Announcements { get; }
+    public ImageRepository Images { get; }
 
     private readonly AppDbContext _dbContext;
 
-    public UnitOfWork(AppDbContext dbContext, UserRepository users, VehicleRepository vehicles, FeaturesRepository features, AnnouncementRepository announcements)
+    public UnitOfWork(AppDbContext dbContext, UserRepository users, VehicleRepository vehicles, FeaturesRepository features, AnnouncementRepository announcements, ImageRepository images)
     {
         Users = users;
         Vehicles = vehicles;
         Features = features;
         Announcements = announcements;
         _dbContext = dbContext;
+        Images = images;
     }
 
     public async Task SaveChanges()

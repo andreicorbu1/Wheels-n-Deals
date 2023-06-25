@@ -2,7 +2,7 @@
 
 public class ResourceMissingException : Exception
 {
-    public ResourceMissingException(string message) : base(message) 
+    public ResourceMissingException(string message) : base(message)
     {
     }
 }

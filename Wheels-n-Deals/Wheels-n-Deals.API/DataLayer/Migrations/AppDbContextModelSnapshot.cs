@@ -60,7 +60,7 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Announcements", (string)null);
+                    b.ToTable("Announcements");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Features", b =>
@@ -90,7 +90,7 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Features", (string)null);
+                    b.ToTable("Features");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Image", b =>
@@ -99,7 +99,7 @@ namespace Wheels_n_Deals.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AnnouncementId")
+                    b.Property<Guid>("AnnouncementId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Url")
@@ -111,7 +111,7 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasIndex("AnnouncementId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.User", b =>
@@ -156,7 +156,7 @@ namespace Wheels_n_Deals.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", b =>
@@ -208,7 +208,7 @@ namespace Wheels_n_Deals.API.Migrations
                     b.HasIndex("VinNumber")
                         .IsUnique();
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Announcement", b =>
@@ -230,7 +230,9 @@ namespace Wheels_n_Deals.API.Migrations
                 {
                     b.HasOne("Wheels_n_Deals.API.DataLayer.Entities.Announcement", null)
                         .WithMany("ImagesUrl")
-                        .HasForeignKey("AnnouncementId");
+                        .HasForeignKey("AnnouncementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Entities.Vehicle", b =>

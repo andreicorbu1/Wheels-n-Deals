@@ -2,7 +2,7 @@
 
 public class ResourceExistingException : Exception
 {
-    public ResourceExistingException(string message) : base(message) 
+    public ResourceExistingException(string message) : base(message)
     {
     }
 }

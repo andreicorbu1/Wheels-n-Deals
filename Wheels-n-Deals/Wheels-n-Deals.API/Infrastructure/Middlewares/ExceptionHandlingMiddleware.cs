@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Net;
 using Wheels_n_Deals.API.Infrastructure.Exceptions;
 
@@ -16,30 +16,26 @@ public class ExceptionHandlingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        Console.WriteLine("request1");
-
         try
         {
             await next(context);
         }
         catch (ForbiddenException ex)
         {
-            await RespondToExceptionAsync(context, HttpStatusCode.Forbidden, ex.Message, ex);
+            await RespondToExceptionAsync(context, HttpStatusCode.Forbidden, ex.Message + '\n' + ex.InnerException?.Message, ex);
         }
         catch (ResourceMissingException ex)
         {
-            await RespondToExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message, ex);
+            await RespondToExceptionAsync(context, HttpStatusCode.NotFound, ex.Message + '\n' + ex.InnerException?.Message, ex);
         }
         catch (ResourceExistingException ex)
         {
-            await RespondToExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message, ex);
+            await RespondToExceptionAsync(context, HttpStatusCode.Conflict, ex.Message + '\n' + ex.InnerException?.Message, ex);
         }
         catch (Exception ex)
         {
-            await RespondToExceptionAsync(context, HttpStatusCode.InternalServerError, "Internal Server Error", ex);
+            await RespondToExceptionAsync(context, HttpStatusCode.InternalServerError, ex.Message + '\n' + ex.InnerException?.Message, ex);
         }
-
-        Console.WriteLine("response1");
     }
 
     private static Task RespondToExceptionAsync(HttpContext context, HttpStatusCode failureStatusCode, string message, Exception exception)

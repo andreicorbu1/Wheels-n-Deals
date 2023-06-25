@@ -61,8 +61,9 @@ public class Dependencies
         services.AddScoped<UserRepository>();
         services.AddScoped<VehicleRepository>();
         services.AddScoped<FeaturesRepository>();
-        services.AddScoped<UnitOfWork>();
+        services.AddScoped<ImageRepository>();
         services.AddScoped<AnnouncementRepository>();
+        services.AddScoped<UnitOfWork>();
     }
 
     private static void AddServices(IServiceCollection services)

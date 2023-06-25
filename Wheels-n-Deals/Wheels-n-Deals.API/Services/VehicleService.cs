@@ -11,10 +11,11 @@ namespace Wheels_n_Deals.API.Services;
 public class VehicleService
 {
     private readonly UnitOfWork _unitOfWork;
-
-    public VehicleService(UnitOfWork unitOfWork)
+    private AnnouncementService _announcementService;
+    public VehicleService(UnitOfWork unitOfWork, AnnouncementService announcementService)
     {
         _unitOfWork = unitOfWork;
+        _announcementService = announcementService;
     }
 
     public async Task<Guid> AddVehicle(AddVehicleDto addVehicleDto)
@@ -105,16 +106,16 @@ public class VehicleService
         var announcements = await _unitOfWork.Announcements.GetAll();
         if (vehicle is not null)
         {
-            if(announcements is not null)
+            if (announcements is not null)
             {
                 var announcement = announcements.FirstOrDefault(a => a.Vehicle?.VinNumber == vin);
-                if(announcement is not null)
+                if (announcement is not null)
                 {
-                    await _unitOfWork.Announcements.Remove(announcement.Id);
+                    await _announcementService.DeleteAnnouncement(announcement.User.Id, announcement.Id);
                 }
             }
             var featuresId = vehicle.Features.Id;
-            if((await _unitOfWork.Vehicles.GetAll()).Where(v => v.Features?.Id == featuresId).Count() == 1)
+            if ((await _unitOfWork.Vehicles.GetAll()).Where(v => v.Features?.Id == featuresId).Count() == 1)
             {
                 await _unitOfWork.Features.Remove(featuresId);
             }

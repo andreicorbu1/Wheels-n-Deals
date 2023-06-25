@@ -25,18 +25,17 @@ public class AnnouncementService
         var user = await _unitOfWork.Users.GetById(addAnnouncementDto.UserId);
         var vehicle = await _unitOfWork.Vehicles.GetVehicleByVin(addAnnouncementDto.VinNumber);
 
-        if(user is null)
+        if (user is null)
         {
             throw new ResourceMissingException($"User with id '{addAnnouncementDto.UserId}' doesn't exist");
         }
 
-        if(vehicle is null || (vehicle?.Owner?.Id != user.Id && vehicle?.Owner?.RoleType != DataLayer.Enums.Role.Administrator))
-
+        if (vehicle is null)
         {
             throw new ResourceMissingException($"Vehicle with id '{addAnnouncementDto.VinNumber}' doesn't exist");
         }
 
-        if(vehicle?.Owner?.Id != user.Id && vehicle?.Owner?.RoleType != DataLayer.Enums.Role.Administrator)
+        if (vehicle?.Owner?.Id != user.Id && vehicle?.Owner?.RoleType != DataLayer.Enums.Role.Administrator)
         {
             throw new ForbiddenException($"User with id '{user.Id}' doesn't have acces to this operation!");
         }
@@ -49,13 +48,53 @@ public class AnnouncementService
             Description = addAnnouncementDto.Description,
             County = addAnnouncementDto.County,
             City = addAnnouncementDto.City,
-            ImagesUrl = addAnnouncementDto.ImagesUrl
+            ImagesUrl = null
         };
 
         var id = await _unitOfWork.Announcements.Insert(newAnnouncement) ?? Guid.Empty;
         await _unitOfWork.SaveChanges();
 
+        if (id == Guid.Empty)
+        {
+            throw new Exception("Announcement could not be inserted into database");
+        }
+
+        var images = await AddImages(addAnnouncementDto.ImagesUrl, id);
+
+        if (images != null)
+        {
+            var updateAnnouncementDto = new UpdateAnnouncementDto()
+            {
+                Vehicle = vehicle,
+                Title = addAnnouncementDto.Title,
+                Description = addAnnouncementDto.Description,
+                County = addAnnouncementDto.County,
+                City = addAnnouncementDto.City,
+                ImagesUrl = images
+            };
+            await UpdateAnnouncement(user.Id, id, updateAnnouncementDto);
+        }
+
         return id;
+    }
+
+    private async Task<List<Image>> AddImages(List<ImageDto> imagesDto, Guid announcementId)
+    {
+        List<Image> images = new List<Image>();
+        foreach (var image in imagesDto)
+        {
+            var auxImage = new Image()
+            {
+                Url = image.Url,
+                Id = Guid.Empty,
+                AnnouncementId = announcementId
+            };
+            var id = await _unitOfWork.Images.Insert(auxImage);
+            auxImage.Id = id.Value;
+            images.Add(auxImage);
+        }
+        await _unitOfWork.SaveChanges();
+        return images;
     }
 
     public async Task<Announcement> UpdateAnnouncement(Guid userId, Guid announcementId, UpdateAnnouncementDto updateDto)
@@ -95,6 +134,15 @@ public class AnnouncementService
         if (existingAnnouncement.User?.Id != userId && existingAnnouncement.User?.RoleType != DataLayer.Enums.Role.Administrator)
         {
             throw new ForbiddenException($"User with id '{userId}' doesn't have acces to this operation!");
+        }
+
+        var images = (await _unitOfWork.Images.GetAll())
+            .Where(im => im.AnnouncementId == existingAnnouncement.Id)
+            .ToList();
+
+        foreach (var image in images)
+        {
+            await _unitOfWork.Images.Remove(image.Id);
         }
 
         var announcement = await _unitOfWork.Announcements.Remove(existingAnnouncement.Id);

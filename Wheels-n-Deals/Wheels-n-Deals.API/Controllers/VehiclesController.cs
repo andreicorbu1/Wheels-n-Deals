@@ -90,7 +90,7 @@ public class VehiclesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vehicle>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> GetAllVehicles([FromQuery]VehicleFiltersDto? vehicleFilters)
+    public async Task<IActionResult> GetAllVehicles([FromQuery] VehicleFiltersDto? vehicleFilters)
     {
         var vehicles = await VehicleService.GetVehicles(vehicleFilters);
 

@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Wheels_n_Deals.API.DataLayer.Entities;
+using System.Text.Json.Serialization;
 
 namespace Wheels_n_Deals.API.DataLayer.Dtos;
 
 public class AddAnnouncementDto
 {
-    [Required]public Guid UserId { get; set; }
+    [JsonIgnore] public Guid UserId { get; set; }
 
     [Required][MaxLength(50)] public string VinNumber { get; set; } = string.Empty;
 
@@ -17,5 +17,5 @@ public class AddAnnouncementDto
 
     [Required][MaxLength(50)] public string City { get; set; } = string.Empty;
 
-    public List<Image>? ImagesUrl { get; set; }
+    public List<ImageDto>? ImagesUrl { get; set; }
 }

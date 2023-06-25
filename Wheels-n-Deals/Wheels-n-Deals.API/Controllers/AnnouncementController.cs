@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.Dtos;
@@ -74,13 +73,13 @@ public class AnnouncementController : ControllerBase
     public async Task<IActionResult> AddAnnouncement([FromBody] AddAnnouncementDto addAnnouncementDto)
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if(userId is null)
+        if (userId is null)
         {
             return BadRequest();
         }
         addAnnouncementDto.UserId = Guid.Parse(userId.Value);
         var id = await AnnouncementService.CreateAnnouncement(addAnnouncementDto);
-        if(id != Guid.Empty)
+        if (id != Guid.Empty)
         {
             var response = new
             {
@@ -188,7 +187,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AnnouncementDto>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> GetAllAnnouncemenets([FromQuery]VehicleFiltersDto? vehicleFiltersDto)
+    public async Task<IActionResult> GetAllAnnouncemenets([FromQuery] VehicleFiltersDto? vehicleFiltersDto)
     {
         var vehicles = await VehicleService.GetVehicles(vehicleFiltersDto);
         var announcements = await AnnouncementService.GetAllAnnouncements(vehicles);

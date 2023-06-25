@@ -18,6 +18,15 @@ public class VehicleRepository : BaseRepository<Vehicle>
         return searchedVehicle;
     }
 
+    public async Task<List<Vehicle?>> GetVehiclesByOwnerId(Guid ownerId)
+    {
+        var vehicles = await GetAll();
+
+        var searchedVehicles = vehicles.Where(v => v.Owner.Id == ownerId).ToList();
+
+        return searchedVehicles;
+    }
+
     public async Task<Vehicle?> UpdateVehiclePatch(Guid id, JsonPatchDocument<Vehicle> vehiclePatched)
     {
         var vehicle = await GetById(id);

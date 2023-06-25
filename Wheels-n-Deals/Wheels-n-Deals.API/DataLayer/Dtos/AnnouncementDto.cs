@@ -7,7 +7,7 @@ public class AnnouncementDto
 {
     [MaxLength(50)] public string Id { get; set; } = string.Empty;
 
-    public UserDto? User { get; set; } 
+    public UserDto? User { get; set; }
 
     public VehicleDto? Vehicle { get; set; }
 
