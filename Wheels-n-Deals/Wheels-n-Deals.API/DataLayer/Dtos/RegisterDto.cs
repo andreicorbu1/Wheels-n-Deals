@@ -19,5 +19,5 @@ public class RegisterDto
 
     [MaxLength(50)] public string Address { get; set; } = string.Empty;
 
-    public string RoleType { get; set; } = string.Empty;
+    public string RoleType { get; set; } = "User";
 }

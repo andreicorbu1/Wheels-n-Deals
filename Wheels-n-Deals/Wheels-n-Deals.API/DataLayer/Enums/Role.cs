@@ -2,7 +2,6 @@
 
 public enum Role
 {
-    None,
     Administrator,
-    Seller
+    User
 }

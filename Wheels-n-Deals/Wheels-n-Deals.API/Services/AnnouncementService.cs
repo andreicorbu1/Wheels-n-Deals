@@ -81,7 +81,7 @@ public class AnnouncementService
 
     private async Task<List<Image>> AddImages(List<ImageDto> imagesDto, Guid announcementId)
     {
-        List<Image> images = new List<Image>();
+        List<Image> images = new();
         foreach (var image in imagesDto)
         {
             var auxImage = new Image()
@@ -139,16 +139,17 @@ public class AnnouncementService
             throw new ForbiddenException($"User with id '{userId}' doesn't have acces to this operation!");
         }
 
-        var images = (await _unitOfWork.Images.GetAll())
-            .Where(im => im.AnnouncementId == existingAnnouncement.Id)
-            .ToList();
+        var images = await _unitOfWork.Images.GetImagesOfAnnouncement(announcementId);
 
-        foreach (var image in images)
+        if(images is not null)
         {
-            await _unitOfWork.Images.Remove(image.Id);
+            foreach (var image in images)
+            {
+                await _unitOfWork.Images.Remove(image.Id);
+            }
         }
 
-        var announcement = await _unitOfWork.Announcements.Remove(existingAnnouncement.Id);
+        var announcement = await _unitOfWork.Announcements.Remove(announcementId);
         await _unitOfWork.SaveChanges();
 
         return announcement is not null;
@@ -156,10 +157,7 @@ public class AnnouncementService
 
     public async Task<List<AnnouncementDto>> GetAllAnnouncements(List<Vehicle> vehicles)
     {
-        var announcements = await _unitOfWork.Announcements.GetAll();
-        announcements = announcements
-            .Where(ann => vehicles.Contains(ann.Vehicle))
-            .ToList();
+        var announcements = await _unitOfWork.Announcements.GetAllAnnouncements(vehicles);
 
         return announcements.ToAnnouncementDtos();
     }

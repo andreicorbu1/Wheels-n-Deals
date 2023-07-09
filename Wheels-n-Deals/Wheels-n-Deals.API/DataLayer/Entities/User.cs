@@ -20,5 +20,5 @@ public class User : BaseEntity
 
     [MaxLength(50)] public string Address { get; set; } = string.Empty;
 
-    public Role RoleType { get; set; } = Role.None;
+    public Role RoleType { get; set; } = Role.User;
 }

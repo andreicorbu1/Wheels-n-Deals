@@ -182,7 +182,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> DeleteUser([FromQuery] Guid userId = default(Guid))
     {
-        if (User.IsInRole("Seller") || userId == Guid.Empty)
+        if (User.IsInRole("User") || userId == Guid.Empty)
         {
             userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
         }

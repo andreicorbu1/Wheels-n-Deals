@@ -47,7 +47,7 @@ public class VehiclesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleDto addVehicleDto)
     {
-        if (!(User.IsInRole("Administrator") || User.IsInRole("Seller")))
+        if (!(User.IsInRole("Administrator") || User.IsInRole("User")))
         {
             return Unauthorized();
         }
@@ -164,7 +164,7 @@ public class VehiclesController : ControllerBase
         if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
-            (User.IsInRole("Seller") && vehicle?.Owner?.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            (User.IsInRole("User") && vehicle?.Owner?.Id == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
             {
                 var deleted = await VehicleService.DeleteVehicle(vin);
                 if (deleted)
@@ -213,7 +213,7 @@ public class VehiclesController : ControllerBase
         if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
-            (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            (User.IsInRole("User") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
             {
                 var updatedVehicle = await VehicleService.UpdateVehiclePatch(vehicleId, patchedVehicle);
 
@@ -263,7 +263,7 @@ public class VehiclesController : ControllerBase
         if (vehicle is not null)
         {
             if (User.IsInRole("Administrator") ||
-            (User.IsInRole("Seller") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
+            (User.IsInRole("User") && vehicle?.Owner?.Id.ToString() == User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value))
             {
 
                 var vehicleToUpdate = await VehicleService.UpdateVehicle(updatedVehicle);

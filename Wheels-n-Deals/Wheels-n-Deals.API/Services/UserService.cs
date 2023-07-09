@@ -42,7 +42,7 @@ public class UserService
             LastName = registerDto.LastName,
             Address = registerDto.Address,
             PhoneNumber = registerDto.PhoneNumber,
-            RoleType = Role.None
+            RoleType = Role.User
         };
 
         Role roleType;
