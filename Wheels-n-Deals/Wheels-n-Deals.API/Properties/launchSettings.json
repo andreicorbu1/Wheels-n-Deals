@@ -4,17 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:47002",
-      "sslPort": 44388
+      "applicationUrl": "http://localhost:18286",
+      "sslPort": 0
     }
   },
   "profiles": {
     "Wheels_n_Deals.API": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:7250",
+      "applicationUrl": "http://localhost:5142",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

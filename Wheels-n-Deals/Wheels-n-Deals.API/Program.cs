@@ -1,4 +1,3 @@
-using Wheels_n_Deals.API.Infrastructure.Middlewares;
 using Wheels_n_Deals.API.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +6,7 @@ Dependencies.Inject(builder);
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

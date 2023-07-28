@@ -1,136 +1,100 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using Wheels_n_Deals.API.DataLayer;
-using Wheels_n_Deals.API.DataLayer.Dtos;
-using Wheels_n_Deals.API.DataLayer.Entities;
-using Wheels_n_Deals.API.DataLayer.Enums;
-using Wheels_n_Deals.API.DataLayer.Mapping;
-using Wheels_n_Deals.API.Infrastructure.Exceptions;
+﻿using Wheels_n_Deals.API.DataLayer.DTO;
+using Wheels_n_Deals.API.DataLayer.Interfaces;
+using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Services.Interfaces;
 
 namespace Wheels_n_Deals.API.Services;
 
-public class UserService
+public class UserService : IUserService
 {
-    private AuthorizationService AuthService { get; set; }
-    private VehicleService VehicleService { get; set; }
-    private readonly UnitOfWork _unitOfWork;
+    private IAuthService _authService { get; set; }
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(AuthorizationService authService, UnitOfWork unitOfWork, VehicleService vehicleService)
+    public UserService(IAuthService authService, IUnitOfWork unitOfWork)
     {
-        AuthService = authService;
+        _authService = authService;
         _unitOfWork = unitOfWork;
-        VehicleService = vehicleService;
     }
 
-    public async Task<Guid> RegisterUser(RegisterDto registerDto)
+    public async Task<User> DeleteUserAsync(Guid userId)
     {
-        if (registerDto is null)
-            return Guid.Empty;
-
-        var existingUserWithEmail = _unitOfWork.Users.Any(u => u.Email == registerDto.Email);
-        if (existingUserWithEmail)
-        {
-            throw new ResourceExistingException($"User with email '{registerDto.Email}' already exists!");
-        }
-
-        var hashedPassword = AuthService.HashPassword(registerDto.Password);
-
-        var user = new User
-        {
-            Email = registerDto.Email,
-            HashedPassword = hashedPassword,
-            FirstName = registerDto.FirstName,
-            LastName = registerDto.LastName,
-            Address = registerDto.Address,
-            PhoneNumber = registerDto.PhoneNumber,
-            RoleType = Role.User
-        };
-
-        Role roleType;
-
-        if (Enum.TryParse(registerDto.RoleType, true, out roleType)) user.RoleType = roleType;
-
-        var id = await _unitOfWork.Users.Insert(user) ?? Guid.Empty;
-        await _unitOfWork.SaveChanges();
-
-        return id;
+        var user = await _unitOfWork.Users.GetUserByIdAsync(userId);
+        user = await _unitOfWork.Users.RemoveAsync(user.Id);
+        await _unitOfWork.SaveChangesAsync();
+        return user;
     }
 
-    public async Task<User> GetUserById(Guid id)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
-        return await _unitOfWork.Users.GetById(id) ?? new User();
+        return await _unitOfWork.Users.GetUserByEmailAsync(email);
     }
 
-    public async Task<User> UpdateUser(UpdateUserDto updateDto)
+    public async Task<User> GetUserByIdAsync(Guid id)
     {
-        if (updateDto is null || string.IsNullOrEmpty(updateDto.Email))
-            return new User();
-        var user = await _unitOfWork.Users.GetUserByEmail(updateDto.Email);
-
-        if (user is null)
-        {
-            throw new ResourceMissingException($"User with email '{updateDto.Email}' doesn't exist!");
-        }
-
-        user.Address = updateDto.Address;
-        user.PhoneNumber = updateDto.PhoneNumber;
-        user.FirstName = updateDto.FirstName;
-        user.LastName = updateDto.LastName;
-        user.HashedPassword = AuthService.HashPassword(updateDto.Password);
-
-        var userUpdated = await _unitOfWork.Users.Update(user);
-        await _unitOfWork.SaveChanges();
-        return userUpdated;
-    }
-
-    public async Task<string> Validate(LoginDto loginDto)
-    {
-        var user = await _unitOfWork.Users.GetUserByEmail(loginDto.Email);
-
-        if (user is null)
-        {
-            throw new ResourceMissingException($"User with email '{loginDto.Email}' doesn't exist!");
-        }
-
-        var passwordFine =
-            await Task.Run(() => AuthService.VerifyHashedPassword(user.HashedPassword, loginDto.Password));
-        if (passwordFine) return await Task.Run(() => AuthService.GetToken(user));
-
-        return string.Empty;
+        return await _unitOfWork.Users.GetUserByIdAsync(id);
     }
 
     public async Task<List<User>> GetUsersAsync()
     {
-        var users = await _unitOfWork.Users.GetAll();
-
-        return users;
+        return await _unitOfWork.Users.GetUsersAsync();
     }
 
-    public async Task<UserDto?> UpdateUserPatch(Guid userId, JsonPatchDocument<User> userPatch)
+    public async Task<string> LoginUserAsync(LoginDto dto)
     {
-        var user = await _unitOfWork.Users.UpdateUserPatch(userId, userPatch);
+        var user = await _unitOfWork.Users.GetUserByEmailAsync(dto.Email) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
+        var passwordFine = await Task.Run(() => _authService.VerifyHashedPassword(user.HashedPassword, dto.Password));
 
-        if (user is null)
-        {
-            throw new ResourceMissingException($"User with id '{userId}' doesn't exist!");
-        }
-        await _unitOfWork.SaveChanges();
-        return user.ToUserDto();
+        if (passwordFine)
+            return await Task.Run(() => _authService.GetToken(user));
+
+        return string.Empty;
     }
 
-    public async Task<bool> DeleteUser(Guid userId)
+    public async Task<Guid> RegisterUserAsync(RegisterDto dto)
     {
-        var vehicles = await _unitOfWork.Vehicles.GetVehiclesByOwnerId(userId);
-        if (vehicles is not null)
+        if (dto is null) throw new ArgumentNullException(nameof(dto));
+
+        var existingUserWithEmail = _unitOfWork.Users.Any(u => u.Email == dto.Email);
+        if (existingUserWithEmail)
         {
-            foreach (var vehicle in vehicles)
-            {
-                await VehicleService.DeleteVehicle(vehicle.VinNumber);
-            }
+            throw new Exception($"User with email '{dto.Email}' already exists!");
         }
+        var hashedPassword = _authService.HashPassword(dto.Password);
 
-        var result = await _unitOfWork.Users.Remove(userId) is not null;
-        await _unitOfWork.SaveChanges();
+        var user = new User
+        {
+            Email = dto.Email,
+            HashedPassword = hashedPassword,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Address = dto.Address,
+            PhoneNumber = dto.PhoneNumber,
+            Role = DataLayer.Enums.Role.User
+        };
 
-        return result;
+        var id = await _unitOfWork.Users.InsertAsync(user);
+        await _unitOfWork.SaveChangesAsync();
+
+        return id;
+    }
+
+    public async Task<User> UpdateUserAsync(UpdateUserDto dto)
+    {
+        if (dto is null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrWhiteSpace(dto.Email))
+            throw new ArgumentNullException(nameof(dto));
+        var user = await GetUserByIdAsync(dto.Id) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
+
+        user.Address = dto.Address;
+        user.PhoneNumber = dto.PhoneNumber;
+        user.FirstName = dto.FirstName;
+        user.LastName = dto.LastName;
+        user.Email = dto.Email;
+        user.HashedPassword = _authService.HashPassword(dto.Password);
+        user.LastModified = DateTime.UtcNow;
+
+        user = await _unitOfWork.Users.UpdateAsync(user);
+        await _unitOfWork.SaveChangesAsync();
+
+        return user;
     }
 }

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.6.33723.286
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wheels-n-Deals.API", "Wheels-n-Deals.API\Wheels-n-Deals.API.csproj", "{FA83193C-F968-4EC8-B276-85E4D7F6F160}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wheels-n-Deals.API", "Wheels-n-Deals.API\Wheels-n-Deals.API.csproj", "{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FA83193C-F968-4EC8-B276-85E4D7F6F160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA83193C-F968-4EC8-B276-85E4D7F6F160}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA83193C-F968-4EC8-B276-85E4D7F6F160}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA83193C-F968-4EC8-B276-85E4D7F6F160}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1DDCA64C-43A0-4057-9985-2EFAAE816F57}
+		SolutionGuid = {39305B94-5D85-4BEF-BDB4-E91EE8387ED2}
 	EndGlobalSection
 EndGlobal

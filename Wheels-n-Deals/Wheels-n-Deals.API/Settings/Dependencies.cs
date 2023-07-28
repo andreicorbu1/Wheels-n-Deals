@@ -6,20 +6,22 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
 using Wheels_n_Deals.API.DataLayer;
+using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Repositories;
 using Wheels_n_Deals.API.Services;
+using Wheels_n_Deals.API.Services.Interfaces;
 
 namespace Wheels_n_Deals.API.Settings;
 
 public class Dependencies
 {
-    public static void Inject(WebApplicationBuilder applicationBuilder)
+    public static void Inject(WebApplicationBuilder app)
     {
-        applicationBuilder.Services.AddDbContext<AppDbContext>(options =>
+        app.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(applicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseNpgsql(app.Configuration.GetConnectionString("DefaultConnection"));
         });
-        applicationBuilder.Services.AddAuthentication(options =>
+        app.Services.AddAuthentication(options =>
         {
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,37 +42,31 @@ public class Dependencies
                 ValidAudience = "Frontend",
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(applicationBuilder.Configuration["JWT:SecurityKey"]))
+                        Encoding.UTF8.GetBytes(app.Configuration["JWT:SecurityKey"]))
             };
         });
-        applicationBuilder.Services.AddControllers().AddNewtonsoftJson();
-        applicationBuilder.Services.AddSwaggerGen(c =>
+        app.Services.AddControllers();
+        app.Services.AddSwaggerGen(c =>
         {
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
-        applicationBuilder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        app.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
-        AddRepositories(applicationBuilder.Services);
-        AddServices(applicationBuilder.Services);
+        AddRepositories(app.Services);
+        AddServices(app.Services);
     }
 
     private static void AddRepositories(IServiceCollection services)
     {
-        services.AddScoped<UserRepository>();
-        services.AddScoped<VehicleRepository>();
-        services.AddScoped<FeaturesRepository>();
-        services.AddScoped<ImageRepository>();
-        services.AddScoped<AnnouncementRepository>();
-        services.AddScoped<UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
     private static void AddServices(IServiceCollection services)
     {
-        services.AddScoped<AuthorizationService>();
-        services.AddScoped<VehicleService>();
-        services.AddScoped<UserService>();
-        services.AddScoped<AnnouncementService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
     }
 }

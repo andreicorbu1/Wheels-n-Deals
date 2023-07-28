@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Wheels_n_Deals.API.DataLayer.Dtos;
-using Wheels_n_Deals.API.DataLayer.Entities;
+using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Mapping;
-using Wheels_n_Deals.API.Services;
+using Wheels_n_Deals.API.Services.Interfaces;
 
 namespace Wheels_n_Deals.API.Controllers;
 
@@ -14,11 +12,11 @@ namespace Wheels_n_Deals.API.Controllers;
 [Authorize]
 public class UsersController : ControllerBase
 {
-    private UserService UserService { get; set; }
+    private IUserService _userService { get; set; }
 
-    public UsersController(UserService userService)
+    public UsersController(IUserService userService)
     {
-        UserService = userService;
+        _userService = userService;
     }
 
     /// <summary>
@@ -48,7 +46,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
     {
-        var id = await UserService.RegisterUser(registerDto);
+        var id = await _userService.RegisterUserAsync(registerDto);
         if (id != Guid.Empty)
         {
             var response = new
@@ -87,7 +85,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
     {
-        var jwtToken = await UserService.Validate(loginDto);
+        var jwtToken = await _userService.LoginUserAsync(loginDto);
 
         if (string.IsNullOrEmpty(jwtToken) || string.IsNullOrWhiteSpace(jwtToken))
             return NotFound("Email or password was wrong");
@@ -120,7 +118,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
-        var user = await UserService.GetUserById(id);
+        var user = await _userService.GetUserByIdAsync(id);
         if (user is null) return NotFound($"User with id {id} was not found!");
         return Ok(user.ToUserDto());
     }
@@ -129,50 +127,32 @@ public class UsersController : ControllerBase
     [HttpGet()]
     public async Task<IActionResult> GetAllUsers()
     {
-        var users = await UserService.GetUsersAsync();
+        var users = (await _userService.GetUsersAsync()).ToUserDto();
 
         return Ok(users);
     }
 
-    /// <summary>
-    /// Update User (Patch)
-    /// </summary>
-    /// <remarks>
-    /// Updates a user partially by applying a JSON Patch document.
-    /// Requires authorization.
-    /// </remarks>
-    /// <param name="patchedUser">The JSON Patch document containing the partial updates</param>
-    /// <returns>
-    /// 200 - User updated successfully
-    ///   - Content-Type: application/json
-    ///   - Body: User
-    ///
-    /// 404 - Not Found
-    ///   - Content-Type: text/plain
-    ///   - Body: User with ID {userId} was not found
-    ///
-    /// 401 - Unauthorized
-    /// </returns>
-    [HttpPatch]
+    [HttpPut]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesDefaultResponseType]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateUserPatch([FromBody] JsonPatchDocument<User> patchedUser)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto, [FromQuery] string originalEmail)
     {
-        var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if (userId is null)
+        var user = await _userService.GetUserByEmailAsync(originalEmail);
+
+        if (user is null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        var updatedUser = await UserService.UpdateUserPatch(Guid.Parse(userId.Value), patchedUser);
-
-        if (updatedUser is null)
+        if (User.IsInRole("Admin") || User.HasClaim(ClaimTypes.NameIdentifier, user.Id.ToString()))
         {
-            return NotFound("Vehicle with id vehicleId was not found");
+            dto.Id = user.Id;
+            user = await _userService.UpdateUserAsync(dto);
+            return Ok(user);
         }
-        return Ok(updatedUser);
+        return BadRequest();
     }
 
     [HttpDelete]
@@ -180,16 +160,16 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> DeleteUser([FromQuery] Guid userId = default(Guid))
+    public async Task<IActionResult> DeleteUser([FromQuery] Guid userId = default)
     {
-        if (User.IsInRole("User") || userId == Guid.Empty)
+        if (User.IsInRole("Seller") || userId == Guid.Empty)
         {
             userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
         }
 
-        var deleted = await UserService.DeleteUser(userId);
-        if (deleted)
-            return Ok();
+        var deleted = await _userService.DeleteUserAsync(userId);
+        if (deleted is not null)
+            return Ok(deleted);
         else
             return StatusCode(StatusCodes.Status500InternalServerError);
     }

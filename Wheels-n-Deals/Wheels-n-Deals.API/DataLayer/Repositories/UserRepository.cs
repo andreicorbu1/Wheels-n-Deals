@@ -1,38 +1,77 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
-using Wheels_n_Deals.API.DataLayer.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Wheels_n_Deals.API.DataLayer.Interfaces;
+using Wheels_n_Deals.API.DataLayer.Models;
 
 namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
-public class UserRepository : BaseRepository<User>
+public class UserRepository : IUserRepository
 {
-    public UserRepository(AppDbContext appDbContext) : base(appDbContext)
+    protected readonly AppDbContext _context;
+    private readonly DbSet<User> _users;
+
+    public UserRepository(AppDbContext context)
     {
+        _context = context;
+        _users = context.Set<User>();
     }
 
-    public async Task<User?> GetUserByEmail(string email)
+    public bool Any(Func<User, bool> predicate)
     {
-        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+        return _users.AsQueryable().Any(predicate);
     }
 
-    public async Task<User?> GetUserById(Guid id)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
-        return await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+        if (_users is null) return null;
+
+        return await _users.AsQueryable().FirstOrDefaultAsync(us => us.Email == email);
     }
 
-    public async Task<User?> UpdateUserPatch(Guid id, JsonPatchDocument<User> userPatched)
+    public async Task<User> GetUserByIdAsync(Guid id)
     {
-        var user = await GetUserById(id);
+        if (_users is null) return null;
 
-        if (user is null)
-        {
-            return null;
-        }
+        return await _users.FindAsync(id);
+    }
 
-        userPatched.ApplyTo(user);
+    public async Task<List<User>> GetUsersAsync()
+    {
+        if (_users is null) return null;
 
-        await Update(user);
-        await _appDbContext.SaveChangesAsync();
+        return await _users.AsQueryable().ToListAsync();
+    }
+
+    public async Task<Guid> InsertAsync(User user)
+    {
+        if (_users is null) return Guid.Empty;
+
+        await _users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        return user.Id;
+    }
+
+    public async Task<User> RemoveAsync(Guid id)
+    {
+        if (_users is null) return null;
+
+        var user = await _users.FindAsync(id);
+
+        if (user is null) throw new Exception("User not found in DB");
+
+        _users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return user;
+    }
+
+    public async Task<User> UpdateAsync(User user)
+    {
+        if (_users is null) return null;
+
+        _context.ChangeTracker.Clear();
+        _users.Update(user);
+        await _context.SaveChangesAsync();
 
         return user;
     }
