@@ -11,5 +11,5 @@ public class Image
 
     // Relationships
     [JsonIgnore]
-    public ICollection<AnnouncementImage> Announcements { get; set; }
+    public ICollection<Announcement> Announcements { get; set; }
 }

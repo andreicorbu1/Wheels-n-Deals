@@ -65,20 +65,15 @@ public class AnnouncementService : IAnnouncementService
         foreach (var image in images)
         {
             var dbImage = await _unitOfWork.Images.GetImageAsync(image.ImageUrl);
-            if (dbImage != null)
+            if (dbImage == null)
             {
-                imagesForAnnouncement.Add(dbImage);
-            }
-            else
-            {
-
                 dbImage = new Image
                 {
                     ImageUrl = image.ImageUrl,
                 };
                 dbImage.Id = await _unitOfWork.Images.InsertAsync(dbImage);
-                imagesForAnnouncement.Add(dbImage);
             }
+            imagesForAnnouncement.Add(dbImage);
         }
 
         return imagesForAnnouncement;
