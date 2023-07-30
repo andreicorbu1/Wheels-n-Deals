@@ -12,7 +12,7 @@ namespace Wheels_n_Deals.API.Controllers;
 [Authorize]
 public class UsersController : ControllerBase
 {
-    private IUserService _userService { get; set; }
+    private IUserService _userService;
 
     public UsersController(IUserService userService)
     {
@@ -118,7 +118,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> GetUserById([FromRoute] Guid id)
     {
-        var user = await _userService.GetUserByIdAsync(id);
+        var user = await _userService.GetUserAsync(id);
         if (user is null) return NotFound($"User with id {id} was not found!");
         return Ok(user.ToUserDto());
     }
@@ -139,7 +139,7 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto, [FromQuery] string originalEmail)
     {
-        var user = await _userService.GetUserByEmailAsync(originalEmail);
+        var user = await _userService.GetUserAsync(originalEmail);
 
         if (user is null)
         {

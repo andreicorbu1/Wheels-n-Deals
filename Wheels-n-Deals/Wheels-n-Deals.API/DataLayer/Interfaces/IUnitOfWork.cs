@@ -3,10 +3,10 @@
 public interface IUnitOfWork
 {
     IUserRepository Users { get; }
-    //IVehicleRepository Vehicles { get; }
-    //IFeaturesRepository Features { get; }
-    //IAnnouncementRepository Announcements { get; }
-    //IImageRepository Images { get; }
+    IVehicleRepository Vehicles { get; }
+    IFeatureRepository Features { get; }
+    IAnnouncementRepository Announcements { get; }
+    IImageRepository Images { get; }
 
     Task SaveChangesAsync();
 }

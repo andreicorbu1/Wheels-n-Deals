@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Wheels_n_Deals.API.DataLayer.Models;
 
@@ -17,10 +18,12 @@ public class Announcement
     public DateTime DateCreated { get; set; }
 
     [ForeignKey(nameof(Vehicle))]
+    [JsonIgnore]
     public Guid VehicleId { get; set; }
 
     // Relationships
+    [JsonIgnore]
     public User Owner { get; set; }
     public Vehicle Vehicle { get; set; }
-    public ICollection<Image> Images { get; set; }
+    public ICollection<AnnouncementImage> Images { get; set; }
 }

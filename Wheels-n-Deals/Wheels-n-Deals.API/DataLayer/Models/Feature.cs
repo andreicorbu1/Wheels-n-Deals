@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Wheels_n_Deals.API.DataLayer.Enums;
 
 namespace Wheels_n_Deals.API.DataLayer.Models;
@@ -14,5 +15,6 @@ public class Feature
     public uint HorsePower { get; set; }
 
     // Relationships
+    [JsonIgnore]
     public ICollection<Vehicle> Vehicles { get; set; }
 }

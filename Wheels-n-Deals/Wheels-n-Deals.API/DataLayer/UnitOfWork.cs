@@ -6,13 +6,27 @@ public class UnitOfWork : IUnitOfWork
 {
     public IUserRepository Users { get; }
 
+    public IVehicleRepository Vehicles { get; }
+
+    public IFeatureRepository Features { get; }
+    public IAnnouncementRepository Announcements { get; }
+    public IImageRepository Images { get; }
+
     private readonly AppDbContext _context;
 
     public UnitOfWork(IUserRepository userRepository,
-        AppDbContext context)
+        AppDbContext context,
+        IVehicleRepository vehicles,
+        IFeatureRepository features,
+        IAnnouncementRepository announcements,
+        IImageRepository images)
     {
         Users = userRepository;
         _context = context;
+        Vehicles = vehicles;
+        Features = features;
+        Announcements = announcements;
+        Images = images;
     }
 
     public async Task SaveChangesAsync()

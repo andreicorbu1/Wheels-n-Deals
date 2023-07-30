@@ -11,7 +11,7 @@ namespace Wheels_n_Deals.API.Services;
 public class AuthService : IAuthService
 {
     private readonly string _securityKey;
-    private readonly int _PBKDF2IterCount = 1000;
+    private readonly int _PBKDF2IterCount = 10000;
     private readonly int _PBKDF2SubkeyLength = 256 / 8;
     private readonly int _SaltSize = 128 / 8;
 

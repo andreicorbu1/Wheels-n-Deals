@@ -1,10 +1,15 @@
-﻿namespace Wheels_n_Deals.API.DataLayer.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
+namespace Wheels_n_Deals.API.DataLayer.Models;
+
+[Index(nameof(ImageUrl), IsUnique = true)]
 public class Image
 {
     public Guid Id { get; set; }
     public string ImageUrl { get; set; }
 
     // Relationships
-    public ICollection<Announcement> Announcements { get; set; }
+    [JsonIgnore]
+    public ICollection<AnnouncementImage> Announcements { get; set; }
 }

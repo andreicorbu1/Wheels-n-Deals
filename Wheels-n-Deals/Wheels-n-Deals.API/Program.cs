@@ -13,6 +13,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Access-Control-Allow-Origin");
+
 app.UseAuthentication();
 
 app.UseAuthorization();

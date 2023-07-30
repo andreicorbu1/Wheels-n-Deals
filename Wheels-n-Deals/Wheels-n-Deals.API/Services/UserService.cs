@@ -16,22 +16,25 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<User> DeleteUserAsync(Guid userId)
+    public async Task<User?> DeleteUserAsync(Guid userId)
     {
-        var user = await _unitOfWork.Users.GetUserByIdAsync(userId);
+        var user = await _unitOfWork.Users.GetUserAsync(userId);
+
+        if (user is null) return null;
+
         user = await _unitOfWork.Users.RemoveAsync(user.Id);
         await _unitOfWork.SaveChangesAsync();
         return user;
     }
 
-    public async Task<User> GetUserByEmailAsync(string email)
+    public async Task<User?> GetUserAsync(string email)
     {
-        return await _unitOfWork.Users.GetUserByEmailAsync(email);
+        return await _unitOfWork.Users.GetUserAsync(email);
     }
 
-    public async Task<User> GetUserByIdAsync(Guid id)
+    public async Task<User?> GetUserAsync(Guid id)
     {
-        return await _unitOfWork.Users.GetUserByIdAsync(id);
+        return await _unitOfWork.Users.GetUserAsync(id);
     }
 
     public async Task<List<User>> GetUsersAsync()
@@ -41,7 +44,7 @@ public class UserService : IUserService
 
     public async Task<string> LoginUserAsync(LoginDto dto)
     {
-        var user = await _unitOfWork.Users.GetUserByEmailAsync(dto.Email) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
+        var user = await _unitOfWork.Users.GetUserAsync(dto.Email) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
         var passwordFine = await Task.Run(() => _authService.VerifyHashedPassword(user.HashedPassword, dto.Password));
 
         if (passwordFine)
@@ -78,11 +81,11 @@ public class UserService : IUserService
         return id;
     }
 
-    public async Task<User> UpdateUserAsync(UpdateUserDto dto)
+    public async Task<User?> UpdateUserAsync(UpdateUserDto dto)
     {
         if (dto is null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrWhiteSpace(dto.Email))
             throw new ArgumentNullException(nameof(dto));
-        var user = await GetUserByIdAsync(dto.Id) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
+        var user = await GetUserAsync(dto.Id) ?? throw new Exception($"User with email '{dto.Email}' does not exists!");
 
         user.Address = dto.Address;
         user.PhoneNumber = dto.PhoneNumber;

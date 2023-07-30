@@ -13,10 +13,10 @@ public class AppDbContext : DbContext
 
 
         // set-up delete cascade
-        //modelBuilder.Entity<User>()
-        //    .HasMany(u => u.Announcements)
-        //    .WithOne(a => a.Owner)
-        //    .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Announcements)
+            .WithOne(a => a.Owner)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.Vehicles)
@@ -27,7 +27,7 @@ public class AppDbContext : DbContext
             .HasOne(v => v.Feature)
             .WithMany(f => f.Vehicles)
             .HasForeignKey(v => v.FeatureId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Vehicle>()
             .HasOne(v => v.Announcement)
@@ -35,10 +35,19 @@ public class AppDbContext : DbContext
             .HasForeignKey<Announcement>(a => a.VehicleId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Announcement>()
-            .HasMany(a => a.Images)
-            .WithMany(i => i.Announcements)
-            .UsingEntity(j => j.ToTable("AnnouncementImage"));
+
+        modelBuilder.Entity<AnnouncementImage>()
+            .HasKey(ai => new { ai.ImageId, ai.AnnouncementId });
+
+        modelBuilder.Entity<AnnouncementImage>()
+            .HasOne(ai => ai.Announcement)
+            .WithMany(ai => ai.Images)
+            .HasForeignKey(c => c.AnnouncementId);
+
+        modelBuilder.Entity<AnnouncementImage>()
+            .HasOne(ai => ai.Image)
+            .WithMany(ai => ai.Announcements)
+            .HasForeignKey(c => c.ImageId);
 
         // Convert Enums to Strings in Database
         modelBuilder.Entity<User>()
@@ -58,6 +67,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Vehicle>()
             .Navigation(v => v.Feature)
             .AutoInclude();
+        modelBuilder.Entity<Vehicle>()
+            .Navigation(v => v.Owner)
+            .AutoInclude();
 
         modelBuilder.Entity<Announcement>()
             .Navigation(an => an.Owner)
@@ -69,11 +81,12 @@ public class AppDbContext : DbContext
             .Navigation(an => an.Images)
             .AutoInclude();
 
+        modelBuilder.Entity<AnnouncementImage>()
+            .Navigation(ai => ai.Image)
+            .AutoInclude();
+
         modelBuilder.Entity<User>()
             .Navigation(u => u.Vehicles)
-            .AutoInclude();
-        modelBuilder.Entity<User>()
-            .Navigation(u => u.Announcements)
             .AutoInclude();
     }
 
@@ -81,5 +94,7 @@ public class AppDbContext : DbContext
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Feature> Features { get; set; }
     public DbSet<Announcement> Announcements { get; set; }
+    public DbSet<AnnouncementImage> AnnouncementImages { get; set; }
     public DbSet<Image> Images { get; set; }
+
 }

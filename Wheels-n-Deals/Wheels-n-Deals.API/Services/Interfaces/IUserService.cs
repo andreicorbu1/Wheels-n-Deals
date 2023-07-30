@@ -9,8 +9,8 @@ public interface IUserService
     Task<string> LoginUserAsync(LoginDto dto);
 
     Task<List<User>> GetUsersAsync();
-    Task<User> GetUserByIdAsync(Guid id);
-    Task<User> GetUserByEmailAsync(string email);
-    Task<User> DeleteUserAsync(Guid userId);
-    Task<User> UpdateUserAsync(UpdateUserDto dto);
+    Task<User?> GetUserAsync(Guid id);
+    Task<User?> GetUserAsync(string email);
+    Task<User?> DeleteUserAsync(Guid userId);
+    Task<User?> UpdateUserAsync(UpdateUserDto dto);
 }

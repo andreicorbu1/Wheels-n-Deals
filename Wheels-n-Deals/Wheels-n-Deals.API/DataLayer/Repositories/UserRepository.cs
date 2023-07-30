@@ -6,7 +6,7 @@ namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    protected readonly AppDbContext _context;
+    private readonly AppDbContext _context;
     private readonly DbSet<User> _users;
 
     public UserRepository(AppDbContext context)
@@ -20,14 +20,14 @@ public class UserRepository : IUserRepository
         return _users.AsQueryable().Any(predicate);
     }
 
-    public async Task<User> GetUserByEmailAsync(string email)
+    public async Task<User?> GetUserAsync(string email)
     {
         if (_users is null) return null;
 
         return await _users.AsQueryable().FirstOrDefaultAsync(us => us.Email == email);
     }
 
-    public async Task<User> GetUserByIdAsync(Guid id)
+    public async Task<User?> GetUserAsync(Guid id)
     {
         if (_users is null) return null;
 
@@ -36,7 +36,7 @@ public class UserRepository : IUserRepository
 
     public async Task<List<User>> GetUsersAsync()
     {
-        if (_users is null) return null;
+        if (_users is null) return new List<User>();
 
         return await _users.AsQueryable().ToListAsync();
     }
@@ -51,21 +51,18 @@ public class UserRepository : IUserRepository
         return user.Id;
     }
 
-    public async Task<User> RemoveAsync(Guid id)
+    public async Task<User?> RemoveAsync(Guid id)
     {
         if (_users is null) return null;
 
-        var user = await _users.FindAsync(id);
-
-        if (user is null) throw new Exception("User not found in DB");
-
+        var user = await _users.FindAsync(id) ?? throw new Exception("User not found in DB");
         _users.Remove(user);
         await _context.SaveChangesAsync();
 
         return user;
     }
 
-    public async Task<User> UpdateAsync(User user)
+    public async Task<User?> UpdateAsync(User user)
     {
         if (_users is null) return null;
 

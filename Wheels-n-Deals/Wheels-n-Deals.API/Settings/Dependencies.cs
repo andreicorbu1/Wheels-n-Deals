@@ -53,7 +53,17 @@ public class Dependencies
             c.IncludeXmlComments(xmlPath);
         });
         app.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-
+        app.Services.AddCors(options =>
+        {
+            options.AddPolicy("Access-Control-Allow-Origin",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:5173")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                });
+        });
         AddRepositories(app.Services);
         AddServices(app.Services);
     }
@@ -61,6 +71,10 @@ public class Dependencies
     private static void AddRepositories(IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IFeatureRepository, FeatureRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+        services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
@@ -68,5 +82,7 @@ public class Dependencies
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IVehicleService, VehicleService>();
+        services.AddScoped<IAnnouncementService, AnnouncementService>();
     }
 }

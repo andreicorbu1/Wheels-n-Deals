@@ -12,9 +12,9 @@
     "Wheels_n_Deals.API": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5142",
+      "applicationUrl": "http://localhost:7250",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
