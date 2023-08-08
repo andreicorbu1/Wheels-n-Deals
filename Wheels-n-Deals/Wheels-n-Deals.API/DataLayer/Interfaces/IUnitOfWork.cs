@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IFeatureRepository Features { get; }
     IAnnouncementRepository Announcements { get; }
     IImageRepository Images { get; }
+    AppDbContext Context { get; }
 
     Task SaveChangesAsync();
 }

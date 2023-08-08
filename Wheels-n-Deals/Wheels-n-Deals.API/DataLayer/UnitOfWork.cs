@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IAnnouncementRepository Announcements { get; }
     public IImageRepository Images { get; }
 
-    private readonly AppDbContext _context;
+    public AppDbContext Context { get; }
 
     public UnitOfWork(IUserRepository userRepository,
         AppDbContext context,
@@ -22,7 +22,7 @@ public class UnitOfWork : IUnitOfWork
         IImageRepository images)
     {
         Users = userRepository;
-        _context = context;
+        Context = context;
         Vehicles = vehicles;
         Features = features;
         Announcements = announcements;
@@ -33,7 +33,7 @@ public class UnitOfWork : IUnitOfWork
     {
         try
         {
-            await _context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

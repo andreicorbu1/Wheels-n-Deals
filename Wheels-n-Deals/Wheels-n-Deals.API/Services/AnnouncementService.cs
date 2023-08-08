@@ -107,12 +107,13 @@ public class AnnouncementService : IAnnouncementService
         if (existingAnnouncement is not null)
         {
             existingAnnouncement.AnnouncementImages.Clear();
-            foreach(var image in existingAnnouncement.Images)
+            foreach (var image in existingAnnouncement.Images)
             {
                 image.Announcements.Remove(existingAnnouncement);
                 image.AnnouncementImages.Remove(image.AnnouncementImages.FirstOrDefault(ai => ai.AnnouncementId == existingAnnouncement.Id));
             }
             existingAnnouncement.Images.Clear();
+            await _unitOfWork.SaveChangesAsync();
             var img = await AddImagesToAnnouncement(updatedAnnouncement.ImagesUrl);
             existingAnnouncement.Images = img;
             existingAnnouncement.Title = updatedAnnouncement.Title;
