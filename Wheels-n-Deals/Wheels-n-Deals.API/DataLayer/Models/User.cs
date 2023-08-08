@@ -11,21 +11,21 @@ public class User
 {
     public Guid Id { get; set; }
     [MaxLength(50)]
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string LastName { get; set; }
+    public string LastName { get; set; } = string.Empty;
 
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
 
     [MaxLength(50)]
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
     [MaxLength(150)]
-    public string HashedPassword { get; set; }
+    public string HashedPassword { get; set; } = string.Empty;
     [MaxLength(10)]
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string Address { get; set; }
+    public string Address { get; set; } = string.Empty;
     public Role Role { get; set; }
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastModified { get; set; } = DateTime.UtcNow;

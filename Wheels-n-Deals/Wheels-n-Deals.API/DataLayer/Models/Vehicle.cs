@@ -11,11 +11,11 @@ public class Vehicle
 {
     public Guid Id { get; set; }
     [MaxLength(17)]
-    public string VinNumber { get; set; }
+    public string VinNumber { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string Make { get; set; }
+    public string Make { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string Model { get; set; }
+    public string Model { get; set; } = string.Empty;
     public uint Year { get; set; }
     public uint Mileage { get; set; }
     public float PriceInEuro { get; set; }
@@ -29,9 +29,9 @@ public class Vehicle
 
 
     // Relationships
-    public Feature Feature { get; set; }
+    public Feature? Feature { get; set; }
     [JsonIgnore]
-    public User Owner { get; set; }
+    public User? Owner { get; set; }
     [JsonIgnore]
-    public Announcement Announcement { get; set; }
+    public Announcement? Announcement { get; set; }
 }

@@ -7,6 +7,7 @@ public static class VehicleMappingExtensions
 {
     public static VehicleDto ToVehicleDto(this Vehicle vehicle)
     {
+        if (vehicle is null || vehicle.Feature is null) throw new ArgumentNullException(nameof(vehicle));
         var vehicleDto = new VehicleDto(vehicle.Id, vehicle.VinNumber, vehicle.Make, vehicle.Model, vehicle.Year,
             vehicle.Mileage, vehicle.TechnicalState.ToString(), vehicle.PriceInEuro, vehicle.PriceInRon, vehicle.Feature.CarBody,
             vehicle.Feature.Fuel.ToString(), vehicle.Feature.EngineSize, vehicle.Feature.Gearbox.ToString(), vehicle.Feature.HorsePower);

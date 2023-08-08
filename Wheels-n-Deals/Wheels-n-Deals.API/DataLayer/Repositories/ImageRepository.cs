@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 
 namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
@@ -58,7 +59,7 @@ public class ImageRepository : IImageRepository
     {
         if (_images is null) return null;
 
-        var image = await _images.FindAsync(id) ?? throw new Exception("Image not found in DB");
+        var image = await _images.FindAsync(id) ?? throw new ResourceMissingException("Image not found in DB");
         _images.Remove(image);
         await _context.SaveChangesAsync();
 

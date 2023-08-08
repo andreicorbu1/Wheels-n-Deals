@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 
 namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
@@ -32,7 +33,8 @@ public class AnnouncementRepository : IAnnouncementRepository
     public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)
     {
         var announcements = await _announcements.AsQueryable()
-            .Where(ann => vehicles.Contains(ann.Vehicle))
+            .Where(ann => ann.Vehicle != null && vehicles.Contains(ann.Vehicle))
+            .OrderByDescending(ann => ann.DateModified)
             .ToListAsync();
 
         return announcements ?? new();
@@ -52,7 +54,7 @@ public class AnnouncementRepository : IAnnouncementRepository
     {
         if (_announcements is null) return null;
 
-        var announcement = await _announcements.FindAsync(id) ?? throw new Exception("Announcement not found");
+        var announcement = await _announcements.FindAsync(id) ?? throw new ResourceMissingException("Announcement not found");
 
         _announcements.Remove(announcement);
         await _context.SaveChangesAsync();

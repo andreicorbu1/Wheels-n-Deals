@@ -8,23 +8,23 @@ public class Announcement
 {
     public Guid Id { get; set; }
     [MaxLength(50)]
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     [MaxLength(1000)]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string County { get; set; }
+    public string County { get; set; } = string.Empty;
     [MaxLength(50)]
-    public string City { get; set; }
+    public string City { get; set; } = string.Empty;
     public DateTime DateCreated { get; set; }
-
+    public DateTime DateModified { get; set; }
     [ForeignKey(nameof(Vehicle))]
     [JsonIgnore]
     public Guid VehicleId { get; set; }
 
     // Relationships
     [JsonIgnore]
-    public User Owner { get; set; }
-    public Vehicle Vehicle { get; set; }
+    public User? Owner { get; set; }
+    public Vehicle? Vehicle { get; set; }
     [JsonIgnore]
     public List<AnnouncementImage> AnnouncementImages { get; set; } = new();
     public List<Image> Images { get; set; } = new();

@@ -8,7 +8,7 @@ public class Feature
 {
     public Guid Id { get; set; }
     [MaxLength(20)]
-    public string CarBody { get; set; }
+    public string CarBody { get; set; } = string.Empty;
     public Fuel Fuel { get; set; }
     public uint EngineSize { get; set; }
     public Gearbox Gearbox { get; set; }

@@ -133,6 +133,44 @@ public class AnnouncementController : ControllerBase
     }
 
     /// <summary>
+    /// Renew Announcement
+    /// </summary>
+    /// <remarks>
+    /// Renews an existing announcement. Can be made once 24h.
+    /// </remarks>
+    /// <param name="announcementId">The ID of the announcement to update</param>
+    /// <returns>
+    /// 200 - Successful update
+    ///   - Content-Type: application/json
+    ///   - Body: Updated Announcement object
+    ///
+    /// 404 - Not Found
+    ///   - Content-Type: text/plain
+    ///   - Body: Announcement with ID {id} was not found.
+    /// </returns>
+    [Authorize]
+    [HttpPut("renew/{announcementId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> RenewAnnouncement([FromRoute] Guid announcementId)
+    {
+        var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            return BadRequest();
+        }
+        var updatedAnnouncement = await _announcementService.RenewAnnouncementAsync(announcementId);
+
+        if (updatedAnnouncement is null)
+        {
+            return NotFound($"Announcement with ID {announcementId} was not found.");
+        }
+
+        return Ok(updatedAnnouncement);
+    }
+
+    /// <summary>
     /// Delete Announcement
     /// </summary>
     /// <remarks>

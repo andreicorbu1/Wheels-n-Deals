@@ -8,8 +8,7 @@ namespace Wheels_n_Deals.API.DataLayer.Models
         public Guid ImageId { get; set; }
 
         [JsonIgnore]
-        public Announcement Announcement { get; set; }
-        [JsonIgnore]
-        public Image Image { get; set; }
+        public Announcement? Announcement { get; set; }
+        public Image? Image { get; set; }
     }
 }

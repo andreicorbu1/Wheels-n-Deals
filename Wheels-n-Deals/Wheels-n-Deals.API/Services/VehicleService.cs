@@ -2,6 +2,7 @@
 using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 using Wheels_n_Deals.API.Services.Interfaces;
 
 namespace Wheels_n_Deals.API.Services;
@@ -29,6 +30,11 @@ public class VehicleService : IVehicleService
         User? owner = await _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId);
         if (owner is null) return Guid.Empty;
 
+        if ((await GetVehicleAsync(addVehicleDto.VinNumber)) != null)
+        {
+            throw new ResourceExistingException($"A vehicle with the VIN {addVehicleDto.VinNumber} already exists!");
+        }
+
         var vehicle = new Vehicle
         {
             Make = addVehicleDto.Make,
@@ -54,18 +60,18 @@ public class VehicleService : IVehicleService
     public async Task<Vehicle?> DeleteVehicleAsync(string vin)
     {
         var result = await _unitOfWork.Vehicles.RemoveAsync(vin);
-        if (result is null) return null;
+        if (result is null) throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
         return result;
     }
 
     public async Task<Vehicle?> GetVehicleAsync(string vin)
     {
-        return (await _unitOfWork.Vehicles.GetVehicleAsync(vin));
+        return await _unitOfWork.Vehicles.GetVehicleAsync(vin) ?? throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
     }
 
     public async Task<Vehicle?> GetVehicleAsync(Guid id)
     {
-        return await _unitOfWork.Vehicles.GetVehicleAsync(id);
+        return await _unitOfWork.Vehicles.GetVehicleAsync(id) ?? throw new ResourceMissingException($"Vehicle with id {id} does not exist!");
     }
 
     public async Task<List<Vehicle>> GetVehiclesAsync(VehicleFiltersDto? vehicleFilters)
@@ -75,8 +81,8 @@ public class VehicleService : IVehicleService
 
     public async Task<Vehicle?> UpdateVehicleAsync(Guid id, UpdateVehicleDto updatedVehicle)
     {
-        var vehicleToUpdate = await _unitOfWork.Vehicles.GetVehicleAsync(id);
-        if (vehicleToUpdate is null || (await _unitOfWork.Vehicles.GetVehicleAsync(updatedVehicle.VinNumber))?.Id != id) return null;
+        var vehicleToUpdate = await _unitOfWork.Vehicles.GetVehicleAsync(id) ?? throw new ResourceMissingException($"Vehicle with id {id} does not exist!");
+        if ((await _unitOfWork.Vehicles.GetVehicleAsync(updatedVehicle.VinNumber))?.Id != id) throw new ResourceExistingException($"Vehicle with VIN {updatedVehicle.VinNumber} already exists!");
 
         var fuelType = (Fuel)Enum.Parse(typeof(Fuel), updatedVehicle.FuelType, true);
         var gearboxType = (Gearbox)Enum.Parse(typeof(Gearbox), updatedVehicle.Gearbox, true);
@@ -98,6 +104,7 @@ public class VehicleService : IVehicleService
                 Gearbox = gearboxType,
                 Fuel = fuelType,
             });
+            vehicleToUpdate.Feature ??= new();
             vehicleToUpdate.Feature.Id = featureId;
             vehicleToUpdate.Feature.CarBody = updatedVehicle.CarBody;
             vehicleToUpdate.Feature.Fuel = fuelType;

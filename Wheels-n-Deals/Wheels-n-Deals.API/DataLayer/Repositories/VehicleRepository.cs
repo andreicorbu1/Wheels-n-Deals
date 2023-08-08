@@ -2,6 +2,7 @@
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 
 namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
@@ -15,7 +16,6 @@ public class VehicleRepository : IVehicleRepository
         _context = context;
         _vehicles = context.Vehicles;
     }
-
 
     public bool Any(Func<Vehicle, bool> predicate)
     {
@@ -56,15 +56,15 @@ public class VehicleRepository : IVehicleRepository
 
         if (!string.IsNullOrEmpty(vehicleFilters.CarBody))
             vehicles = vehicles
-                .Where(v => v.Feature.CarBody == vehicleFilters.CarBody);
+                .Where(v => v.Feature != null && v.Feature.CarBody == vehicleFilters.CarBody);
 
         if (!string.IsNullOrEmpty(vehicleFilters.FuelType))
             vehicles = vehicles
-                .Where(v => v.Feature.Fuel.ToString() == vehicleFilters.FuelType);
+                .Where(v => v.Feature != null && v.Feature.Fuel.ToString() == vehicleFilters.FuelType);
 
         if (!string.IsNullOrEmpty(vehicleFilters.Gearbox))
             vehicles = vehicles
-                .Where(v => v.Feature.Gearbox.ToString() == vehicleFilters.Gearbox);
+                .Where(v => v.Feature != null && v.Feature.Gearbox.ToString() == vehicleFilters.Gearbox);
 
         if (vehicleFilters.MinYear is not null)
             vehicles = vehicles
@@ -93,19 +93,19 @@ public class VehicleRepository : IVehicleRepository
 
         if (vehicleFilters.MinEngineSize is not null)
             vehicles = vehicles
-                .Where(v => v.Feature.EngineSize >= vehicleFilters.MinEngineSize);
+                .Where(v => v.Feature != null && v.Feature.EngineSize >= vehicleFilters.MinEngineSize);
 
         if (vehicleFilters.MaxEngineSize is not null)
             vehicles = vehicles
-                .Where(v => v.Feature.EngineSize <= vehicleFilters.MaxEngineSize);
+                .Where(v => v.Feature != null && v.Feature.EngineSize <= vehicleFilters.MaxEngineSize);
 
         if (vehicleFilters.MinHorsePower is not null)
             vehicles = vehicles
-                .Where(v => v.Feature.HorsePower >= vehicleFilters.MinHorsePower);
+                .Where(v => v.Feature != null && v.Feature.HorsePower >= vehicleFilters.MinHorsePower);
 
         if (vehicleFilters.MaxHorsePower is not null)
             vehicles = vehicles
-                .Where(v => v.Feature.HorsePower <= vehicleFilters.MaxHorsePower);
+                .Where(v => v.Feature != null && v.Feature.HorsePower <= vehicleFilters.MaxHorsePower);
 
 
         return await vehicles.ToListAsync();
@@ -126,7 +126,7 @@ public class VehicleRepository : IVehicleRepository
     {
         if (_vehicles is null) return null;
 
-        var vehicle = await _vehicles.FirstOrDefaultAsync(v => v.VinNumber == vin) ?? throw new Exception($"Vehicle with vin {vin} not found in database!");
+        var vehicle = await _vehicles.FirstOrDefaultAsync(v => v.VinNumber == vin) ?? throw new ResourceMissingException($"Vehicle with vin {vin} not found in database!");
         _vehicles.Remove(vehicle);
         await _context.SaveChangesAsync();
 

@@ -10,4 +10,5 @@ public interface IAnnouncementService
     Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles);
     Task<Announcement?> GetAnnouncementAsync(Guid id);
     Task<Announcement?> UpdateAnnouncementAsync(Guid id, UpdateAnnouncementDto updatedAnnouncement);
+    Task<Announcement?> RenewAnnouncementAsync(Guid id);
 }

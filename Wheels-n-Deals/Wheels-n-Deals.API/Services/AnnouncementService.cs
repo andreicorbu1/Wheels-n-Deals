@@ -2,6 +2,7 @@
 using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
+using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 using Wheels_n_Deals.API.Services.Interfaces;
 
 namespace Wheels_n_Deals.API.Services;
@@ -20,14 +21,14 @@ public class AnnouncementService : IAnnouncementService
         var user = await _unitOfWork.Users.GetUserAsync(addAnnouncementDto.UserId);
         var vehicle = await _unitOfWork.Vehicles.GetVehicleAsync(addAnnouncementDto.VinNumber);
 
-        if (user is null || vehicle is null)
+        if (user is null || vehicle is null || vehicle.Owner is null)
         {
-            throw new Exception("User or vehicle not found!");
+            throw new ResourceMissingException("User or vehicle not found!");
         }
 
         if (vehicle.Owner.Id != user.Id && user.Role != Role.Admin)
         {
-            throw new Exception("You are not allowed to do this operation!");
+            throw new ForbiddenAccessException("You are not allowed to do this operation!");
         }
 
         if (addAnnouncementDto is null)
@@ -50,7 +51,9 @@ public class AnnouncementService : IAnnouncementService
             Description = addAnnouncementDto.Description,
             County = addAnnouncementDto.County,
             City = addAnnouncementDto.City,
-            Images = null
+            Images = new(),
+            DateCreated = DateTime.UtcNow,
+            DateModified = DateTime.UtcNow
         };
         newAnnouncement.Images = images;
 
@@ -83,13 +86,12 @@ public class AnnouncementService : IAnnouncementService
     public async Task<Announcement?> DeleteAnnouncementAsync(Guid id)
     {
         var result = await _unitOfWork.Announcements.RemoveAsync(id);
-        if (result is null) return null;
-        return result;
+        return result is null ? throw new ResourceMissingException($"Announcement with id {id} does not exist") : result;
     }
 
     public async Task<Announcement?> GetAnnouncementAsync(Guid id)
     {
-        return await _unitOfWork.Announcements.GetAnnouncementAsync(id);
+        return await _unitOfWork.Announcements.GetAnnouncementAsync(id) ?? throw new ResourceMissingException($"Announcement with id {id} does not exist!");
     }
 
     public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)
@@ -102,32 +104,61 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<Announcement?> UpdateAnnouncementAsync(Guid id, UpdateAnnouncementDto updatedAnnouncement)
     {
-        var existingAnnouncement = await GetAnnouncementAsync(id);
-
-        if (existingAnnouncement is not null)
+        var existingAnnouncement = await GetAnnouncementAsync(id) ?? throw new ResourceMissingException($"Announcement with id {id} does not exist!");
+        await ClearExistingImagesAsync(existingAnnouncement);
+        if (updatedAnnouncement is null || updatedAnnouncement.ImagesUrl is null)
         {
-            existingAnnouncement.AnnouncementImages.Clear();
-            foreach (var image in existingAnnouncement.Images)
-            {
-                image.Announcements.Remove(existingAnnouncement);
-                image.AnnouncementImages.Remove(image.AnnouncementImages.FirstOrDefault(ai => ai.AnnouncementId == existingAnnouncement.Id));
-            }
-            existingAnnouncement.Images.Clear();
-            await _unitOfWork.SaveChangesAsync();
-            var img = await AddImagesToAnnouncement(updatedAnnouncement.ImagesUrl);
-            existingAnnouncement.Images = img;
-            existingAnnouncement.Title = updatedAnnouncement.Title;
-            existingAnnouncement.City = updatedAnnouncement.City;
-            existingAnnouncement.County = updatedAnnouncement.County;
-            existingAnnouncement.Description = updatedAnnouncement.Description;
-            var vehicle = await _unitOfWork.Vehicles.GetVehicleAsync(updatedAnnouncement.VinNumber) ?? throw new Exception("You need to add the vehicle with that vin to the database first");
-            existingAnnouncement.Vehicle = vehicle;
-            existingAnnouncement.VehicleId = vehicle.Id;
-            existingAnnouncement = await _unitOfWork.Announcements.UpdateAsync(existingAnnouncement);
-            await _unitOfWork.SaveChangesAsync();
-            return existingAnnouncement;
+            throw new ArgumentNullException(nameof(updatedAnnouncement));
         }
+        var newImages = await AddImagesToAnnouncement(updatedAnnouncement.ImagesUrl);
 
-        throw new Exception($"Announcement with id {id} does not exist!");
+        UpdateAnnouncementProperties(existingAnnouncement, updatedAnnouncement, newImages);
+
+        return await SaveUpdatedAnnouncementAsync(existingAnnouncement);
+    }
+
+    private async Task ClearExistingImagesAsync(Announcement announcement)
+    {
+        foreach (var image in announcement.Images.ToList())
+        {
+            announcement.Images.Remove(image);
+            image.Announcements.Remove(announcement);
+        }
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    private void UpdateAnnouncementProperties(Announcement announcement, UpdateAnnouncementDto updatedAnnouncement, List<Image> newImages)
+    {
+        announcement.Title = updatedAnnouncement.Title;
+        announcement.City = updatedAnnouncement.City;
+        announcement.County = updatedAnnouncement.County;
+        announcement.Description = updatedAnnouncement.Description;
+        announcement.Images = newImages;
+        announcement.DateModified = DateTime.UtcNow;
+        var vehicle = GetVehicle(updatedAnnouncement.VinNumber);
+        announcement.Vehicle = vehicle;
+        announcement.VehicleId = vehicle.Id;
+    }
+
+    private Vehicle GetVehicle(string vinNumber)
+    {
+        var vehicle = _unitOfWork.Vehicles.GetVehicleAsync(vinNumber).Result;
+        return vehicle is null ? throw new ResourceMissingException("You need to add the vehicle with that VIN to the database first") : vehicle;
+    }
+
+    private async Task<Announcement?> SaveUpdatedAnnouncementAsync(Announcement announcement)
+    {
+        return await _unitOfWork.Announcements.UpdateAsync(announcement);
+    }
+
+    public async Task<Announcement?> RenewAnnouncementAsync(Guid id)
+    {
+        var announcement = await GetAnnouncementAsync(id) ?? throw new ResourceMissingException($"Announcement with id {id} does not exist");
+        if (DateTime.UtcNow.Day - announcement.DateModified.Day < 1)
+        {
+            throw new RenewTimeNotElapsedException("An announcement can be renewed once every 24h");
+        }
+        announcement.DateModified = DateTime.UtcNow;
+        return await _unitOfWork.Announcements.UpdateAsync(announcement);
     }
 }

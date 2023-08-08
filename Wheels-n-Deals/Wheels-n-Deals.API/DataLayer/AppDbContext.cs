@@ -93,6 +93,6 @@ public class AppDbContext : DbContext
     public DbSet<Feature> Features { get; set; }
     public DbSet<Announcement> Announcements { get; set; }
     public DbSet<Image> Images { get; set; }
-    public DbSet<AnnouncementImage> AnnouncementImages { get; set;}
+    public DbSet<AnnouncementImage> AnnouncementImages { get; set; }
 
 }
