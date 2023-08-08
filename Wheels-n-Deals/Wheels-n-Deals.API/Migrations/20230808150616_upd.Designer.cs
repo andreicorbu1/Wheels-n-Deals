@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Wheels_n_Deals.API.DataLayer;
@@ -11,9 +12,11 @@ using Wheels_n_Deals.API.DataLayer;
 namespace Wheels_n_Deals.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230808150616_upd")]
+    partial class upd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,13 +261,13 @@ namespace Wheels_n_Deals.API.Migrations
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.AnnouncementImage", b =>
                 {
                     b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Announcement", "Announcement")
-                        .WithMany("AnnouncementImages")
+                        .WithMany("Images")
                         .HasForeignKey("AnnouncementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Image", "Image")
-                        .WithMany("AnnouncementImages")
+                        .WithMany("Announcements")
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -295,7 +298,7 @@ namespace Wheels_n_Deals.API.Migrations
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Announcement", b =>
                 {
-                    b.Navigation("AnnouncementImages");
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Feature", b =>
@@ -305,7 +308,7 @@ namespace Wheels_n_Deals.API.Migrations
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Image", b =>
                 {
-                    b.Navigation("AnnouncementImages");
+                    b.Navigation("Announcements");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.User", b =>

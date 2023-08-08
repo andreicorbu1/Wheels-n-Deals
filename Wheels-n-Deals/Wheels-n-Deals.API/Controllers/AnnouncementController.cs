@@ -160,11 +160,11 @@ public class AnnouncementController : ControllerBase
             return BadRequest();
         }
         var announcement = await _announcementService.GetAnnouncementAsync(announcementId);
-        if (announcement != null && announcement.Owner != null && (User.IsInRole("Admin") || userId.Value == announcement.Owner.Id.ToString()))
+        if (announcement is not null && announcement.Owner is not null && (User.IsInRole("Admin") || userId.Value == announcement.Owner.Id.ToString()))
         {
             var isDeleted = await _announcementService.DeleteAnnouncementAsync(announcementId);
 
-            if (isDeleted == null)
+            if (isDeleted is null)
             {
                 return NotFound($"Announcement with ID {announcementId} was not found.");
             }

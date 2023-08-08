@@ -50,22 +50,23 @@ public class AnnouncementService : IAnnouncementService
             Description = addAnnouncementDto.Description,
             County = addAnnouncementDto.County,
             City = addAnnouncementDto.City,
-            Images = images
+            Images = null
         };
+        newAnnouncement.Images = images;
 
         return await _unitOfWork.Announcements.InsertAsync(newAnnouncement);
     }
 
     private async Task<List<Image>> AddImagesToAnnouncement(IEnumerable<ImageDto> images)
     {
-        if (images == null) { throw new ArgumentNullException(nameof(images)); }
+        if (images is null) { throw new ArgumentNullException(nameof(images)); }
 
         var imagesForAnnouncement = new List<Image>();
 
         foreach (var image in images)
         {
             var dbImage = await _unitOfWork.Images.GetImageAsync(image.ImageUrl);
-            if (dbImage == null)
+            if (dbImage is null)
             {
                 dbImage = new Image
                 {
@@ -82,7 +83,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<Announcement?> DeleteAnnouncementAsync(Guid id)
     {
         var result = await _unitOfWork.Announcements.RemoveAsync(id);
-        if (result == null) return null;
+        if (result is null) return null;
         return result;
     }
 
@@ -103,8 +104,17 @@ public class AnnouncementService : IAnnouncementService
     {
         var existingAnnouncement = await GetAnnouncementAsync(id);
 
-        if (existingAnnouncement != null)
+        if (existingAnnouncement is not null)
         {
+            existingAnnouncement.AnnouncementImages.Clear();
+            foreach(var image in existingAnnouncement.Images)
+            {
+                image.Announcements.Remove(existingAnnouncement);
+                image.AnnouncementImages.Remove(image.AnnouncementImages.FirstOrDefault(ai => ai.AnnouncementId == existingAnnouncement.Id));
+            }
+            existingAnnouncement.Images.Clear();
+            var img = await AddImagesToAnnouncement(updatedAnnouncement.ImagesUrl);
+            existingAnnouncement.Images = img;
             existingAnnouncement.Title = updatedAnnouncement.Title;
             existingAnnouncement.City = updatedAnnouncement.City;
             existingAnnouncement.County = updatedAnnouncement.County;
@@ -112,22 +122,8 @@ public class AnnouncementService : IAnnouncementService
             var vehicle = await _unitOfWork.Vehicles.GetVehicleAsync(updatedAnnouncement.VinNumber) ?? throw new Exception("You need to add the vehicle with that vin to the database first");
             existingAnnouncement.Vehicle = vehicle;
             existingAnnouncement.VehicleId = vehicle.Id;
-            if (updatedAnnouncement.ImagesUrl != null && updatedAnnouncement.ImagesUrl.Count > 0)
-            {
-                existingAnnouncement.Images = await AddImagesToAnnouncement(updatedAnnouncement.ImagesUrl);
-            }
-            foreach(var image in (await _unitOfWork.Images.GetImagesAsync()))
-            {
-                if(!existingAnnouncement.Images.Contains(image))
-                {
-                    var ann = image.Announcements.FirstOrDefault(an => an.Id == id);
-                    if (ann != null)
-                    {
-                        image.Announcements.Remove(ann);
-                    }
-                }
-            }
             existingAnnouncement = await _unitOfWork.Announcements.UpdateAsync(existingAnnouncement);
+            await _unitOfWork.SaveChangesAsync();
             return existingAnnouncement;
         }
 

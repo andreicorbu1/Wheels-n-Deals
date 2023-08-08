@@ -27,7 +27,7 @@ public class VehicleService : IVehicleService
         if (feature is null) return Guid.Empty;
 
         User? owner = await _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId);
-        if (owner == null) return Guid.Empty;
+        if (owner is null) return Guid.Empty;
 
         var vehicle = new Vehicle
         {

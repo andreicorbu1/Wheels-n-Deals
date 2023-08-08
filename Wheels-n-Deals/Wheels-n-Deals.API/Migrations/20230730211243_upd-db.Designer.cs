@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Wheels_n_Deals.API.DataLayer;
@@ -11,9 +12,11 @@ using Wheels_n_Deals.API.DataLayer;
 namespace Wheels_n_Deals.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230730211243_upd-db")]
+    partial class upddb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace Wheels_n_Deals.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("AnnouncementImage", b =>
+                {
+                    b.Property<Guid>("AnnouncementsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ImagesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AnnouncementsId", "ImagesId");
+
+                    b.HasIndex("ImagesId");
+
+                    b.ToTable("AnnouncementImage", (string)null);
+                });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Announcement", b =>
                 {
@@ -65,21 +83,6 @@ namespace Wheels_n_Deals.API.Migrations
                         .IsUnique();
 
                     b.ToTable("Announcements");
-                });
-
-            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.AnnouncementImage", b =>
-                {
-                    b.Property<Guid>("AnnouncementId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ImageId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("AnnouncementId", "ImageId");
-
-                    b.HasIndex("ImageId");
-
-                    b.ToTable("AnnouncementImages");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Feature", b =>
@@ -236,6 +239,21 @@ namespace Wheels_n_Deals.API.Migrations
                     b.ToTable("Vehicles");
                 });
 
+            modelBuilder.Entity("AnnouncementImage", b =>
+                {
+                    b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Announcement", null)
+                        .WithMany()
+                        .HasForeignKey("AnnouncementsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Image", null)
+                        .WithMany()
+                        .HasForeignKey("ImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Announcement", b =>
                 {
                     b.HasOne("Wheels_n_Deals.API.DataLayer.Models.User", "Owner")
@@ -253,25 +271,6 @@ namespace Wheels_n_Deals.API.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.AnnouncementImage", b =>
-                {
-                    b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Announcement", "Announcement")
-                        .WithMany("AnnouncementImages")
-                        .HasForeignKey("AnnouncementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Wheels_n_Deals.API.DataLayer.Models.Image", "Image")
-                        .WithMany("AnnouncementImages")
-                        .HasForeignKey("ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Announcement");
-
-                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Vehicle", b =>
@@ -293,19 +292,9 @@ namespace Wheels_n_Deals.API.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Announcement", b =>
-                {
-                    b.Navigation("AnnouncementImages");
-                });
-
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Feature", b =>
                 {
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.Image", b =>
-                {
-                    b.Navigation("AnnouncementImages");
                 });
 
             modelBuilder.Entity("Wheels_n_Deals.API.DataLayer.Models.User", b =>

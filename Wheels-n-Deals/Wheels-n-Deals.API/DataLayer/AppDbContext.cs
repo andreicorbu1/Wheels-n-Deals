@@ -35,10 +35,21 @@ public class AppDbContext : DbContext
             .HasForeignKey<Announcement>(a => a.VehicleId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<AnnouncementImage>()
+            .HasKey(ai => new { ai.AnnouncementId, ai.ImageId });
+        //modelBuilder.Entity<AnnouncementImage>()
+        //    .HasOne(ai => ai.Announcement)
+        //    .WithMany(ai => ai.Images)
+        //    .HasForeignKey(ai => ai.AnnouncementId);
+        //modelBuilder.Entity<AnnouncementImage>()
+        //   .HasOne(ai => ai.Image)
+        //   .WithMany(ai => ai.Announcements)
+        //   .HasForeignKey(ai => ai.ImageId);
+
         modelBuilder.Entity<Announcement>()
-            .HasMany(a => a.Images)
-            .WithMany(i => i.Announcements)
-            .UsingEntity(j => j.ToTable("AnnouncementImage"));
+            .HasMany(an => an.Images)
+            .WithMany(an => an.Announcements)
+            .UsingEntity<AnnouncementImage>();
 
         // Convert Enums to Strings in Database
         modelBuilder.Entity<User>()
@@ -82,5 +93,6 @@ public class AppDbContext : DbContext
     public DbSet<Feature> Features { get; set; }
     public DbSet<Announcement> Announcements { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<AnnouncementImage> AnnouncementImages { get; set;}
 
 }

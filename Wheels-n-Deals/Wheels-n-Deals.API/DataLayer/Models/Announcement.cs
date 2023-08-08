@@ -25,5 +25,7 @@ public class Announcement
     [JsonIgnore]
     public User Owner { get; set; }
     public Vehicle Vehicle { get; set; }
-    public ICollection<Image> Images { get; set; }
+    [JsonIgnore]
+    public List<AnnouncementImage> AnnouncementImages { get; set; } = new();
+    public List<Image> Images { get; set; } = new();
 }

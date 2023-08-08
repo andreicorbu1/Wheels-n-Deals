@@ -16,5 +16,5 @@ public class Feature
 
     // Relationships
     [JsonIgnore]
-    public ICollection<Vehicle> Vehicles { get; set; }
+    public List<Vehicle> Vehicles { get; set; } = new();
 }

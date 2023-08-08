@@ -1,19 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Wheels_n_Deals.API.Migrations
 {
     /// <inheritdoc />
-    public partial class SomeMigration : Migration
+    public partial class upd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Vehicles_Features_FeatureId",
-                table: "Vehicles");
-
             migrationBuilder.DropTable(
                 name: "AnnouncementImage");
 
@@ -26,7 +23,7 @@ namespace Wheels_n_Deals.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnnouncementImages", x => new { x.ImageId, x.AnnouncementId });
+                    table.PrimaryKey("PK_AnnouncementImages", x => new { x.AnnouncementId, x.ImageId });
                     table.ForeignKey(
                         name: "FK_AnnouncementImages_Announcements_AnnouncementId",
                         column: x => x.AnnouncementId,
@@ -42,38 +39,16 @@ namespace Wheels_n_Deals.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_ImageUrl",
-                table: "Images",
-                column: "ImageUrl",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AnnouncementImages_AnnouncementId",
+                name: "IX_AnnouncementImages_ImageId",
                 table: "AnnouncementImages",
-                column: "AnnouncementId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Vehicles_Features_FeatureId",
-                table: "Vehicles",
-                column: "FeatureId",
-                principalTable: "Features",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                column: "ImageId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Vehicles_Features_FeatureId",
-                table: "Vehicles");
-
             migrationBuilder.DropTable(
                 name: "AnnouncementImages");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Images_ImageUrl",
-                table: "Images");
 
             migrationBuilder.CreateTable(
                 name: "AnnouncementImage",
@@ -103,14 +78,6 @@ namespace Wheels_n_Deals.API.Migrations
                 name: "IX_AnnouncementImage_ImagesId",
                 table: "AnnouncementImage",
                 column: "ImagesId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Vehicles_Features_FeatureId",
-                table: "Vehicles",
-                column: "FeatureId",
-                principalTable: "Features",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
     }
 }

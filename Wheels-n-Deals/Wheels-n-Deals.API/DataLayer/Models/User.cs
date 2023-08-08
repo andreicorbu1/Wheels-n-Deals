@@ -33,7 +33,7 @@ public class User
 
     // Relationships
     [JsonIgnore]
-    public ICollection<Vehicle> Vehicles { get; set; }
+    public List<Vehicle> Vehicles { get; set; } = new();
     [JsonIgnore]
-    public ICollection<Announcement> Announcements { get; set; }
+    public List<Announcement> Announcements { get; set; } = new();
 }
