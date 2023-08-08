@@ -32,6 +32,10 @@ public class ExceptionHandlingMiddleware
         {
             await RespondToExceptionAsync(context, HttpStatusCode.Conflict, ex.Message + ' ' + ex.InnerException?.Message, ex);
         }
+        catch (RenewTimeNotElapsedException ex)
+        {
+            await RespondToExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message + ' ' + ex.InnerException?.Message, ex);
+        }
         catch (Exception ex)
         {
             await RespondToExceptionAsync(context, HttpStatusCode.InternalServerError, ex.Message + ' ' + ex.InnerException?.Message, ex);
