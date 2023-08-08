@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Models;
 using Wheels_n_Deals.API.Services.Interfaces;
@@ -21,20 +21,19 @@ public class AnnouncementController : ControllerBase
     }
 
     /// <summary>
-    /// Get Announcement by ID
+    ///     Get Announcement by ID
     /// </summary>
     /// <remarks>
-    /// Retrieves announcement information by the provided announcement ID.
+    ///     Retrieves announcement information by the provided announcement ID.
     /// </remarks>
     /// <param name="announcementId">The ID of the announcement to retrieve</param>
     /// <returns>
-    /// 200 - Successful retrieval
-    ///   - Content-Type: application/json
-    ///   - Body: Announcement object
-    ///
-    /// 404 - Not Found
-    ///   - Content-Type: text/plain
-    ///   - Body: Announcement with ID {announcementId} was not found!
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: Announcement object
+    ///     404 - Not Found
+    ///     - Content-Type: text/plain
+    ///     - Body: Announcement with ID {announcementId} was not found!
     /// </returns>
     [HttpGet("{announcementId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,20 +50,19 @@ public class AnnouncementController : ControllerBase
     }
 
     /// <summary>
-    /// Add Announcement
+    ///     Add Announcement
     /// </summary>
     /// <remarks>
-    /// Creates a new announcement with the provided information.
+    ///     Creates a new announcement with the provided information.
     /// </remarks>
     /// <param name="addAnnouncementDto"></param>
     /// <returns>
-    /// 201 - Announcement created successfully
-    ///   - Content-Type: application/json
-    ///   - Body: { "Id": "string", "Payload": AnnouncementDto }
-    ///
-    /// 500 - Internal Server Error
-    ///   - Content-Type: text/plain
-    ///   - Body: Failed to create announcement.
+    ///     201 - Announcement created successfully
+    ///     - Content-Type: application/json
+    ///     - Body: { "Id": "string", "Payload": AnnouncementDto }
+    ///     500 - Internal Server Error
+    ///     - Content-Type: text/plain
+    ///     - Body: Failed to create announcement.
     /// </returns>
     [Authorize]
     [HttpPost("add")]
@@ -74,10 +72,7 @@ public class AnnouncementController : ControllerBase
     public async Task<IActionResult> AddAnnouncement([FromBody] AddAnnouncementDto addAnnouncementDto)
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if (userId is null)
-        {
-            return BadRequest();
-        }
+        if (userId is null) return BadRequest();
         addAnnouncementDto.UserId = Guid.Parse(userId.Value);
         var id = await _announcementService.AddAnnouncementAsync(addAnnouncementDto);
         if (id != Guid.Empty)
@@ -94,59 +89,52 @@ public class AnnouncementController : ControllerBase
     }
 
     /// <summary>
-    /// Update Announcement
+    ///     Update Announcement
     /// </summary>
     /// <remarks>
-    /// Updates an existing announcement with the provided information.
+    ///     Updates an existing announcement with the provided information.
     /// </remarks>
     /// <param name="announcementId">The ID of the announcement to update</param>
     /// <param name="updateDto">The updated announcement information</param>
     /// <returns>
-    /// 200 - Successful update
-    ///   - Content-Type: application/json
-    ///   - Body: Updated Announcement object
-    ///
-    /// 404 - Not Found
-    ///   - Content-Type: text/plain
-    ///   - Body: Announcement with ID {id} was not found.
+    ///     200 - Successful update
+    ///     - Content-Type: application/json
+    ///     - Body: Updated Announcement object
+    ///     404 - Not Found
+    ///     - Content-Type: text/plain
+    ///     - Body: Announcement with ID {id} was not found.
     /// </returns>
     [Authorize]
     [HttpPut("{announcementId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> UpdateAnnouncement([FromRoute] Guid announcementId, [FromBody] UpdateAnnouncementDto updateDto)
+    public async Task<IActionResult> UpdateAnnouncement([FromRoute] Guid announcementId,
+        [FromBody] UpdateAnnouncementDto updateDto)
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if (userId is null)
-        {
-            return BadRequest();
-        }
+        if (userId is null) return BadRequest();
         var updatedAnnouncement = await _announcementService.UpdateAnnouncementAsync(announcementId, updateDto);
 
-        if (updatedAnnouncement is null)
-        {
-            return NotFound($"Announcement with ID {announcementId} was not found.");
-        }
+        if (updatedAnnouncement is null) return NotFound($"Announcement with ID {announcementId} was not found.");
 
         return Ok(updatedAnnouncement);
     }
 
     /// <summary>
-    /// Renew Announcement
+    ///     Renew Announcement
     /// </summary>
     /// <remarks>
-    /// Renews an existing announcement. Can be made once 24h.
+    ///     Renews an existing announcement. Can be made once 24h.
     /// </remarks>
     /// <param name="announcementId">The ID of the announcement to update</param>
     /// <returns>
-    /// 200 - Successful update
-    ///   - Content-Type: application/json
-    ///   - Body: Updated Announcement object
-    ///
-    /// 404 - Not Found
-    ///   - Content-Type: text/plain
-    ///   - Body: Announcement with ID {id} was not found.
+    ///     200 - Successful update
+    ///     - Content-Type: application/json
+    ///     - Body: Updated Announcement object
+    ///     404 - Not Found
+    ///     - Content-Type: text/plain
+    ///     - Body: Announcement with ID {id} was not found.
     /// </returns>
     [Authorize]
     [HttpPut("renew/{announcementId}")]
@@ -156,33 +144,26 @@ public class AnnouncementController : ControllerBase
     public async Task<IActionResult> RenewAnnouncement([FromRoute] Guid announcementId)
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if (userId is null)
-        {
-            return BadRequest();
-        }
+        if (userId is null) return BadRequest();
         var updatedAnnouncement = await _announcementService.RenewAnnouncementAsync(announcementId);
 
-        if (updatedAnnouncement is null)
-        {
-            return NotFound($"Announcement with ID {announcementId} was not found.");
-        }
+        if (updatedAnnouncement is null) return NotFound($"Announcement with ID {announcementId} was not found.");
 
         return Ok(updatedAnnouncement);
     }
 
     /// <summary>
-    /// Delete Announcement
+    ///     Delete Announcement
     /// </summary>
     /// <remarks>
-    /// Deletes an existing announcement.
+    ///     Deletes an existing announcement.
     /// </remarks>
     /// <param name="announcementId">The ID of the announcement to delete</param>
     /// <returns>
-    /// 204 - Successful deletion
-    ///
-    /// 404 - Not Found
-    ///   - Content-Type: text/plain
-    ///   - Body: Announcement with ID {id} was not found.
+    ///     204 - Successful deletion
+    ///     404 - Not Found
+    ///     - Content-Type: text/plain
+    ///     - Body: Announcement with ID {id} was not found.
     /// </returns>
     [Authorize]
     [HttpDelete("{announcementId}")]
@@ -193,39 +174,34 @@ public class AnnouncementController : ControllerBase
     public async Task<IActionResult> DeleteAnnouncement([FromRoute] Guid announcementId)
     {
         var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-        if (userId is null)
-        {
-            return BadRequest();
-        }
+        if (userId is null) return BadRequest();
         var announcement = await _announcementService.GetAnnouncementAsync(announcementId);
-        if (announcement is not null && announcement.Owner is not null && (User.IsInRole("Admin") || userId.Value == announcement.Owner.Id.ToString()))
+        if (announcement is not null && announcement.Owner is not null &&
+            (User.IsInRole("Admin") || userId.Value == announcement.Owner.Id.ToString()))
         {
             var isDeleted = await _announcementService.DeleteAnnouncementAsync(announcementId);
 
-            if (isDeleted is null)
-            {
-                return NotFound($"Announcement with ID {announcementId} was not found.");
-            }
+            if (isDeleted is null) return NotFound($"Announcement with ID {announcementId} was not found.");
 
             return Ok(isDeleted);
         }
+
         return BadRequest();
     }
 
     /// <summary>
-    /// Get All Announcements
+    ///     Get All Announcements
     /// </summary>
     /// <remarks>
-    /// Retrieves all the announcements.
+    ///     Retrieves all the announcements.
     /// </remarks>
     /// <returns>
-    /// 200 - Successful retrieval
-    ///   - Content-Type: application/json
-    ///   - Body: VehicleDto[]
-    ///
-    /// 500 - Unexpected error
-    ///   - Content-Type: application/json
-    ///   - Body: Error
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: VehicleDto[]
+    ///     500 - Unexpected error
+    ///     - Content-Type: application/json
+    ///     - Body: Error
     /// </returns>
     [HttpGet("getall")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Announcement>))]
@@ -238,5 +214,4 @@ public class AnnouncementController : ControllerBase
 
         return Ok(announcements);
     }
-
 }

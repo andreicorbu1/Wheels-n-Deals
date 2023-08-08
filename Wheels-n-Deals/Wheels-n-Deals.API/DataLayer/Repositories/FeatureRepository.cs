@@ -30,7 +30,8 @@ public class FeatureRepository : IFeatureRepository
         return await _features.FindAsync(id);
     }
 
-    public async Task<Feature?> GetFeatureAsync(string carBody, uint horsePower, uint engineSize, Gearbox gearbox, Fuel fuel)
+    public async Task<Feature?> GetFeatureAsync(string carBody, uint horsePower, uint engineSize, Gearbox gearbox,
+        Fuel fuel)
     {
         if (_features is null) return null;
 
@@ -40,7 +41,7 @@ public class FeatureRepository : IFeatureRepository
             f.HorsePower == horsePower &&
             f.EngineSize == engineSize &&
             f.Gearbox == gearbox
-            );
+        );
     }
 
     public async Task<List<Feature>> GetFeaturesAsync()

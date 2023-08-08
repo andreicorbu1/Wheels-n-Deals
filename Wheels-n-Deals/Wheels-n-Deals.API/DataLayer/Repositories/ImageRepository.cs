@@ -7,7 +7,6 @@ namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
 public class ImageRepository : IImageRepository
 {
-
     private readonly AppDbContext _context;
     private readonly DbSet<Image> _images;
 
@@ -19,7 +18,7 @@ public class ImageRepository : IImageRepository
 
     public bool Any(Func<Image, bool> predicate)
     {
-        if (_images is null) { return false; }
+        if (_images is null) return false;
 
         return _images.Any(predicate);
     }

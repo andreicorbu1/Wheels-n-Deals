@@ -2,5 +2,7 @@
 
 public class RenewTimeNotElapsedException : Exception
 {
-    public RenewTimeNotElapsedException(string message) : base(message) { }
+    public RenewTimeNotElapsedException(string message) : base(message)
+    {
+    }
 }

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.DataLayer.Models;
@@ -14,7 +14,7 @@ namespace Wheels_n_Deals.API.Controllers;
 [Authorize]
 public class VehiclesController : ControllerBase
 {
-    private IVehicleService _vehicleService;
+    private readonly IVehicleService _vehicleService;
 
     public VehiclesController(IVehicleService vehicleService)
     {
@@ -22,23 +22,21 @@ public class VehiclesController : ControllerBase
     }
 
     /// <summary>
-    /// Add Vehicle
+    ///     Add Vehicle
     /// </summary>
     /// <remarks>
-    /// Adds a new vehicle to the system.
-    /// Requires authorization.
+    ///     Adds a new vehicle to the system.
+    ///     Requires authorization.
     /// </remarks>
     /// <param name="addVehicleDto">The vehicle information to add</param>
     /// <returns>
-    /// 201 - Vehicle added successfully
-    ///   - Content-Type: application/json
-    ///   - Body: { "VehicleId": "string", "Vehicle": AddVehicleDto }
-    ///
-    /// 409 - Conflict - Vehicle already exists
-    ///   - Content-Type: text/plain
-    ///   - Body: A vehicle with the same VIN already exists!
-    ///
-    /// 401 - Unauthorized
+    ///     201 - Vehicle added successfully
+    ///     - Content-Type: application/json
+    ///     - Body: { "VehicleId": "string", "Vehicle": AddVehicleDto }
+    ///     409 - Conflict - Vehicle already exists
+    ///     - Content-Type: text/plain
+    ///     - Body: A vehicle with the same VIN already exists!
+    ///     401 - Unauthorized
     /// </returns>
     [HttpPost("add")]
     [Authorize]
@@ -49,41 +47,34 @@ public class VehiclesController : ControllerBase
     public async Task<IActionResult> AddVehicle([FromBody] AddVehicleDto addVehicleDto)
     {
         var idClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (idClaim is null)
-        {
-            return Unauthorized();
-        }
+        if (idClaim is null) return Unauthorized();
 
-        Guid ownerId = Guid.Parse(idClaim.Value);
+        var ownerId = Guid.Parse(idClaim.Value);
         addVehicleDto.OwnerId = ownerId;
 
-        Guid vehicleId = await _vehicleService.AddVehicleAsync(addVehicleDto);
+        var vehicleId = await _vehicleService.AddVehicleAsync(addVehicleDto);
 
-        if (vehicleId == Guid.Empty)
-        {
-            return Conflict("A vehicle with the same VIN already exists!");
-        }
+        if (vehicleId == Guid.Empty) return Conflict("A vehicle with the same VIN already exists!");
 
         return Created($"{vehicleId}", new { VehicleId = vehicleId, Vehicle = addVehicleDto });
     }
 
     /// <summary>
-    /// Get All Vehicles
+    ///     Get All Vehicles
     /// </summary>
     /// <remarks>
-    /// Retrieves information for all vehicles.
-    /// No authentication required.
+    ///     Retrieves information for all vehicles.
+    ///     No authentication required.
     /// </remarks>
     /// <returns>
-    /// 200 - Successful retrieval
-    ///   - Content-Type: application/json
-    ///   - Body: VehicleDto[]
-    ///
-    /// 500 - Unexpected error
-    ///   - Content-Type: application/json
-    ///   - Body: Error
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: VehicleDto[]
+    ///     500 - Unexpected error
+    ///     - Content-Type: application/json
+    ///     - Body: Error
     /// </returns>
-    [HttpGet()]
+    [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vehicle>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -96,21 +87,19 @@ public class VehiclesController : ControllerBase
     }
 
     /// <summary>
-    /// Get Vehicle from VIN
+    ///     Get Vehicle from VIN
     /// </summary>
     /// <remarks>
-    /// Retrieves vehicle information by the provided VIN (Vehicle Identification Number).
-    /// No authentication required.
+    ///     Retrieves vehicle information by the provided VIN (Vehicle Identification Number).
+    ///     No authentication required.
     /// </remarks>
     /// <param name="vin">The VIN of the vehicle to retrieve</param>
     /// <returns>
-    /// 200 - Successful retrieval
-    ///   - Content-Type: application/json
-    ///   - Body: VehicleDto
-    ///
-    /// 404 - Not Found
-    ///
-    /// 500 - Unexpected error
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: VehicleDto
+    ///     404 - Not Found
+    ///     500 - Unexpected error
     /// </returns>
     [HttpGet("{vin}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VehicleDto))]
@@ -121,32 +110,25 @@ public class VehiclesController : ControllerBase
         var vehicle = await _vehicleService.GetVehicleAsync(vin);
 
         if (vehicle is not null)
-        {
             return Ok(vehicle);
-        }
-        else
-        {
-            return NotFound();
-        }
+        return NotFound();
     }
+
     /// <summary>
-    /// Delete Vehicles you own. Or if you are an administrator you can delete others vehicles.
+    ///     Delete Vehicles you own. Or if you are an administrator you can delete others vehicles.
     /// </summary>
     /// <remarks>
-    /// Deletes a vehicle by the provided VIN (Vehicle Identification Number).
-    /// Requires authorization.
+    ///     Deletes a vehicle by the provided VIN (Vehicle Identification Number).
+    ///     Requires authorization.
     /// </remarks>
     /// <param name="vin">The VIN of the vehicle to delete</param>
     /// <returns>
-    /// 200 - Vehicle deleted successfully
-    ///   - Content-Type: application/json
-    ///   - Body: VehicleDto
-    ///
-    /// 401 - Unauthorized
-    ///
-    /// 500 - Unexpected error
-    ///
-    /// 404 - Not Found
+    ///     200 - Vehicle deleted successfully
+    ///     - Content-Type: application/json
+    ///     - Body: VehicleDto
+    ///     401 - Unauthorized
+    ///     500 - Unexpected error
+    ///     404 - Not Found
     /// </returns>
     [HttpDelete("{vin}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VehicleDto))]
@@ -161,39 +143,35 @@ public class VehiclesController : ControllerBase
         if (vehicle is not null && vehicle.Owner is not null)
         {
             if (User.IsInRole("Admin") ||
-            (User.IsInRole("User") && User.HasClaim(ClaimTypes.NameIdentifier, vehicle.Owner.Id.ToString())))
+                (User.IsInRole("User") && User.HasClaim(ClaimTypes.NameIdentifier, vehicle.Owner.Id.ToString())))
             {
                 var deleted = await _vehicleService.DeleteVehicleAsync(vin);
                 if (deleted is not null)
                     return Ok(vehicle.ToVehicleDto());
-                else return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            else
-            {
-                return Unauthorized();
-            }
+
+            return Unauthorized();
         }
 
         return NotFound();
     }
 
     /// <summary>
-    /// Update Vehicle
+    ///     Update Vehicle
     /// </summary>
     /// <remarks>
-    /// Updates a vehicle with the provided information.
-    /// Requires authorization.
+    ///     Updates a vehicle with the provided information.
+    ///     Requires authorization.
     /// </remarks>
     /// <param name="id">Id of the vehicle to be updated</param>
     /// <param name="updatedVehicle">The updated vehicle information</param>
     /// <returns>
-    /// 200 - Vehicle updated successfully
-    ///   - Content-Type: application/json
-    ///   - Body: Vehicle
-    ///
-    /// 400 - Bad Request
-    ///
-    /// 401 - Unauthorized
+    ///     200 - Vehicle updated successfully
+    ///     - Content-Type: application/json
+    ///     - Body: Vehicle
+    ///     400 - Bad Request
+    ///     401 - Unauthorized
     /// </returns>
     [HttpPut]
     [Authorize]
@@ -208,20 +186,16 @@ public class VehiclesController : ControllerBase
         if (vehicle is not null && vehicle.Owner is not null)
         {
             if (User.IsInRole("Admin") ||
-            (User.IsInRole("User") && User.HasClaim(ClaimTypes.NameIdentifier, vehicle.Owner.Id.ToString())))
+                (User.IsInRole("User") && User.HasClaim(ClaimTypes.NameIdentifier, vehicle.Owner.Id.ToString())))
             {
-
                 var vehicleToUpdate = await _vehicleService.UpdateVehicleAsync(id, updatedVehicle);
 
-                if (vehicleToUpdate is null)
-                {
-                    return BadRequest();
-                }
+                if (vehicleToUpdate is null) return BadRequest();
 
                 return Ok(vehicleToUpdate);
             }
-            else
-                return Unauthorized();
+
+            return Unauthorized();
         }
 
         return BadRequest();

@@ -5,7 +5,16 @@ namespace Wheels_n_Deals.API.DataLayer;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<Feature> Features { get; set; }
+    public DbSet<Announcement> Announcements { get; set; }
+    public DbSet<Image> Images { get; set; }
+    public DbSet<AnnouncementImage> AnnouncementImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -87,12 +96,4 @@ public class AppDbContext : DbContext
             .Navigation(u => u.Vehicles)
             .AutoInclude();
     }
-
-    public DbSet<User> Users { get; set; }
-    public DbSet<Vehicle> Vehicles { get; set; }
-    public DbSet<Feature> Features { get; set; }
-    public DbSet<Announcement> Announcements { get; set; }
-    public DbSet<Image> Images { get; set; }
-    public DbSet<AnnouncementImage> AnnouncementImages { get; set; }
-
 }

@@ -7,7 +7,7 @@ networks:
 services:
   wheels-n-deals:
     image: docker.io/library/wheelsndeals
-    depends_on: 
+    depends_on:
       - "app_db"
     container_name: wheelsndeals-services
     ports:

@@ -7,8 +7,8 @@ namespace Wheels_n_Deals.API.DataLayer.Repositories;
 
 public class AnnouncementRepository : IAnnouncementRepository
 {
-    private readonly AppDbContext _context;
     private readonly DbSet<Announcement> _announcements;
+    private readonly AppDbContext _context;
 
     public AnnouncementRepository(AppDbContext context)
     {
@@ -37,7 +37,7 @@ public class AnnouncementRepository : IAnnouncementRepository
             .OrderByDescending(ann => ann.DateModified)
             .ToListAsync();
 
-        return announcements ?? new();
+        return announcements ?? new List<Announcement>();
     }
 
     public async Task<Guid> InsertAsync(Announcement announcement)
@@ -54,7 +54,8 @@ public class AnnouncementRepository : IAnnouncementRepository
     {
         if (_announcements is null) return null;
 
-        var announcement = await _announcements.FindAsync(id) ?? throw new ResourceMissingException("Announcement not found");
+        var announcement = await _announcements.FindAsync(id) ??
+                           throw new ResourceMissingException("Announcement not found");
 
         _announcements.Remove(announcement);
         await _context.SaveChangesAsync();

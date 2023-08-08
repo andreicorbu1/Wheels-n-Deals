@@ -109,7 +109,6 @@ public class VehicleRepository : IVehicleRepository
 
 
         return await vehicles.ToListAsync();
-
     }
 
     public async Task<Guid> InsertAsync(Vehicle vehicle)
@@ -126,7 +125,8 @@ public class VehicleRepository : IVehicleRepository
     {
         if (_vehicles is null) return null;
 
-        var vehicle = await _vehicles.FirstOrDefaultAsync(v => v.VinNumber == vin) ?? throw new ResourceMissingException($"Vehicle with vin {vin} not found in database!");
+        var vehicle = await _vehicles.FirstOrDefaultAsync(v => v.VinNumber == vin) ??
+                      throw new ResourceMissingException($"Vehicle with vin {vin} not found in database!");
         _vehicles.Remove(vehicle);
         await _context.SaveChangesAsync();
 

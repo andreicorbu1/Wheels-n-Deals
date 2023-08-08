@@ -1,4 +1,5 @@
 ﻿using Wheels_n_Deals.API.DataLayer.DTO;
+using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
 using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
@@ -8,7 +9,6 @@ namespace Wheels_n_Deals.API.Services;
 
 public class UserService : IUserService
 {
-    private IAuthService _authService { get; set; }
     private readonly IUnitOfWork _unitOfWork;
 
     public UserService(IAuthService authService, IUnitOfWork unitOfWork)
@@ -16,6 +16,8 @@ public class UserService : IUserService
         _authService = authService;
         _unitOfWork = unitOfWork;
     }
+
+    private IAuthService _authService { get; }
 
     public async Task<User?> DeleteUserAsync(Guid userId)
     {
@@ -30,12 +32,14 @@ public class UserService : IUserService
 
     public async Task<User?> GetUserAsync(string email)
     {
-        return await _unitOfWork.Users.GetUserAsync(email) ?? throw new ResourceMissingException($"User with email {email} does not exist!");
+        return await _unitOfWork.Users.GetUserAsync(email) ??
+               throw new ResourceMissingException($"User with email {email} does not exist!");
     }
 
     public async Task<User?> GetUserAsync(Guid id)
     {
-        return await _unitOfWork.Users.GetUserAsync(id) ?? throw new ResourceMissingException($"User with id {id} does not exist!");
+        return await _unitOfWork.Users.GetUserAsync(id) ??
+               throw new ResourceMissingException($"User with id {id} does not exist!");
     }
 
     public async Task<List<User>> GetUsersAsync()
@@ -45,7 +49,8 @@ public class UserService : IUserService
 
     public async Task<string> LoginUserAsync(LoginDto dto)
     {
-        var user = await _unitOfWork.Users.GetUserAsync(dto.Email) ?? throw new ResourceMissingException($"User with email '{dto.Email}' does not exists!");
+        var user = await _unitOfWork.Users.GetUserAsync(dto.Email) ??
+                   throw new ResourceMissingException($"User with email '{dto.Email}' does not exists!");
         var passwordFine = await Task.Run(() => _authService.VerifyHashedPassword(user.HashedPassword, dto.Password));
 
         if (passwordFine)
@@ -60,9 +65,7 @@ public class UserService : IUserService
 
         var existingUserWithEmail = _unitOfWork.Users.Any(u => u.Email == dto.Email);
         if (existingUserWithEmail)
-        {
             throw new ResourceExistingException($"User with email '{dto.Email}' already exists!");
-        }
         var hashedPassword = _authService.HashPassword(dto.Password);
 
         var user = new User
@@ -73,7 +76,7 @@ public class UserService : IUserService
             LastName = dto.LastName,
             Address = dto.Address,
             PhoneNumber = dto.PhoneNumber,
-            Role = DataLayer.Enums.Role.User
+            Role = Role.User
         };
 
         var id = await _unitOfWork.Users.InsertAsync(user);
@@ -86,7 +89,8 @@ public class UserService : IUserService
     {
         if (dto is null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrWhiteSpace(dto.Email))
             throw new ArgumentNullException(nameof(dto));
-        var user = await GetUserAsync(dto.Id) ?? throw new ResourceMissingException($"User with email '{dto.Email}' does not exists!");
+        var user = await GetUserAsync(dto.Id) ??
+                   throw new ResourceMissingException($"User with email '{dto.Email}' does not exists!");
 
         user.Address = dto.Address;
         user.PhoneNumber = dto.PhoneNumber;

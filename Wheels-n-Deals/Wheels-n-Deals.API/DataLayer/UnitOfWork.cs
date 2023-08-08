@@ -4,14 +4,6 @@ namespace Wheels_n_Deals.API.DataLayer;
 
 public class UnitOfWork : IUnitOfWork
 {
-    public IUserRepository Users { get; }
-
-    public IVehicleRepository Vehicles { get; }
-
-    public IFeatureRepository Features { get; }
-    public IAnnouncementRepository Announcements { get; }
-    public IImageRepository Images { get; }
-
     private readonly AppDbContext _context;
 
     public UnitOfWork(IUserRepository userRepository,
@@ -28,6 +20,14 @@ public class UnitOfWork : IUnitOfWork
         Announcements = announcements;
         Images = images;
     }
+
+    public IUserRepository Users { get; }
+
+    public IVehicleRepository Vehicles { get; }
+
+    public IFeatureRepository Features { get; }
+    public IAnnouncementRepository Announcements { get; }
+    public IImageRepository Images { get; }
 
     public async Task SaveChangesAsync()
     {

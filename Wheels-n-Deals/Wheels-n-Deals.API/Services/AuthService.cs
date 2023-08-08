@@ -1,8 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Wheels_n_Deals.API.DataLayer.Models;
 using Wheels_n_Deals.API.Services.Interfaces;
 
@@ -10,10 +10,10 @@ namespace Wheels_n_Deals.API.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly string _securityKey;
     private readonly int _PBKDF2IterCount = 10000;
     private readonly int _PBKDF2SubkeyLength = 256 / 8;
     private readonly int _SaltSize = 128 / 8;
+    private readonly string _securityKey;
 
     public AuthService(IConfiguration configuration)
     {
