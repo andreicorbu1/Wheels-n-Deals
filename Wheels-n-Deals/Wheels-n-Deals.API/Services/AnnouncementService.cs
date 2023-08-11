@@ -140,7 +140,6 @@ public class AnnouncementService : IAnnouncementService
         announcement.County = updatedAnnouncement.County;
         announcement.Description = updatedAnnouncement.Description;
         announcement.Images = newImages;
-        announcement.DateModified = DateTime.UtcNow;
         var vehicle = GetVehicle(updatedAnnouncement.VinNumber);
         announcement.Vehicle = vehicle;
         announcement.VehicleId = vehicle.Id;

@@ -10,6 +10,7 @@ namespace Wheels_n_Deals.API.Services;
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthService _authService;
 
     public UserService(IAuthService authService, IUnitOfWork unitOfWork)
     {
@@ -17,7 +18,6 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
 
-    private IAuthService _authService { get; }
 
     public async Task<User?> DeleteUserAsync(Guid userId)
     {
