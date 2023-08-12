@@ -43,8 +43,8 @@ public class UserServiceTests
 
         // Assert
         user.Should().NotBeNull();
-        user.Id.Should().Be(userId);
-        user.FullName.Should().Be("Andrei Corbu");
+        user?.Id.Should().Be(userId);
+        user?.FullName.Should().Be("Andrei Corbu");
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class UserServiceTests
 
         // Assert
         user.Should().NotBeNull();
-        user.FullName.Should().Be(userName);
-        user.Email.Should().Be(email);
+        user?.FullName.Should().Be(userName);
+        user?.Email.Should().Be(email);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class UserServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var user = new User
-        { 
+        {
             Id = userId,
             FirstName = "Andrei",
             LastName = "Corbu",
@@ -118,15 +118,15 @@ public class UserServiceTests
         };
         _unitOfWork.Users.GetUserAsync(userId).Returns(user);
         _unitOfWork.Users.RemoveAsync(userId).Returns(user);
-        
+
         // Act
         var res = await _userService.DeleteUserAsync(userId);
 
         // Assert
         res.Should().NotBeNull();
-        res.FullName.Should().Be("Andrei Corbu");
-        res.Id.Should().Be(userId);
-        res.Email.Should().Be(user.Email);
+        res?.FullName.Should().Be("Andrei Corbu");
+        res?.Id.Should().Be(userId);
+        res?.Email.Should().Be(user.Email);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class UserServiceTests
     {
         // Arrange
         RegisterDto registerDto = null;
-        
+
         // Act
         var action = async () => await _userService.RegisterUserAsync(registerDto);
 
@@ -315,12 +315,12 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Should().Be(user);
-        result.FullName.Should().Be(user.FullName);
-        result.Address.Should().Be(user.Address);
-        result.HashedPassword.Should().Be(user.HashedPassword);
-        result.Email.Should().Be(user.Email);
-        result.PhoneNumber.Should().Be(user.PhoneNumber);
-        result.Id.Should().Be(user.Id);
+        result?.FullName.Should().Be(user.FullName);
+        result?.Address.Should().Be(user.Address);
+        result?.HashedPassword.Should().Be(user.HashedPassword);
+        result?.Email.Should().Be(user.Email);
+        result?.PhoneNumber.Should().Be(user.PhoneNumber);
+        result?.Id.Should().Be(user.Id);
     }
 
     [Fact]
