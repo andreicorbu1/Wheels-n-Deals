@@ -25,7 +25,7 @@ public class UserService : IUserService
 
         if (user is null) throw new ResourceMissingException($"User with id {userId} does not exist!");
 
-        user = await _unitOfWork.Users.RemoveAsync(user.Id);
+        user = await _unitOfWork.Users.RemoveAsync(userId);
         await _unitOfWork.SaveChangesAsync();
         return user;
     }
@@ -90,7 +90,7 @@ public class UserService : IUserService
         if (dto is null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrWhiteSpace(dto.Email))
             throw new ArgumentNullException(nameof(dto));
         var user = await GetUserAsync(dto.Id) ??
-                   throw new ResourceMissingException($"User with email '{dto.Email}' does not exists!");
+                   throw new ResourceMissingException($"User with id {dto.Id} does not exists!");
 
         user.Address = dto.Address;
         user.PhoneNumber = dto.PhoneNumber;
