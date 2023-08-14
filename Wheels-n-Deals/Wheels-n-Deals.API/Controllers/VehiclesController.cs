@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.DataLayer.Models;

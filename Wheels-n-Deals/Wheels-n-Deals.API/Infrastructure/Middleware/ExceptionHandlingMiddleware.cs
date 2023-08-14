@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Net;
 using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 
 namespace Wheels_n_Deals.API.Infrastructure.Middlewares;

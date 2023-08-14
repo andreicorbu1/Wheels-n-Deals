@@ -12,9 +12,9 @@ namespace Wheels_n_Deals.Tests;
 
 public class UserServiceTests
 {
-    private readonly IUserService _userService;
     private readonly IAuthService _authService = Substitute.For<IAuthService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IUserService _userService;
 
     public UserServiceTests()
     {
@@ -201,7 +201,8 @@ public class UserServiceTests
         };
         _unitOfWork.Users.GetUserAsync(login.Email).Returns(user);
         _authService.VerifyHashedPassword(user.HashedPassword, login.Password).Returns(true);
-        _authService.GetToken(user).Returns("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1laWQiOiIwMmQ2MjlhZC0yNjg4LTRmY2EtYTQ2Mi02ZTQ1MWZkZWM2YTkiLCJlbWFpbCI6InRlc3QiLCJuYmYiOjE2OTE4MzQ5NzgsImV4cCI6MTY5MTgzODU3OCwiaWF0IjoxNjkxODM0OTc4LCJpc3MiOiJCYWNrZW5kIiwiYXVkIjoiRnJvbnRlbmQifQ.Gzj4FplIUyN3xG_HAT07RZo5SRyGPuFtaBA12Zsp_oE");
+        _authService.GetToken(user).Returns(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1laWQiOiIwMmQ2MjlhZC0yNjg4LTRmY2EtYTQ2Mi02ZTQ1MWZkZWM2YTkiLCJlbWFpbCI6InRlc3QiLCJuYmYiOjE2OTE4MzQ5NzgsImV4cCI6MTY5MTgzODU3OCwiaWF0IjoxNjkxODM0OTc4LCJpc3MiOiJCYWNrZW5kIiwiYXVkIjoiRnJvbnRlbmQifQ.Gzj4FplIUyN3xG_HAT07RZo5SRyGPuFtaBA12Zsp_oE");
 
         // Act
         var token = await _userService.LoginUserAsync(login);

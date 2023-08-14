@@ -19,7 +19,7 @@ public static class VehicleMappingExtensions
     public static List<VehicleDto> ToVehicleDto(this List<Vehicle> vehicles)
     {
         return (from vehicle in vehicles
-                let vehicleDto = vehicle.ToVehicleDto()
-                select vehicleDto).ToList();
+            let vehicleDto = vehicle.ToVehicleDto()
+            select vehicleDto).ToList();
     }
 }

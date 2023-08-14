@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
-using System.Text;
 using Wheels_n_Deals.API.DataLayer;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Repositories;

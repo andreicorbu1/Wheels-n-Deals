@@ -9,8 +9,8 @@ namespace Wheels_n_Deals.API.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UserService(IAuthService authService, IUnitOfWork unitOfWork)
     {
