@@ -47,7 +47,7 @@ public class VehicleService : IVehicleService
 
         var id = await _unitOfWork.Vehicles.InsertAsync(vehicle);
 
-        feature.Vehicles.Add(vehicle);
+        feature?.Vehicles.Add(vehicle);
         owner.Vehicles.Add(vehicle);
         await _unitOfWork.SaveChangesAsync();
 

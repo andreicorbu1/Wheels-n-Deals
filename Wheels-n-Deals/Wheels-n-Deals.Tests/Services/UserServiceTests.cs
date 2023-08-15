@@ -8,7 +8,7 @@ using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 using Wheels_n_Deals.API.Services;
 using Wheels_n_Deals.API.Services.Interfaces;
 
-namespace Wheels_n_Deals.Tests;
+namespace Wheels_n_Deals.Tests.Services;
 
 public class UserServiceTests
 {
@@ -270,7 +270,7 @@ public class UserServiceTests
     public async Task RegisterUserAsync_ShouldThrow_WhenDtoIsEmpty()
     {
         // Arrange
-        RegisterDto registerDto = null;
+        RegisterDto? registerDto = null;
 
         // Act
         var action = async () => await _userService.RegisterUserAsync(registerDto);
@@ -350,7 +350,7 @@ public class UserServiceTests
     public async Task UpdateUserAsync_ShouldThrow_WhenDtoNotFound()
     {
         // Arrange
-        UpdateUserDto dto = null;
+        UpdateUserDto? dto = null;
         var dtoWithEmptyEmail = new UpdateUserDto
         {
             Email = ""

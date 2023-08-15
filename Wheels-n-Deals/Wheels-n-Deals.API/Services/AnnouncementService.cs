@@ -18,6 +18,8 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<Guid> AddAnnouncementAsync(AddAnnouncementDto addAnnouncementDto)
     {
+        if (addAnnouncementDto is null) throw new ArgumentNullException(nameof(addAnnouncementDto));
+        
         var user = await _unitOfWork.Users.GetUserAsync(addAnnouncementDto.UserId);
         var vehicle = await _unitOfWork.Vehicles.GetVehicleAsync(addAnnouncementDto.VinNumber);
 
@@ -26,8 +28,6 @@ public class AnnouncementService : IAnnouncementService
 
         if (vehicle.Owner.Id != user.Id && user.Role != Role.Admin)
             throw new ForbiddenAccessException("You are not allowed to do this operation!");
-
-        if (addAnnouncementDto is null) throw new ArgumentNullException(nameof(addAnnouncementDto));
 
         var images = new List<Image>();
         if (addAnnouncementDto.ImagesUrl is not null)
@@ -71,6 +71,15 @@ public class AnnouncementService : IAnnouncementService
         return announcements;
     }
 
+    public async Task<Announcement?> RenewAnnouncementAsync(Guid id)
+    {
+        var announcement = await GetAnnouncementAsync(id) ??
+                           throw new ResourceMissingException($"Announcement with id {id} does not exist");
+        if (DateTime.UtcNow.Day - announcement.DateModified.Day < 1)
+            throw new RenewTimeNotElapsedException("An announcement can be renewed once every 24h");
+        announcement.DateModified = DateTime.UtcNow;
+        return await _unitOfWork.Announcements.UpdateAsync(announcement);
+    }
 
     public async Task<Announcement?> UpdateAnnouncementAsync(Guid id, UpdateAnnouncementDto updatedAnnouncement)
     {
@@ -84,16 +93,6 @@ public class AnnouncementService : IAnnouncementService
         UpdateAnnouncementProperties(existingAnnouncement, updatedAnnouncement, newImages);
 
         return await SaveUpdatedAnnouncementAsync(existingAnnouncement);
-    }
-
-    public async Task<Announcement?> RenewAnnouncementAsync(Guid id)
-    {
-        var announcement = await GetAnnouncementAsync(id) ??
-                           throw new ResourceMissingException($"Announcement with id {id} does not exist");
-        if (DateTime.UtcNow.Day - announcement.DateModified.Day < 1)
-            throw new RenewTimeNotElapsedException("An announcement can be renewed once every 24h");
-        announcement.DateModified = DateTime.UtcNow;
-        return await _unitOfWork.Announcements.UpdateAsync(announcement);
     }
 
     private async Task<List<Image>> AddImagesToAnnouncement(IEnumerable<ImageDto> images)
