@@ -61,8 +61,7 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<Announcement?> GetAnnouncementAsync(Guid id)
     {
-        return await _unitOfWork.Announcements.GetAnnouncementAsync(id) ??
-               throw new ResourceMissingException($"Announcement with id {id} does not exist!");
+        return await _unitOfWork.Announcements.GetAnnouncementAsync(id);
     }
 
     public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)

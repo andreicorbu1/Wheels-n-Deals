@@ -48,18 +48,17 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetUserAsyncById_ShouldThrow_WhenUserNotExists()
+    public async Task GetUserAsyncById_ShouldReturnNull_WhenUserNotExists()
     {
         // Arrange
         _unitOfWork.Users.GetUserAsync(Arg.Any<Guid>()).ReturnsNull();
         var userId = Guid.NewGuid();
 
         // Act
-        var action = async () => await _userService.GetUserAsync(userId);
+        var user = await _userService.GetUserAsync(userId);
 
         // Assert
-        await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with id {userId} does not exist!");
+        user.Should().BeNull();
     }
 
     [Fact]
@@ -87,18 +86,17 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetUserAsyncByEmail_ShouldThrow_WhenUserNotExist()
+    public async Task GetUserAsyncByEmail_ShouldReturnNull_WhenUserNotExist()
     {
         // Arrange
         var email = "andreicorbu7@gmail.com";
         _unitOfWork.Users.GetUserAsync(Arg.Any<string>()).ReturnsNull();
 
         // Act
-        var action = async () => await _userService.GetUserAsync(email);
+        var user = await _userService.GetUserAsync(email);
 
         // Assert
-        await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with email {email} does not exist!");
+        user.Should().BeNull();
     }
 
     [Fact]
@@ -345,7 +343,7 @@ public class UserServiceTests
 
         // Assert
         await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with id {updateUserDto.Id} does not exist!");
+            .WithMessage($"User with id {updateUserDto.Id} does not exists!");
     }
 
     [Fact]

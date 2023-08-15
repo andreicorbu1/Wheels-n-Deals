@@ -25,7 +25,6 @@ public class VehicleService : IVehicleService
         var technicalState = (State)Enum.Parse(typeof(State), addVehicleDto.TechnicalState, true);
 
         var feature = await GetOrCreateFeature(addVehicleDto, fuelType, gearboxType);
-        if (feature is null) return Guid.Empty;
 
         var owner = await _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId);
         if (owner is null) return Guid.Empty;
@@ -57,21 +56,18 @@ public class VehicleService : IVehicleService
 
     public async Task<Vehicle?> DeleteVehicleAsync(string vin)
     {
-        var result = await _unitOfWork.Vehicles.RemoveAsync(vin);
-        if (result is null) throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
+        var result = await _unitOfWork.Vehicles.RemoveAsync(vin) ?? throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
         return result;
     }
 
     public async Task<Vehicle?> GetVehicleAsync(string vin)
     {
-        return await _unitOfWork.Vehicles.GetVehicleAsync(vin) ??
-               throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
+        return await _unitOfWork.Vehicles.GetVehicleAsync(vin);
     }
 
     public async Task<Vehicle?> GetVehicleAsync(Guid id)
     {
-        return await _unitOfWork.Vehicles.GetVehicleAsync(id) ??
-               throw new ResourceMissingException($"Vehicle with id {id} does not exist!");
+        return await _unitOfWork.Vehicles.GetVehicleAsync(id);
     }
 
     public async Task<List<Vehicle>> GetVehiclesAsync(VehicleFiltersDto? vehicleFilters)
@@ -83,7 +79,8 @@ public class VehicleService : IVehicleService
     {
         var vehicleToUpdate = await _unitOfWork.Vehicles.GetVehicleAsync(id) ??
                               throw new ResourceMissingException($"Vehicle with id {id} does not exist!");
-        if ((await _unitOfWork.Vehicles.GetVehicleAsync(updatedVehicle.VinNumber))?.Id != id)
+        var vehicleWithNewVin = await _unitOfWork.Vehicles.GetVehicleAsync(updatedVehicle.VinNumber);
+        if (vehicleWithNewVin is not null && vehicleWithNewVin.Id != id)
             throw new ResourceExistingException($"Vehicle with VIN {updatedVehicle.VinNumber} already exists!");
 
         var fuelType = (Fuel)Enum.Parse(typeof(Fuel), updatedVehicle.FuelType, true);
@@ -134,7 +131,7 @@ public class VehicleService : IVehicleService
     private static float CalculatePrice(float price, string priceCurrency)
     {
         if (priceCurrency == "RON")
-            return price / 5;
+            return price * 5;
         return price;
     }
 
