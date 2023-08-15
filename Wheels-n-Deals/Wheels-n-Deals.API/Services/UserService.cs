@@ -9,8 +9,8 @@ namespace Wheels_n_Deals.API.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UserService(IAuthService authService, IUnitOfWork unitOfWork)
     {
@@ -32,14 +32,12 @@ public class UserService : IUserService
 
     public async Task<User?> GetUserAsync(string email)
     {
-        return await _unitOfWork.Users.GetUserAsync(email) ??
-               throw new ResourceMissingException($"User with email {email} does not exist!");
+        return await _unitOfWork.Users.GetUserAsync(email);
     }
 
     public async Task<User?> GetUserAsync(Guid id)
     {
-        return await _unitOfWork.Users.GetUserAsync(id) ??
-               throw new ResourceMissingException($"User with id {id} does not exist!");
+        return await _unitOfWork.Users.GetUserAsync(id);
     }
 
     public async Task<List<User>> GetUsersAsync()

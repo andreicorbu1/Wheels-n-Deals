@@ -12,9 +12,9 @@ namespace Wheels_n_Deals.Tests;
 
 public class UserServiceTests
 {
-    private readonly IUserService _userService;
     private readonly IAuthService _authService = Substitute.For<IAuthService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IUserService _userService;
 
     public UserServiceTests()
     {
@@ -43,23 +43,22 @@ public class UserServiceTests
 
         // Assert
         user.Should().NotBeNull();
-        user.Id.Should().Be(userId);
-        user.FullName.Should().Be("Andrei Corbu");
+        user?.Id.Should().Be(userId);
+        user?.FullName.Should().Be("Andrei Corbu");
     }
 
     [Fact]
-    public async Task GetUserAsyncById_ShouldThrow_WhenUserNotExists()
+    public async Task GetUserAsyncById_ShouldReturnNull_WhenUserNotExists()
     {
         // Arrange
         _unitOfWork.Users.GetUserAsync(Arg.Any<Guid>()).ReturnsNull();
         var userId = Guid.NewGuid();
 
         // Act
-        var action = async () => await _userService.GetUserAsync(userId);
+        var user = await _userService.GetUserAsync(userId);
 
         // Assert
-        await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with id {userId} does not exist!");
+        user.Should().BeNull();
     }
 
     [Fact]
@@ -82,23 +81,22 @@ public class UserServiceTests
 
         // Assert
         user.Should().NotBeNull();
-        user.FullName.Should().Be(userName);
-        user.Email.Should().Be(email);
+        user?.FullName.Should().Be(userName);
+        user?.Email.Should().Be(email);
     }
 
     [Fact]
-    public async Task GetUserAsyncByEmail_ShouldThrow_WhenUserNotExist()
+    public async Task GetUserAsyncByEmail_ShouldReturnNull_WhenUserNotExist()
     {
         // Arrange
         var email = "andreicorbu7@gmail.com";
         _unitOfWork.Users.GetUserAsync(Arg.Any<string>()).ReturnsNull();
 
         // Act
-        var action = async () => await _userService.GetUserAsync(email);
+        var user = await _userService.GetUserAsync(email);
 
         // Assert
-        await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with email {email} does not exist!");
+        user.Should().BeNull();
     }
 
     [Fact]
@@ -107,7 +105,7 @@ public class UserServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var user = new User
-        { 
+        {
             Id = userId,
             FirstName = "Andrei",
             LastName = "Corbu",
@@ -118,15 +116,15 @@ public class UserServiceTests
         };
         _unitOfWork.Users.GetUserAsync(userId).Returns(user);
         _unitOfWork.Users.RemoveAsync(userId).Returns(user);
-        
+
         // Act
         var res = await _userService.DeleteUserAsync(userId);
 
         // Assert
         res.Should().NotBeNull();
-        res.FullName.Should().Be("Andrei Corbu");
-        res.Id.Should().Be(userId);
-        res.Email.Should().Be(user.Email);
+        res?.FullName.Should().Be("Andrei Corbu");
+        res?.Id.Should().Be(userId);
+        res?.Email.Should().Be(user.Email);
     }
 
     [Fact]
@@ -201,7 +199,8 @@ public class UserServiceTests
         };
         _unitOfWork.Users.GetUserAsync(login.Email).Returns(user);
         _authService.VerifyHashedPassword(user.HashedPassword, login.Password).Returns(true);
-        _authService.GetToken(user).Returns("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1laWQiOiIwMmQ2MjlhZC0yNjg4LTRmY2EtYTQ2Mi02ZTQ1MWZkZWM2YTkiLCJlbWFpbCI6InRlc3QiLCJuYmYiOjE2OTE4MzQ5NzgsImV4cCI6MTY5MTgzODU3OCwiaWF0IjoxNjkxODM0OTc4LCJpc3MiOiJCYWNrZW5kIiwiYXVkIjoiRnJvbnRlbmQifQ.Gzj4FplIUyN3xG_HAT07RZo5SRyGPuFtaBA12Zsp_oE");
+        _authService.GetToken(user).Returns(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1laWQiOiIwMmQ2MjlhZC0yNjg4LTRmY2EtYTQ2Mi02ZTQ1MWZkZWM2YTkiLCJlbWFpbCI6InRlc3QiLCJuYmYiOjE2OTE4MzQ5NzgsImV4cCI6MTY5MTgzODU3OCwiaWF0IjoxNjkxODM0OTc4LCJpc3MiOiJCYWNrZW5kIiwiYXVkIjoiRnJvbnRlbmQifQ.Gzj4FplIUyN3xG_HAT07RZo5SRyGPuFtaBA12Zsp_oE");
 
         // Act
         var token = await _userService.LoginUserAsync(login);
@@ -272,7 +271,7 @@ public class UserServiceTests
     {
         // Arrange
         RegisterDto registerDto = null;
-        
+
         // Act
         var action = async () => await _userService.RegisterUserAsync(registerDto);
 
@@ -315,12 +314,12 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Should().Be(user);
-        result.FullName.Should().Be(user.FullName);
-        result.Address.Should().Be(user.Address);
-        result.HashedPassword.Should().Be(user.HashedPassword);
-        result.Email.Should().Be(user.Email);
-        result.PhoneNumber.Should().Be(user.PhoneNumber);
-        result.Id.Should().Be(user.Id);
+        result?.FullName.Should().Be(user.FullName);
+        result?.Address.Should().Be(user.Address);
+        result?.HashedPassword.Should().Be(user.HashedPassword);
+        result?.Email.Should().Be(user.Email);
+        result?.PhoneNumber.Should().Be(user.PhoneNumber);
+        result?.Id.Should().Be(user.Id);
     }
 
     [Fact]
@@ -344,7 +343,7 @@ public class UserServiceTests
 
         // Assert
         await action.Should().ThrowAsync<ResourceMissingException>()
-            .WithMessage($"User with id {updateUserDto.Id} does not exist!");
+            .WithMessage($"User with id {updateUserDto.Id} does not exists!");
     }
 
     [Fact]
