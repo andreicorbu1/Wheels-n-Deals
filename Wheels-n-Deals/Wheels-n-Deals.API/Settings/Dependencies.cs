@@ -58,7 +58,7 @@ public class Dependencies
             options.AddPolicy("Access-Control-Allow-Origin",
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000")
+                    builder.WithOrigins("http://localhost:5173")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

@@ -9,27 +9,22 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
 
         <RootNamespace>Wheels_n_Deals.API</RootNamespace>
-
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-
-        <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.20"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
 </Project>
