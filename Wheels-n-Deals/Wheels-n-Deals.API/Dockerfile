@@ -1,19 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 ENV ASPNETCORE_ENVIRONMENT=Development
-
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-RUN dotnet tool install --global dotnet-ef
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["Wheels-n-Deals.API/Wheels-n-Deals.API.csproj", "Wheels-n-Deals.API/"]
+RUN dotnet restore "Wheels-n-Deals.API/Wheels-n-Deals.API.csproj"
+COPY . .
+WORKDIR "/src/Wheels-n-Deals.API"
+RUN dotnet build "Wheels-n-Deals.API.csproj" -c Release -o /app/build
 
-COPY *.csproj ./
-RUN dotnet restore
+FROM build AS publish
+RUN dotnet publish "Wheels-n-Deals.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-COPY . ./
-RUN dotnet publish -c Release -o out
-
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS final-env
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Wheels-n-Deals.API.dll"]
