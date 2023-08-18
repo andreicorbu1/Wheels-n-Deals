@@ -36,7 +36,7 @@ public class UserServiceTests
             HashedPassword = "SomePass",
             Address = "Romania"
         };
-        _unitOfWork.Users.GetUserAsync(userId).Returns(userDb);
+        _unitOfWork.Users.GetByIdAsync(userId).Returns(userDb);
 
         // Act
         var user = await _userService.GetUserAsync(userId);
@@ -51,7 +51,7 @@ public class UserServiceTests
     public async Task GetUserAsyncById_ShouldReturnNull_WhenUserNotExists()
     {
         // Arrange
-        _unitOfWork.Users.GetUserAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
         var userId = Guid.NewGuid();
 
         // Act
@@ -114,8 +114,8 @@ public class UserServiceTests
             HashedPassword = "SomePass",
             Address = "Romania"
         };
-        _unitOfWork.Users.GetUserAsync(userId).Returns(user);
-        _unitOfWork.Users.RemoveAsync(userId).Returns(user);
+        _unitOfWork.Users.GetByIdAsync(userId).Returns(user);
+        _unitOfWork.Users.DeleteAsync(userId).Returns(user);
 
         // Act
         var res = await _userService.DeleteUserAsync(userId);
@@ -132,7 +132,7 @@ public class UserServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _unitOfWork.Users.GetUserAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
 
         // Act
         var action = async () => await _userService.DeleteUserAsync(id);
@@ -157,7 +157,7 @@ public class UserServiceTests
             Address = "Romania"
         };
         var list = new List<User> { user };
-        _unitOfWork.Users.GetUsersAsync().Returns(list);
+        _unitOfWork.Users.GetAllAsync().Returns(list);
 
         // Act
         var users = await _userService.GetUsersAsync();
@@ -172,7 +172,7 @@ public class UserServiceTests
     public async Task GetUsersAsync_ShouldReturnEmptyList_WhenUsersNotExist()
     {
         // Arrange
-        _unitOfWork.Users.GetUsersAsync().Returns(new List<User>());
+        _unitOfWork.Users.GetAllAsync().Returns(new List<User>());
 
         // Act
         var users = await _userService.GetUsersAsync();
@@ -242,7 +242,7 @@ public class UserServiceTests
         var registerDto = new RegisterDto("test", "test", "Andrei", "Corbu", "0733888999", "Romania");
         _unitOfWork.Users.Any(Arg.Any<Func<User, bool>>()).Returns(false);
         var id = Guid.NewGuid();
-        _unitOfWork.Users.InsertAsync(Arg.Any<User>()).Returns(id);
+        _unitOfWork.Users.AddAsync(Arg.Any<User>()).Returns(new User { Id = id});
 
         // Act
         var actualId = await _userService.RegisterUserAsync(registerDto);
@@ -304,7 +304,7 @@ public class UserServiceTests
             HashedPassword = "test",
             Address = "Romania"
         };
-        _unitOfWork.Users.GetUserAsync(id).Returns(user);
+        _unitOfWork.Users.GetByIdAsync(id).Returns(user);
         _unitOfWork.Users.UpdateAsync(Arg.Any<User>()).Returns(user);
         _authService.HashPassword(Arg.Any<string>()).Returns(updateUserDto.PhoneNumber);
 
@@ -336,7 +336,7 @@ public class UserServiceTests
             Password = "test",
             Address = "Romania"
         };
-        _unitOfWork.Users.GetUserAsync(updateUserDto.Id).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(updateUserDto.Id).ReturnsNull();
 
         // Act
         var action = async () => await _userService.UpdateUserAsync(updateUserDto);

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
+using System.Linq.Expressions;
 using Wheels_n_Deals.API;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Enums;
@@ -56,10 +57,10 @@ public class VehicleServiceTests
             Year = 2001
         };
         _unitOfWork.Features.GetFeatureAsync(Arg.Any<string>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<Gearbox>(), Arg.Any<Fuel>()).ReturnsNull();
-        _unitOfWork.Features.InsertAsync(Arg.Any<Feature>()).Returns(featId);
-        _unitOfWork.Vehicles.InsertAsync(Arg.Any<Vehicle>()).Returns(vehId);
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).ReturnsNull();
-        _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId).Returns(user);
+        _unitOfWork.Features.AddAsync(Arg.Any<Feature>()).Returns(new Feature { Id = featId });
+        _unitOfWork.Vehicles.AddAsync(Arg.Any<Vehicle>()).Returns(new Vehicle { Id = vehId });
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(addVehicleDto.OwnerId).Returns(user);
 
         // Act
         var retId = await _vehicleService.AddVehicleAsync(addVehicleDto);
@@ -92,10 +93,10 @@ public class VehicleServiceTests
             Year = 2001
         };
         _unitOfWork.Features.GetFeatureAsync(Arg.Any<string>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<Gearbox>(), Arg.Any<Fuel>()).ReturnsNull();
-        _unitOfWork.Features.InsertAsync(Arg.Any<Feature>()).Returns(featId);
-        _unitOfWork.Vehicles.InsertAsync(Arg.Any<Vehicle>()).Returns(vehId);
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).ReturnsNull();
-        _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId).ReturnsNull();
+        _unitOfWork.Features.AddAsync(Arg.Any<Feature>()).Returns(new Feature { Id = featId });
+        _unitOfWork.Vehicles.AddAsync(Arg.Any<Vehicle>()).Returns(new Vehicle { Id = vehId });
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(addVehicleDto.OwnerId).ReturnsNull();
 
         // Act
         var retId = await _vehicleService.AddVehicleAsync(addVehicleDto);
@@ -138,10 +139,10 @@ public class VehicleServiceTests
             Year = 2001
         };
         _unitOfWork.Features.GetFeatureAsync(Arg.Any<string>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<Gearbox>(), Arg.Any<Fuel>()).ReturnsNull();
-        _unitOfWork.Features.InsertAsync(Arg.Any<Feature>()).Returns(featId);
-        _unitOfWork.Vehicles.InsertAsync(Arg.Any<Vehicle>()).Returns(vehId);
+        _unitOfWork.Features.AddAsync(Arg.Any<Feature>()).Returns(new Feature { Id = featId });
+        _unitOfWork.Vehicles.AddAsync(Arg.Any<Vehicle>()).Returns(new Vehicle { Id = vehId });
         _unitOfWork.Vehicles.GetVehicleAsync(addVehicleDto.VinNumber).Returns(new Vehicle());
-        _unitOfWork.Users.GetUserAsync(addVehicleDto.OwnerId).Returns(user);
+        _unitOfWork.Users.GetByIdAsync(addVehicleDto.OwnerId).Returns(user);
 
         // Act
         var action = async () => await _vehicleService.AddVehicleAsync(addVehicleDto);
@@ -210,7 +211,7 @@ public class VehicleServiceTests
             Mileage = 190000,
             PriceInEuro = 3000,
         };
-        _unitOfWork.Vehicles.GetVehicleAsync(vehicle.Id).Returns(vehicle);
+        _unitOfWork.Vehicles.GetByIdAsync(vehicle.Id).Returns(vehicle);
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).Returns(vehicle);
 
         // Act
@@ -229,7 +230,7 @@ public class VehicleServiceTests
     {
         // Arrange
         _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<string>()).ReturnsNull();
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
 
         // Act
         var getById = await _vehicleService.GetVehicleAsync(Guid.NewGuid());
@@ -261,7 +262,8 @@ public class VehicleServiceTests
                 PriceInEuro = 3000,
             }
         };
-        _unitOfWork.Vehicles.GetVehiclesAsync(Arg.Any<VehicleFiltersDto>()).Returns(vehicles);
+        _unitOfWork.Vehicles.GetManyAsync(Arg.Any<Expression<Func<Vehicle, bool>>>())
+            .Returns(vehicles);
 
         // Act
         var ret = await _vehicleService.GetVehiclesAsync(null);
@@ -277,7 +279,7 @@ public class VehicleServiceTests
     {
         // Arrange
         var vehicles = new List<Vehicle>();
-        _unitOfWork.Vehicles.GetVehiclesAsync(Arg.Any<VehicleFiltersDto>()).Returns(vehicles);
+        _unitOfWork.Vehicles.GetManyAsync(Arg.Any<Expression<Func<Vehicle, bool>>>()).Returns(vehicles);
 
         // Act
         var ret = await _vehicleService.GetVehiclesAsync(null);
@@ -306,7 +308,7 @@ public class VehicleServiceTests
             Mileage = 190000,
             PriceInEuro = 3000,
         };
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).Returns(vehicle);
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).Returns(vehicle);
         _unitOfWork.Vehicles.GetVehicleAsync("SOMEVIN2").ReturnsNull();
         var upd = new UpdateVehicleDto("SOMEVIN2", "Skoda", "Model", 2001, 190000, "Used", 3000, "Hatchback", "Petrol", 1395, "Manual", 75);
         _unitOfWork.Features.GetFeatureAsync(Arg.Any<string>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<Gearbox>(), Arg.Any<Fuel>()).ReturnsNull();
@@ -339,7 +341,7 @@ public class VehicleServiceTests
             PriceInEuro = 3000,
         };
         var upd = new UpdateVehicleDto("SOMEVIN2", "Skoda", "Model", 2001, 190000, "Used", 3000, "Hatchback", "Petrol", 1395, "Manual", 75);
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).Returns(vehicle);
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).Returns(vehicle);
         _unitOfWork.Vehicles.GetVehicleAsync("SOMEVIN2").Returns(new Vehicle());
 
         // Act
@@ -370,7 +372,7 @@ public class VehicleServiceTests
             PriceInEuro = 3000,
         };
         var upd = new UpdateVehicleDto("SOMEVIN2", "Skoda", "Model", 2001, 190000, "Used", 3000, "Hatchback", "Petrol", 1395, "Manual", 75);
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).ReturnsNull();
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
         _unitOfWork.Vehicles.GetVehicleAsync("SOMEVIN2").Returns(new Vehicle());
 
         // Act
@@ -400,7 +402,7 @@ public class VehicleServiceTests
             Mileage = 190000,
             PriceInEuro = 3000,
         };
-        _unitOfWork.Vehicles.GetVehicleAsync(Arg.Any<Guid>()).Returns(vehicle);
+        _unitOfWork.Vehicles.GetByIdAsync(Arg.Any<Guid>()).Returns(vehicle);
         _unitOfWork.Vehicles.GetVehicleAsync("SOMEVIN2").ReturnsNull();
         var upd = new UpdateVehicleDto("SOMEVIN2", "Skoda", "Model", 2001, 190000, "Used", 3000, "Hatchback", "Petrol", 1395, "Manual", 75);
         _unitOfWork.Features.GetFeatureAsync(Arg.Any<string>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<Gearbox>(), Arg.Any<Fuel>()).Returns(new Feature());

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
+using System.Linq.Expressions;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
@@ -62,7 +63,7 @@ public class AnnouncementServiceTests
             UserId = user.Id
         };
         var annId = Guid.NewGuid();
-        _unitOfWork.Announcements.AddAsync(Arg.Any<Announcement>()).Returns(annId);
+        _unitOfWork.Announcements.AddAsync(Arg.Any<Announcement>()).Returns(new Announcement {  Id = annId  });
 
         // Act
         var res = await _announcementService.AddAnnouncementAsync(addAnn);
@@ -138,7 +139,7 @@ public class AnnouncementServiceTests
             Mileage = 190000,
             PriceInEuro = 3000,
         };
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).Returns(vehicle);
         var addAnn = new AddAnnouncementDto
         {
@@ -187,7 +188,7 @@ public class AnnouncementServiceTests
             Mileage = 190000,
             PriceInEuro = 3000,
         };
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).Returns(vehicle);
         AddAnnouncementDto addAnn = null;
 
@@ -203,7 +204,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var announcement = new Announcement { Id = Guid.NewGuid() };
-        _unitOfWork.Announcements.RemoveAsync(announcement.Id).Returns(announcement);
+        _unitOfWork.Announcements.DeleteAsync(announcement.Id).Returns(announcement);
 
         // Act
         var returned = await _announcementService.DeleteAnnouncementAsync(announcement.Id);
@@ -218,7 +219,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _unitOfWork.Announcements.RemoveAsync(id).ReturnsNull();
+        _unitOfWork.Announcements.DeleteAsync(id).ReturnsNull();
 
         // Act
         var action = async () => await _announcementService.DeleteAnnouncementAsync(id);
@@ -234,7 +235,7 @@ public class AnnouncementServiceTests
         // Arrange
         var id = Guid.NewGuid();
         var ann = new Announcement { Id = id };
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
 
         // Act
         var ret = await _announcementService.GetAnnouncementAsync(id);
@@ -249,7 +250,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).ReturnsNull();
+        _unitOfWork.Announcements.GetByIdAsync(id).ReturnsNull();
 
         // Act
         var ret = await _announcementService.GetAnnouncementAsync(id);
@@ -263,7 +264,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var ann = new List<Announcement> { new Announcement { } };
-        _unitOfWork.Announcements.GetAnnouncementsAsync(null).Returns(ann);
+        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>()).Returns(ann);
 
         // Act
         var ret = await _announcementService.GetAnnouncementsAsync(null);
@@ -278,7 +279,7 @@ public class AnnouncementServiceTests
     public async Task GetAnnouncementsAsync_ShouldReturnEmptyList_WhenAnnouncementsDoNotExist()
     {
         // Arrange
-        _unitOfWork.Announcements.GetAnnouncementsAsync(null).Returns(new List<Announcement>());
+        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>()).Returns(new List<Announcement>());
 
         // Act
         var ret = await _announcementService.GetAnnouncementsAsync(null);
@@ -299,7 +300,7 @@ public class AnnouncementServiceTests
             DateModified = DateTime.UtcNow.AddDays(-1)
         };
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
 
         // Act
         var ret = await _announcementService.RenewAnnouncementAsync(id);
@@ -320,7 +321,7 @@ public class AnnouncementServiceTests
             DateModified = DateTime.UtcNow
         };
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
 
         // Act
         var ret = async () => await _announcementService.RenewAnnouncementAsync(id);
@@ -334,7 +335,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).ReturnsNull();
+        _unitOfWork.Announcements.GetByIdAsync(id).ReturnsNull();
 
         // Act
         var ret = async () => await _announcementService.RenewAnnouncementAsync(id);
@@ -393,9 +394,9 @@ public class AnnouncementServiceTests
             PriceInEuro = 3000,
         };
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).Returns(vehicle);
-        _unitOfWork.Vehicles.GetVehicleAsync(vehicle.Id).Returns(vehicle);
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Vehicles.GetByIdAsync(vehicle.Id).Returns(vehicle);
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
 
         // Act
@@ -457,9 +458,9 @@ public class AnnouncementServiceTests
             PriceInEuro = 3000,
         };
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).ReturnsNull();
-        _unitOfWork.Vehicles.GetVehicleAsync(vehicle.Id).ReturnsNull();
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Vehicles.GetByIdAsync(vehicle.Id).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
 
         // Act
@@ -519,9 +520,9 @@ public class AnnouncementServiceTests
             PriceInEuro = 3000,
         };
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).ReturnsNull();
-        _unitOfWork.Vehicles.GetVehicleAsync(vehicle.Id).ReturnsNull();
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).Returns(ann);
+        _unitOfWork.Vehicles.GetByIdAsync(vehicle.Id).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
+        _unitOfWork.Announcements.GetByIdAsync(id).Returns(ann);
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
 
         // Act
@@ -581,9 +582,9 @@ public class AnnouncementServiceTests
             PriceInEuro = 3000,
         };
         _unitOfWork.Vehicles.GetVehicleAsync(vehicle.VinNumber).ReturnsNull();
-        _unitOfWork.Vehicles.GetVehicleAsync(vehicle.Id).ReturnsNull();
-        _unitOfWork.Users.GetUserAsync(user.Id).Returns(user);
-        _unitOfWork.Announcements.GetAnnouncementAsync(id).ReturnsNull();
+        _unitOfWork.Vehicles.GetByIdAsync(vehicle.Id).ReturnsNull();
+        _unitOfWork.Users.GetByIdAsync(user.Id).Returns(user);
+        _unitOfWork.Announcements.GetByIdAsync(id).ReturnsNull();
         _unitOfWork.Announcements.UpdateAsync(ann).Returns(ann);
 
         // Act

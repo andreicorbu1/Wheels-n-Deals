@@ -50,6 +50,7 @@ public class VehicleService : IVehicleService
 
         feature?.Vehicles.Add(vehicle);
         owner.Vehicles.Add(vehicle);
+
         await _unitOfWork.SaveChangesAsync();
 
         return vehicle.Id;
@@ -58,6 +59,7 @@ public class VehicleService : IVehicleService
     public async Task<Vehicle?> DeleteVehicleAsync(string vin)
     {
         var result = await _unitOfWork.Vehicles.RemoveAsync(vin) ?? throw new ResourceMissingException($"Vehicle with VIN {vin} does not exist!");
+        await _unitOfWork.SaveChangesAsync();
         return result;
     }
 

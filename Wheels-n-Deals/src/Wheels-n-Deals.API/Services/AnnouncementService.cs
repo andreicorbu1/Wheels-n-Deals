@@ -48,12 +48,14 @@ public class AnnouncementService : IAnnouncementService
         };
         newAnnouncement.Images = images;
         await _unitOfWork.Announcements.AddAsync(newAnnouncement);
+        await _unitOfWork.SaveChangesAsync();
         return newAnnouncement.Id;
     }
 
     public async Task<Announcement?> DeleteAnnouncementAsync(Guid id)
     {
         var result = await _unitOfWork.Announcements.DeleteAsync(id);
+        await _unitOfWork.SaveChangesAsync();
         return result is null
             ? throw new ResourceMissingException($"Announcement with id {id} does not exist")
             : result;
@@ -78,7 +80,9 @@ public class AnnouncementService : IAnnouncementService
         if (DateTime.UtcNow.Day - announcement.DateModified.Day < 1)
             throw new RenewTimeNotElapsedException("An announcement can be renewed once every 24h");
         announcement.DateModified = DateTime.UtcNow;
-        return await _unitOfWork.Announcements.UpdateAsync(announcement);
+        await _unitOfWork.Announcements.UpdateAsync(announcement);
+        await _unitOfWork.SaveChangesAsync();
+        return announcement;
     }
 
     public async Task<Announcement?> UpdateAnnouncementAsync(Guid id, UpdateAnnouncementDto updatedAnnouncement)
