@@ -9,11 +9,14 @@ public static class UserMappingExtensions
     {
         var userDto = new UserDto(
             user.Id.ToString(),
+            user.FirstName,
+            user.LastName,
             user.Email,
-            user.FullName,
             user.PhoneNumber,
             user.Address,
-            user.Role.ToString()
+            user.Role.ToString(),
+            user.DateCreated,
+            user.LastModified
         );
         return userDto;
     }

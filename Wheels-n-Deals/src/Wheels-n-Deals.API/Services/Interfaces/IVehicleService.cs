@@ -8,6 +8,7 @@ public interface IVehicleService
     Task<Guid> AddVehicleAsync(AddVehicleDto addVehicleDto);
     Task<Vehicle?> DeleteVehicleAsync(string vin);
     Task<List<Vehicle>> GetVehiclesAsync(VehicleFiltersDto? vehicleFilters);
+    Task<List<Vehicle>> GetUsersVehicles(Guid userId);
     Task<Vehicle?> GetVehicleAsync(string vin);
     Task<Vehicle?> GetVehicleAsync(Guid id);
     Task<Vehicle?> UpdateVehicleAsync(Guid id, UpdateVehicleDto updatedVehicle);

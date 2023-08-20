@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.DTO;
+using Wheels_n_Deals.API.DataLayer.Mapping;
 using Wheels_n_Deals.API.DataLayer.Models;
 using Wheels_n_Deals.API.Services.Interfaces;
 
@@ -212,6 +213,32 @@ public class AnnouncementController : ControllerBase
         var vehicles = await _vehicleService.GetVehiclesAsync(vehicleFiltersDto);
         var announcements = await _announcementService.GetAnnouncementsAsync(vehicles);
 
+        return Ok(announcements.ToAnnouncementDtos());
+    }
+
+    /// <summary>
+    ///     Get All Announcements
+    /// </summary>
+    /// <remarks>
+    ///     Retrieves all the announcements posted by an user
+    /// </remarks>
+    /// <returns>
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: Guid
+    ///     500 - Unexpected error
+    ///     - Content-Type: application/json
+    ///     - Body: Error
+    /// </returns>
+    [HttpGet("userid={userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Announcement>))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllAnnouncemenets(Guid userId)
+    {
+        var announcements = await _announcementService.GetUserAnnouncements(userId);
+        
         return Ok(announcements);
     }
 }

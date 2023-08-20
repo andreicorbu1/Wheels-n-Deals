@@ -264,7 +264,7 @@ public class AnnouncementServiceTests
     {
         // Arrange
         var ann = new List<Announcement> { new Announcement { } };
-        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>()).Returns(ann);
+        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>(), Arg.Any<Func<IQueryable<Announcement>, IOrderedQueryable<Announcement>>>()).Returns(ann);
 
         // Act
         var ret = await _announcementService.GetAnnouncementsAsync(null);

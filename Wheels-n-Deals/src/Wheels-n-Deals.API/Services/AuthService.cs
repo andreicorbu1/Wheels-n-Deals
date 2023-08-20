@@ -77,7 +77,7 @@ public class AuthService : IAuthService
 
         byte[] salt;
         byte[] subkey;
-        using (var deriveByte = new Rfc2898DeriveBytes(password, _SaltSize, _PBKDF2IterCount))
+        using (var deriveByte = new Rfc2898DeriveBytes(password, _SaltSize, _PBKDF2IterCount, HashAlgorithmName.SHA256))
         {
             salt = deriveByte.Salt;
             subkey = deriveByte.GetBytes(_PBKDF2SubkeyLength);
@@ -105,7 +105,7 @@ public class AuthService : IAuthService
         Buffer.BlockCopy(hashedPasswordBytes, 1 + _SaltSize, storedSubkey, 0, _PBKDF2SubkeyLength);
 
         byte[] generatedSubKey;
-        using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, _PBKDF2IterCount))
+        using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, _PBKDF2IterCount, HashAlgorithmName.SHA256))
         {
             generatedSubKey = deriveBytes.GetBytes(_PBKDF2SubkeyLength);
         }

@@ -77,7 +77,7 @@ public class VehicleService : IVehicleService
 
     public async Task<List<Vehicle>> GetVehiclesAsync(VehicleFiltersDto? vehicleFilters)
     {
-        return await _unitOfWork.Vehicles.GetManyAsync(VehicleExtensions.BuildFilterExpression(vehicleFilters));
+        return await _unitOfWork.Vehicles.GetManyAsync(VehicleExtensions.BuildFilterExpression(vehicleFilters)) ?? new();
     }
 
     public async Task<Vehicle?> UpdateVehicleAsync(Guid id, UpdateVehicleDto updatedVehicle)
@@ -149,5 +149,16 @@ public class VehicleService : IVehicleService
         }
 
         return feature;
+    }
+
+    public async Task<List<Vehicle>> GetUsersVehicles(Guid userId)
+    {
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+
+        if (user is null) throw new ResourceMissingException($"There is no user with the id {userId} in the database");
+        
+        var vehicles = await _unitOfWork.Vehicles.GetManyAsync(v => v.Owner != null && v.Owner.Id == userId);
+        
+        return vehicles ?? new();
     }
 }

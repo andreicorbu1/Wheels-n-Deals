@@ -8,6 +8,7 @@ public interface IAnnouncementService
     Task<Guid> AddAnnouncementAsync(AddAnnouncementDto addAnnouncementDto);
     Task<Announcement?> DeleteAnnouncementAsync(Guid id);
     Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles);
+    Task<List<Announcement>> GetUserAnnouncements(Guid userId);
     Task<Announcement?> GetAnnouncementAsync(Guid id);
     Task<Announcement?> UpdateAnnouncementAsync(Guid id, UpdateAnnouncementDto updatedAnnouncement);
     Task<Announcement?> RenewAnnouncementAsync(Guid id);

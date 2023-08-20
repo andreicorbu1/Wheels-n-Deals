@@ -87,6 +87,38 @@ public class VehiclesController : ControllerBase
     }
 
     /// <summary>
+    ///     Get All Vehicles owned by a user
+    /// </summary>
+    /// <remarks>
+    ///     Retrieves information for all vehicles.
+    ///     No authentication required.
+    /// </remarks>
+    /// <returns>
+    ///     200 - Successful retrieval
+    ///     - Content-Type: application/json
+    ///     - Body: VehicleDto[]
+    ///     500 - Unexpected error
+    ///     - Content-Type: application/json
+    ///     - Body: Error
+    /// </returns>
+    [HttpGet("userid={userId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vehicle>))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> GetAllVehiclesOfUser(Guid userId)
+    {
+        if(User.IsInRole("Admin") || User.HasClaim(ClaimTypes.NameIdentifier, userId.ToString()))
+        {
+            var vehicles = await _vehicleService.GetUsersVehicles(userId);
+
+            return Ok(vehicles.ToVehicleDto());
+        }
+
+        return Unauthorized();
+    }
+
+    /// <summary>
     ///     Get Vehicle from VIN
     /// </summary>
     /// <remarks>

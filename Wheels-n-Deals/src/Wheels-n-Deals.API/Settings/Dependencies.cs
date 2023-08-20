@@ -43,7 +43,7 @@ public class Dependencies
                 ValidAudience = "Frontend",
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(app.Configuration["JWT:SecurityKey"]))
+                        Encoding.UTF8.GetBytes(app.Configuration["JWT:SecurityKey"] ?? "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"))
             };
         });
         app.Services.AddControllers();
@@ -59,7 +59,7 @@ public class Dependencies
             options.AddPolicy("Access-Control-Allow-Origin",
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:5173")
+                    builder.WithOrigins("http://localhost:4200")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

@@ -1,0 +1,21 @@
+/* app-navigation.component.css */
+
+.navigation-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}
+
+.left-links a,
+.right-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.right-links a:hover {
+  text-decoration: underline;
+}

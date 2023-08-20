@@ -5,7 +5,7 @@
 namespace Wheels_n_Deals.API.Migrations
 {
     /// <inheritdoc />
-    public partial class upddb : Migration
+    public partial class Upddb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

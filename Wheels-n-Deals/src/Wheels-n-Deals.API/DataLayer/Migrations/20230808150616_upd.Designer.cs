@@ -13,7 +13,7 @@ namespace Wheels_n_Deals.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20230808150616_upd")]
-    partial class upd
+    partial class Upd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

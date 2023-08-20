@@ -9,7 +9,7 @@ public static class VehicleMappingExtensions
     {
         if (vehicle is null || vehicle.Feature is null) throw new ArgumentNullException(nameof(vehicle));
         var vehicleDto = new VehicleDto(vehicle.Id, vehicle.VinNumber, vehicle.Make, vehicle.Model, vehicle.Year,
-            vehicle.Mileage, vehicle.TechnicalState.ToString(), vehicle.PriceInEuro, vehicle.PriceInRon,
+            vehicle.Mileage, vehicle.PriceInEuro, vehicle.PriceInRon, vehicle.TechnicalState.ToString(),
             vehicle.Feature.CarBody,
             vehicle.Feature.Fuel.ToString(), vehicle.Feature.EngineSize, vehicle.Feature.Gearbox.ToString(),
             vehicle.Feature.HorsePower);

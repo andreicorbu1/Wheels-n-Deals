@@ -42,7 +42,7 @@ public class UserService : IUserService
 
     public async Task<List<User>> GetUsersAsync()
     {
-        return await _unitOfWork.Users.GetAllAsync();
+        return await _unitOfWork.Users.GetAllAsync() ?? new();
     }
 
     public async Task<string> LoginUserAsync(LoginDto dto)

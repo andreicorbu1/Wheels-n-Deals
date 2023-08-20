@@ -1,4 +1,5 @@
-﻿using Wheels_n_Deals.API.DataLayer.DTO;
+﻿using Microsoft.IdentityModel.Tokens;
+using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Enums;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
@@ -71,7 +72,12 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)
     {
-        var announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) && vehicles.Contains(a.Vehicle));
+        var announcements = new List<Announcement>();
+
+        if (vehicles.IsNullOrEmpty())
+            announcements = await _unitOfWork.Announcements.GetManyAsync(null, a => a.OrderByDescending(a => a.DateModified));
+        else
+            announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) && vehicles.Contains(a.Vehicle), a => a.OrderByDescending(a => a.DateModified));
 
         return announcements;
     }
@@ -161,5 +167,16 @@ public class AnnouncementService : IAnnouncementService
     private async Task<Announcement?> SaveUpdatedAnnouncementAsync(Announcement announcement)
     {
         return await _unitOfWork.Announcements.UpdateAsync(announcement);
+    }
+
+    public async Task<List<Announcement>> GetUserAnnouncements(Guid userId)
+    {
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+        
+        if (user is null) throw new ResourceMissingException($"User with id {userId} does not exist!");
+
+        var announcements = await _unitOfWork.Announcements.GetManyAsync(a => a.Owner != null && a.Owner.Id == userId, a => a.OrderByDescending(a => a.DateModified));
+
+        return announcements ?? new();
     }
 }
