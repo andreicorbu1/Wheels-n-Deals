@@ -21,7 +21,7 @@ public static class UserMappingExtensions
     public static List<UserDto> ToUserDto(this List<User> users)
     {
         return (from user in users
-            let userDto = user.ToUserDto()
-            select userDto).ToList();
+                let userDto = user.ToUserDto()
+                select userDto).ToList();
     }
 }

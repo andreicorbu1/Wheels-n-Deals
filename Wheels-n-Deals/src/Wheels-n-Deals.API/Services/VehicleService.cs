@@ -46,7 +46,9 @@ public class VehicleService : IVehicleService
             TechnicalState = technicalState
         };
 
-        await _unitOfWork.Vehicles.AddAsync(vehicle);
+        vehicle = await _unitOfWork.Vehicles.AddAsync(vehicle);
+
+        if (vehicle is null) return Guid.Empty;
 
         feature?.Vehicles.Add(vehicle);
         owner.Vehicles.Add(vehicle);
@@ -103,7 +105,7 @@ public class VehicleService : IVehicleService
                 Fuel = fuelType
             };
             await _unitOfWork.Features.AddAsync(feature);
-            
+
         }
         vehicleToUpdate.Feature = feature;
         vehicleToUpdate.FeatureId = feature.Id;

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Wheels_n_Deals.API.DataLayer.Interfaces;
+﻿using Wheels_n_Deals.API.DataLayer.Interfaces;
 
 namespace Wheels_n_Deals.API.DataLayer;
 

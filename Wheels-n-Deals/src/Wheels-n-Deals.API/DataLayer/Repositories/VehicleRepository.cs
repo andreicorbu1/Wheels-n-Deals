@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Interfaces;
 using Wheels_n_Deals.API.DataLayer.Models;
-using Wheels_n_Deals.API.Infrastructure.CustomExceptions;
 
 namespace Wheels_n_Deals.API.DataLayer.Repositories;
 

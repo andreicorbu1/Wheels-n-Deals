@@ -19,7 +19,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<Guid> AddAnnouncementAsync(AddAnnouncementDto addAnnouncementDto)
     {
         if (addAnnouncementDto is null) throw new ArgumentNullException(nameof(addAnnouncementDto));
-        
+
         var user = await _unitOfWork.Users.GetByIdAsync(addAnnouncementDto.UserId);
         var vehicle = await _unitOfWork.Vehicles.GetVehicleAsync(addAnnouncementDto.VinNumber);
 
@@ -47,8 +47,11 @@ public class AnnouncementService : IAnnouncementService
             DateModified = DateTime.UtcNow
         };
         newAnnouncement.Images = images;
-        await _unitOfWork.Announcements.AddAsync(newAnnouncement);
+        newAnnouncement = await _unitOfWork.Announcements.AddAsync(newAnnouncement);
         await _unitOfWork.SaveChangesAsync();
+
+        if (newAnnouncement is null) return Guid.Empty;
+
         return newAnnouncement.Id;
     }
 
@@ -68,7 +71,7 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)
     {
-        var announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) &&  vehicles.Contains(a.Vehicle));
+        var announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) && vehicles.Contains(a.Vehicle));
 
         return announcements;
     }

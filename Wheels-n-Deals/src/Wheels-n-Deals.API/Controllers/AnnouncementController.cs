@@ -1,6 +1,6 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Wheels_n_Deals.API.DataLayer.DTO;
 using Wheels_n_Deals.API.DataLayer.Models;
 using Wheels_n_Deals.API.Services.Interfaces;

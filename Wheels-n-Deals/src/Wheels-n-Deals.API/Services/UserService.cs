@@ -77,7 +77,10 @@ public class UserService : IUserService
             Role = Role.User
         };
 
-        await _unitOfWork.Users.AddAsync(user);
+        user = await _unitOfWork.Users.AddAsync(user);
+
+        if (user is null) return Guid.Empty;
+
         await _unitOfWork.SaveChangesAsync();
 
         return user.Id;
