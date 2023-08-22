@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RegisterDto } from './../models/registerDto.enum';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +23,8 @@ export class AuthService {
     this.isAuthenticatedSubject.next(isAuthenticated);
   }
 
-  register(registerDto : RegisterDto): void {
-    this.httpClient.post(this.baseUrl+'register', registerDto, this.httpOptions).subscribe(response => {
-      console.log(response);
-    });
+  register(registerDto : RegisterDto): Observable<any> {
+    return this.httpClient.post<any>(this.baseUrl+'register', registerDto, this.httpOptions);
   }
 
   login(loginData: { email: string; password: string }): Observable<any> {

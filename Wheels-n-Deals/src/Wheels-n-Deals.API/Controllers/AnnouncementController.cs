@@ -47,7 +47,7 @@ public class AnnouncementController : ControllerBase
         if (announcement is null)
             return NotFound($"Announcement with id {announcementId} was not found!");
 
-        return Ok(announcement);
+        return Ok(announcement.ToAnnouncementDto());
     }
 
     /// <summary>
@@ -239,6 +239,6 @@ public class AnnouncementController : ControllerBase
     {
         var announcements = await _announcementService.GetUserAnnouncements(userId);
         
-        return Ok(announcements);
+        return Ok(announcements.ToAnnouncementDtos());
     }
 }

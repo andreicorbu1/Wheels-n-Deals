@@ -1,0 +1,30 @@
+.ann-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  gap: 20px;
+}
+
+.announcement-container {
+  margin-right: 10px;
+}
+
+.profile-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.info-label {
+  font-weight: bold;
+  margin-right: 5px;
+}

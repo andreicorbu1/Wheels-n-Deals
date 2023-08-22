@@ -22,17 +22,26 @@ export class AnnouncementService {
 
   getAnnouncements(): Observable<Announcement[]> {
     console.log('Called');
-    let json = this.httpClient.get<Announcement[]>(this.baseUrl+'getall', this.httpOptions).subscribe(response => {
-      console.log(response);
-    }, error => {
-      console.error(error);
-    });
     return this.httpClient.get<Announcement[]>(this.baseUrl+'getall', this.httpOptions);
+  }
+
+  getAnnouncementsByUserId(id: string): Observable<Announcement[]> {
+    return this.httpClient.get<Announcement[]>(
+      `${this.baseUrl}userid=${id}`,
+      this.httpOptions
+    );
   }
 
   getAnnouncementById(id: string): Observable<Announcement> {
     return this.httpClient.get<Announcement>(
-      `${this.baseUrl}/${id}`,
+      `${this.baseUrl}${id}`,
+      this.httpOptions
+    );
+  }
+
+  deleteAnnouncementById(id: string): Observable<Announcement> {
+    return this.httpClient.delete<Announcement>(
+      `${this.baseUrl}${id}`,
       this.httpOptions
     );
   }

@@ -15,6 +15,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module'; // Import ReactiveFormsModule
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
+import { DatepipePipe } from './datepipe.pipe';
+import { ProfileComponent } from './components/profile/profile.component';
+import { AnnouncementDetailComponent } from './components/announcement-detail/announcement-detail.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +26,10 @@ import { LoginComponent } from './login/login.component';
     AuthorPipe,
     NavigationComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    DatepipePipe,
+    ProfileComponent,
+    AnnouncementDetailComponent
   ],
   imports: [
     BrowserModule,

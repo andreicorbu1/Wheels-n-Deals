@@ -6,8 +6,8 @@ export interface Announcement {
   description: string,
   county: string,
   city: string,
-  dateCreated: string,
-  dateModified: string,
+  dateCreated: Date,
+  dateModified: Date,
   images: string[],
   vehicle: Vehicle
   user: User

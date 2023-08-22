@@ -2,12 +2,12 @@ import { Role } from "./enums/role";
 
 export interface User {
   id: string,
-  firstName: string,
+  firstName:string,
   lastName: string,
   email: string,
   phoneNumber: string,
   address: string,
   role: Role,
-  dateCreated: Date,
-  dateModified: Date
+  dateCreated: string,
+  dateModified: string
 }

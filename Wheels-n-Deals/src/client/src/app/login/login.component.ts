@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  loginError: string | null = null;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
@@ -21,18 +22,19 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       const loginData = this.loginForm.value;
-      this.authService.login(loginData).subscribe(
-        (response) => {
-          if (response && response.token) {
-            localStorage.setItem('token', response.token);
-            this.authService.setAuthenticated(true);
-            this.router.navigate(['/']);
-          }
-        },
-        (error) => {
-          console.error('Login failed:', error);
-        }
-      );
+      this.authService.login(loginData).subscribe({
+        next: (response) => {
+              if (response && response.token) {
+                localStorage.setItem('token', response.token);
+                this.authService.setAuthenticated(true);
+                this.router.navigate(['/']);
+              }
+            },
+            error: (error) => {
+              console.error('Login failed:', error.error);
+              this.loginError = error.error;
+            }
+      })
     }
   }
 }

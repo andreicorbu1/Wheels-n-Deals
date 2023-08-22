@@ -1,6 +1,8 @@
 <app-navigation></app-navigation>
 <div class="home-container">
   <div *ngFor="let announcement of announcements" class="announcements-home-container">
-    <app-announcement class="announcement-container" [announcement]="announcement"> </app-announcement>
+    <a [routerLink]="['/announcement', announcement.id]">
+      <app-announcement class="announcement-container" [announcement]="announcement"> </app-announcement>
+    </a>
   </div>
 </div>

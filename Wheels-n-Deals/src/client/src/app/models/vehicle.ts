@@ -13,7 +13,7 @@ export interface Vehicle {
   priceInRon: number,
   technicalState: State,
   carBody: string,
-  fuel: Fuel,
+  fuelType: Fuel,
   engineSize: number,
   gearbox: Gearbox,
   horsePower: number

@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
+  errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
@@ -25,8 +26,15 @@ export class RegisterComponent {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const registerData = this.registerForm.value;
-      this.authService.register(registerData);
-      this.router.navigate(['/']);
+      this.authService.register(registerData).subscribe({
+        next: (response) => {
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Registration failed:', error.error);
+          this.errorMessage = error.error.message;
+        }
+      });
     }
   }
 }
