@@ -7,6 +7,36 @@
   gap: 20px;
 }
 
+.filter-container {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.filter-container label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.filter-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.filter-container button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
 .announcement-container {
   margin-right: 10px;
 }

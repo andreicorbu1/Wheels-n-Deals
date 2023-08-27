@@ -9,21 +9,26 @@ import { User } from 'src/app/models/user';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent {
   announcements: Announcement[] = [];
   user: User;
 
-  constructor(private announcementService: AnnouncementService, private userService: UserService) {}
+  constructor(
+    private announcementService: AnnouncementService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     const jwt: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
     console.log(jwt.nameid);
-    this.announcementService.getAnnouncementsByUserId(jwt.nameid).subscribe((announcements) => (this.announcements = announcements));
+    this.announcementService
+      .getAnnouncementsByUserId(jwt.nameid)
+      .subscribe((announcements) => (this.announcements = announcements));
     this.userService.getUserById(jwt.nameid).subscribe((user) => {
       this.user = user;
-      console.log(this.user)
+      console.log(this.user);
     });
   }
 }

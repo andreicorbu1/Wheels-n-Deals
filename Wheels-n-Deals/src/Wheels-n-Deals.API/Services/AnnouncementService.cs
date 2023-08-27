@@ -74,7 +74,7 @@ public class AnnouncementService : IAnnouncementService
     {
         var announcements = new List<Announcement>();
 
-        if (vehicles.IsNullOrEmpty())
+        if (vehicles == null)
             announcements = await _unitOfWork.Announcements.GetManyAsync(null, a => a.OrderByDescending(a => a.DateModified));
         else
             announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) && vehicles.Contains(a.Vehicle), a => a.OrderByDescending(a => a.DateModified));

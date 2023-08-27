@@ -9,20 +9,17 @@ import { AnnouncementDetailComponent } from './components/announcement-detail/an
 import { AddAnnouncementComponent } from './components/add-announcement/add-announcement.component';
 
 const routes: Routes = [
-  {path:'', component:HomeComponent, pathMatch:'full'},
-  {path:'register', component: RegisterComponent},
-  {path:'login', component:LoginComponent},
-  {path:'profile', component:ProfileComponent},
-  {path:'announcement/:id', component: AnnouncementDetailComponent},
-  {path:'add', component:AddAnnouncementComponent},
-  {path: 'edit/:id', component: AddAnnouncementComponent}
+  { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'announcement/:id', component: AnnouncementDetailComponent },
+  { path: 'add', component: AddAnnouncementComponent },
+  { path: 'announcement/edit/:id', component: AddAnnouncementComponent },
 ];
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    RouterModule.forRoot(routes)
-  ]
+  imports: [CommonModule, RouterModule.forRoot(routes)],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

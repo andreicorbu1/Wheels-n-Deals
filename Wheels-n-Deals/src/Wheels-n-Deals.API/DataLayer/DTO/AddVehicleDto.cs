@@ -11,8 +11,7 @@ public class AddVehicleDto
     [Required] public uint Year { get; set; }
     [Required] public uint Mileage { get; set; }
     [Required][MaxLength(50)] public string TechnicalState { get; set; } = string.Empty;
-    [Required][MaxLength(20)] public string PriceCurrency { get; set; } = string.Empty;
-    [Required] public float Price { get; set; }
+    [Required] public float PriceInEuro { get; set; }
     [Required][MaxLength(50)] public string CarBody { get; set; } = string.Empty;
     [Required] public uint EngineSize { get; set; }
 

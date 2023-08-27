@@ -6,17 +6,17 @@
 }
 
 .card-header {
- background-color: white;
- border-radius: 15px 15px 0 0;
+  background-color: white;
+  border-radius: 15px 15px 0 0;
 }
 
 .avatar {
-  background-image: url('https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg');
+  background-image: url("https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg");
   background-size: cover;
 }
 
 .an-title {
-      font-size: 20px;
+  font-size: 20px;
 }
 .author {
   align-self: flex-start;
@@ -30,7 +30,7 @@
   display: flex;
 }
 
-.button-container{
+.button-container {
   justify-content: center;
   text-align: center;
   display: flex;

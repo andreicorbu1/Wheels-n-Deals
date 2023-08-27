@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthorPipe } from './author.pipe';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { RegisterComponent } from './components/register/register.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module'; // Import ReactiveFormsModule
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
@@ -31,12 +31,13 @@ import { AddAnnouncementComponent } from './components/add-announcement/add-anno
     DatepipePipe,
     ProfileComponent,
     AnnouncementDetailComponent,
-    AddAnnouncementComponent
+    AddAnnouncementComponent,
   ],
   imports: [
     BrowserModule,
     MatButtonModule,
     MatInputModule,
+    FormsModule,
     MatSelectModule,
     HttpClientModule,
     ReactiveFormsModule,
@@ -45,6 +46,6 @@ import { AddAnnouncementComponent } from './components/add-announcement/add-anno
     AppRoutingModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -19,8 +19,6 @@ public class VehicleService : IVehicleService
 
     public async Task<Guid> AddVehicleAsync(AddVehicleDto addVehicleDto)
     {
-        var price = CalculatePrice(addVehicleDto.Price, addVehicleDto.PriceCurrency);
-
         var fuelType = (Fuel)Enum.Parse(typeof(Fuel), addVehicleDto.FuelType, true);
         var gearboxType = (Gearbox)Enum.Parse(typeof(Gearbox), addVehicleDto.Gearbox, true);
         var technicalState = (State)Enum.Parse(typeof(State), addVehicleDto.TechnicalState, true);
@@ -42,7 +40,7 @@ public class VehicleService : IVehicleService
             Feature = feature,
             Owner = owner,
             VinNumber = addVehicleDto.VinNumber,
-            PriceInEuro = price,
+            PriceInEuro = addVehicleDto.PriceInEuro,
             TechnicalState = technicalState
         };
 
@@ -121,13 +119,6 @@ public class VehicleService : IVehicleService
         await _unitOfWork.SaveChangesAsync();
 
         return vehicleToUpdate;
-    }
-
-    private static float CalculatePrice(float price, string priceCurrency)
-    {
-        if (priceCurrency == "RON")
-            return price / 5;
-        return price;
     }
 
     private async Task<Feature?> GetOrCreateFeature(AddVehicleDto addVehicleDto, Fuel fuelType, Gearbox gearboxType)

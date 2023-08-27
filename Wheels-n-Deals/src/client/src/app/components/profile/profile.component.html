@@ -10,9 +10,16 @@
 </div>
 
 <div class="ann-container">
-  <div *ngFor="let announcement of announcements" class="announcements-home-container">
+  <div
+    *ngFor="let announcement of announcements"
+    class="announcements-home-container"
+  >
     <a [routerLink]="['/announcement', announcement.id]">
-      <app-announcement class="announcement-container" [announcement]="announcement"> </app-announcement>
+      <app-announcement
+        class="announcement-container"
+        [announcement]="announcement"
+      >
+      </app-announcement>
     </a>
   </div>
 </div>

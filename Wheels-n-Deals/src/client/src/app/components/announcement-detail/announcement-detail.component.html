@@ -7,65 +7,89 @@
   <button class="nav-arrow right" (click)="nextImage()">&#8250;</button>
 </div>
 <div class="vehicle-details">
-<div class="detail-box">
-  <p class="detail-label">Pret</p>
-  <p class="vehicle-price">{{ announcement.vehicle.priceInEuro }} € | {{ announcement.vehicle.priceInRon }} RON</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Producator</p>
-  <p class="detail-value">{{ announcement.vehicle.make }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Model</p>
-  <p class="detail-value">{{ announcement.vehicle.model }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">An de fabricatie</p>
-  <p class="detail-value">{{ announcement.vehicle.year }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Caroserie</p>
-  <p class="detail-value">{{ announcement.vehicle.carBody }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Capacitate cilindrica</p>
-  <p class="detail-value">{{ announcement.vehicle.engineSize }} cc</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Kilometraj</p>
-  <p class="detail-value">{{ announcement.vehicle.mileage }} km</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Stare tehnica</p>
-  <p class="detail-value">{{ announcement.vehicle.technicalState }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Putere</p>
-  <p class="detail-value">{{ announcement.vehicle.horsePower }} hp</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Combustibil</p>
-  <p class="detail-value">{{ announcement.vehicle.fuelType }}</p>
-</div>
-<div class="detail-box">
-  <p class="detail-label">Tip de transmisie</p>
-  <p class="detail-value">{{ announcement.vehicle.gearbox }}</p>
-</div>
+  <div class="detail-box">
+    <p class="detail-label">Pret</p>
+    <p class="vehicle-price">
+      {{ announcement.vehicle.priceInEuro }} € |
+      {{ announcement.vehicle.priceInRon }} RON
+    </p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Producator</p>
+    <p class="detail-value">{{ announcement.vehicle.make }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Model</p>
+    <p class="detail-value">{{ announcement.vehicle.model }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">An de fabricatie</p>
+    <p class="detail-value">{{ announcement.vehicle.year }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Caroserie</p>
+    <p class="detail-value">{{ announcement.vehicle.carBody }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Capacitate cilindrica</p>
+    <p class="detail-value">{{ announcement.vehicle.engineSize }} cc</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Kilometraj</p>
+    <p class="detail-value">{{ announcement.vehicle.mileage }} km</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Stare tehnica</p>
+    <p class="detail-value">{{ announcement.vehicle.technicalState }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Putere</p>
+    <p class="detail-value">{{ announcement.vehicle.horsePower }} hp</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Combustibil</p>
+    <p class="detail-value">{{ announcement.vehicle.fuelType }}</p>
+  </div>
+  <div class="detail-box">
+    <p class="detail-label">Tip de transmisie</p>
+    <p class="detail-value">{{ announcement.vehicle.gearbox }}</p>
+  </div>
 </div>
 <div class="announcement-details">
   <p class="announcement-title">{{ announcement.title }}</p>
   <p class="announcement-description">{{ announcement.description }}</p>
-  <p class="announcement-date">{{ announcement.dateCreated | date:"dd-MMM-y HH:mm:ss" }}</p>
-  <p class="announcement-location">{{ announcement.city }}, {{ announcement.county }}</p>
+  <p class="announcement-date">
+    {{ announcement.dateCreated | date : "dd-MMM-y HH:mm:ss" }}
+  </p>
+  <p class="announcement-location">
+    {{ announcement.city }}, {{ announcement.county }}
+  </p>
 </div>
 <div class="user-details">
-  <p class="detail-label">Posted By:</p>
-  <p class="detail-value">{{ announcement.user.firstName }} {{ announcement.user.lastName }}</p>
-  <p class="detail-label">Phone Number:</p>
-  <p class="detail-value">{{ announcement.user.phoneNumber }}</p>
-  <p class="detail-label">Email:</p>
-  <p class="detail-value">{{ announcement.user.email }}</p>
+  <a [routerLink]="['/announcement', announcement.id]">
+    <p class="detail-label">Posted By:</p>
+    <p class="detail-value">
+      {{ announcement.user.firstName }} {{ announcement.user.lastName }}
+    </p>
+    <p class="detail-label">Phone Number:</p>
+    <p class="detail-value">{{ announcement.user.phoneNumber }}</p>
+    <p class="detail-label">Email:</p>
+    <p class="detail-value">{{ announcement.user.email }}</p>
+  </a>
 </div>
 <div class="button-container">
-  <button class="delete-button" *ngIf="isUserAdmin || isUserOwner" (click)="deleteAnnouncement()">Delete</button>
+  <button
+    class="edit-button"
+    *ngIf="isUserAdmin || isUserOwner"
+    (click)="editAnnouncement()"
+  >
+    Edit
+  </button>
+  <button
+    class="delete-button"
+    *ngIf="isUserAdmin || isUserOwner"
+    (click)="deleteAnnouncement()"
+  >
+    Delete
+  </button>
 </div>

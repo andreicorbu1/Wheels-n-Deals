@@ -1,8 +1,128 @@
 <app-navigation></app-navigation>
+<div class="filter-container">
+  <button (click)="toggleFilterDropdown()">Toggle Filters</button>
+  <div *ngIf="showFilterDropdown">
+    <label for="make">Make:</label>
+    <input id="make" [(ngModel)]="selectedMake" placeholder="Enter Make" />
+
+    <label for="model">Model:</label>
+    <input id="model" [(ngModel)]="selectedModel" placeholder="Enter Model" />
+
+    <label for="minYear">Minimum Year:</label>
+    <input
+      id="minYear"
+      [(ngModel)]="minYear"
+      type="number"
+      placeholder="Enter Min Year"
+    />
+
+    <label for="maxYear">Maximum Year:</label>
+    <input
+      id="maxYear"
+      [(ngModel)]="maxYear"
+      type="number"
+      placeholder="Enter Max Year"
+    />
+
+    <label for="minMileage">Minimum Mileage:</label>
+    <input
+      id="minMileage"
+      [(ngModel)]="minMileage"
+      type="number"
+      placeholder="Enter Min Mileage"
+    />
+
+    <label for="maxMileage">Maximum Mileage:</label>
+    <input
+      id="maxMileage"
+      [(ngModel)]="maxMileage"
+      type="number"
+      placeholder="Enter Max Mileage"
+    />
+
+    <label for="minPrice">Minimum Price:</label>
+    <input
+      id="minPrice"
+      [(ngModel)]="minPrice"
+      type="number"
+      placeholder="Enter Min Price"
+    />
+
+    <label for="maxPrice">Maximum Price:</label>
+    <input
+      id="maxPrice"
+      [(ngModel)]="maxPrice"
+      type="number"
+      placeholder="Enter Max Price"
+    />
+
+    <label for="carBody">Car Body:</label>
+    <input
+      id="carBody"
+      [(ngModel)]="selectedCarBody"
+      placeholder="Enter Car Body"
+    />
+
+    <label for="minEngineSize">Minimum Engine Size:</label>
+    <input
+      id="minEngineSize"
+      [(ngModel)]="minEngineSize"
+      type="number"
+      placeholder="Enter Min Engine Size"
+    />
+
+    <label for="maxEngineSize">Maximum Engine Size:</label>
+    <input
+      id="maxEngineSize"
+      [(ngModel)]="maxEngineSize"
+      type="number"
+      placeholder="Enter Max Engine Size"
+    />
+
+    <label for="fuelType">Fuel Type:</label>
+    <input
+      id="fuelType"
+      [(ngModel)]="selectedFuelType"
+      placeholder="Enter Fuel Type"
+    />
+
+    <label for="gearbox">Gearbox:</label>
+    <input
+      id="gearbox"
+      [(ngModel)]="selectedGearbox"
+      placeholder="Enter Gearbox"
+    />
+
+    <label for="minHorsePower">Minimum Horsepower:</label>
+    <input
+      id="minHorsePower"
+      [(ngModel)]="minHorsePower"
+      type="number"
+      placeholder="Enter Min Horsepower"
+    />
+
+    <label for="maxHorsePower">Maximum Horsepower:</label>
+    <input
+      id="maxHorsePower"
+      [(ngModel)]="maxHorsePower"
+      type="number"
+      placeholder="Enter Max Horsepower"
+    />
+
+    <button (click)="applyFilters()">Apply Filters</button>
+  </div>
+</div>
 <div class="home-container">
-  <div *ngFor="let announcement of announcements" class="announcements-home-container">
+  <div
+    *ngFor="let announcement of announcements"
+    class="announcements-home-container"
+  >
     <a [routerLink]="['/announcement', announcement.id]">
-      <app-announcement class="announcement-container" [announcement]="announcement"> </app-announcement>
+      <app-announcement
+        class="announcement-container"
+        [announcement]="announcement"
+      >
+      </app-announcement>
     </a>
   </div>
 </div>

@@ -50,8 +50,7 @@ public class VehicleServiceTests
             Make = "Skoda",
             Mileage = 190000,
             Model = "Fabia",
-            Price = 3000,
-            PriceCurrency = "Euro",
+            PriceInEuro = 3000,
             TechnicalState = "Used",
             VinNumber = "SOMEVIN",
             Year = 2001
@@ -86,8 +85,7 @@ public class VehicleServiceTests
             Make = "Skoda",
             Mileage = 190000,
             Model = "Fabia",
-            Price = 3000,
-            PriceCurrency = "Euro",
+            PriceInEuro = 3000,
             TechnicalState = "Used",
             VinNumber = "SOMEVIN",
             Year = 2001
@@ -132,8 +130,7 @@ public class VehicleServiceTests
             Make = "Skoda",
             Mileage = 190000,
             Model = "Fabia",
-            Price = 3000,
-            PriceCurrency = "RON",
+            PriceInEuro = 3000,
             TechnicalState = "Used",
             VinNumber = "SOMEVIN",
             Year = 2001

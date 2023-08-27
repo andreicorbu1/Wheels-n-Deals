@@ -9,21 +9,31 @@ import { Announcement } from '../models/announcement';
 import { AddAnnouncementDto } from '../models/Dto/add-announcement-dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AnnouncementService {
   private readonly baseUrl: string = 'http://localhost:7250/api/Announcement/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      Authorization: 'Bearer ' + sessionStorage.getItem('token'),
     }),
   };
   constructor(private httpClient: HttpClient) {}
 
   getAnnouncements(): Observable<Announcement[]> {
     console.log('Called');
-    return this.httpClient.get<Announcement[]>(this.baseUrl+'getall', this.httpOptions);
+    return this.httpClient.get<Announcement[]>(
+      this.baseUrl + 'getall',
+      this.httpOptions
+    );
+  }
+
+  getAnnouncementsWithFilters(filters: string): Observable<Announcement[]> {
+    return this.httpClient.get<Announcement[]>(
+      this.baseUrl + 'getall?' + filters,
+      this.httpOptions
+    );
   }
 
   getAnnouncementsByUserId(id: string): Observable<Announcement[]> {
@@ -49,7 +59,18 @@ export class AnnouncementService {
 
   addAnnouncement(announcement: AddAnnouncementDto): Observable<Announcement> {
     return this.httpClient.post<Announcement>(
-      this.baseUrl+'add',
+      this.baseUrl + 'add',
+      announcement,
+      this.httpOptions
+    );
+  }
+
+  updateAnnouncement(
+    id: string,
+    announcement: AddAnnouncementDto
+  ): Observable<Announcement> {
+    return this.httpClient.put<Announcement>(
+      `${this.baseUrl}${id}`,
       announcement,
       this.httpOptions
     );

@@ -279,7 +279,7 @@ public class AnnouncementServiceTests
     public async Task GetAnnouncementsAsync_ShouldReturnEmptyList_WhenAnnouncementsDoNotExist()
     {
         // Arrange
-        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>()).Returns(new List<Announcement>());
+        _unitOfWork.Announcements.GetManyAsync(Arg.Any<Expression<Func<Announcement, bool>>>(), Arg.Any<Func<IQueryable<Announcement>, IOrderedQueryable<Announcement>>>()).Returns(new List<Announcement>());
 
         // Act
         var ret = await _announcementService.GetAnnouncementsAsync(null);

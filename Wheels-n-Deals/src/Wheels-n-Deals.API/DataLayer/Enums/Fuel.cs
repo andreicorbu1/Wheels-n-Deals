@@ -2,7 +2,7 @@
 
 public enum Fuel
 {
-    Petrol,
+    Petrol = 1,
     Diesel,
     LPG,
     Hybrid,

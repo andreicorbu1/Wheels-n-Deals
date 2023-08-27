@@ -1,3 +1,3 @@
 export interface ImageDto {
-  imageUrl: string
+  imageUrl: string;
 }

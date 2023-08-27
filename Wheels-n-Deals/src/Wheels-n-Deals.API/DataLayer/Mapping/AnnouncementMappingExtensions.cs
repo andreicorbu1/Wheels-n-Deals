@@ -17,8 +17,8 @@ public static class AnnouncementMappingExtensions
             Description = announcement.Description,
             Images = announcement.Images.ToStringList(),
             Title = announcement.Title,
-            User = announcement.Owner.ToUserDto(),
-            Vehicle = announcement.Vehicle.ToVehicleDto(),
+            User = announcement.Owner!.ToUserDto(),
+            Vehicle = announcement.Vehicle!.ToVehicleDto(),
         };
         return annDto;
     }

@@ -11,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-announcement-detail',
   templateUrl: './announcement-detail.component.html',
-  styleUrls: ['./announcement-detail.component.scss']
+  styleUrls: ['./announcement-detail.component.scss'],
 })
 export class AnnouncementDetailComponent {
   @Input() announcement: Announcement;
@@ -25,28 +25,37 @@ export class AnnouncementDetailComponent {
     private userService: UserService
   ) {}
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const announcementId = params.get('id');
       if (announcementId) {
-        this.announcementService.getAnnouncementById(announcementId).subscribe(announcement => {
-          this.announcement = announcement;
-          this.updateCurrentImage();
-          const strToken: string = sessionStorage.getItem('token');
-          if(strToken === null || strToken === undefined || strToken === '') {
-            this.isUserAdmin = this.isUserOwner = false;
-            return;
-          }
-          const token: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
-          this.isUserOwner = token.nameid === this.announcement.user.id;
-          if(!this.isUserOwner) {
-            this.userService.getUserById(token.nameid).subscribe((user: User) => {
-              this.isUserAdmin = user.role.toString() === "Admin";
-            });
-          }
-        });
+        this.announcementService
+          .getAnnouncementById(announcementId)
+          .subscribe((announcement) => {
+            this.announcement = announcement;
+            this.updateCurrentImage();
+            const strToken: string = sessionStorage.getItem('token');
+            if (
+              strToken === null ||
+              strToken === undefined ||
+              strToken === ''
+            ) {
+              this.isUserAdmin = this.isUserOwner = false;
+              return;
+            }
+            const token: JwtClaims = jwt_decode(
+              sessionStorage.getItem('token')
+            );
+            this.isUserOwner = token.nameid === this.announcement.user.id;
+            if (!this.isUserOwner) {
+              this.userService
+                .getUserById(token.nameid)
+                .subscribe((user: User) => {
+                  this.isUserAdmin = user.role.toString() === 'Admin';
+                });
+            }
+          });
       }
     });
-
   }
 
   updateCurrentImage(): void {
@@ -58,19 +67,27 @@ export class AnnouncementDetailComponent {
   }
 
   nextImage(): void {
-    this.currentImageIndex = (this.currentImageIndex + 1) % this.announcement.images.length;
+    this.currentImageIndex =
+      (this.currentImageIndex + 1) % this.announcement.images.length;
     this.updateCurrentImage();
   }
 
   prevImage(): void {
-    this.currentImageIndex = (this.currentImageIndex - 1 + this.announcement.images.length) % this.announcement.images.length;
+    this.currentImageIndex =
+      (this.currentImageIndex - 1 + this.announcement.images.length) %
+      this.announcement.images.length;
     this.updateCurrentImage();
   }
 
   deleteAnnouncement(): void {
-    this.announcementService.deleteAnnouncementById(this.announcement.id).subscribe(() => {
-      window.location.href = '/';
-    });
+    this.announcementService
+      .deleteAnnouncementById(this.announcement.id)
+      .subscribe(() => {
+        window.location.href = '/';
+      });
+  }
+
+  editAnnouncement(): void {
+    window.location.href = '/announcement/edit/' + this.announcement.id;
   }
 }
-

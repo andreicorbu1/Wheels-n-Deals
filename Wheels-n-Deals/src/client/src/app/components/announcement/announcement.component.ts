@@ -5,10 +5,10 @@ import { AnnouncementService } from '../../services/announcement.service';
 @Component({
   selector: 'app-announcement',
   templateUrl: './announcement.component.html',
-  styleUrls: ['./announcement.component.scss']
+  styleUrls: ['./announcement.component.scss'],
 })
 export class AnnouncementComponent {
   @Input()
   announcement: Announcement;
-  constructor(private announcementService: AnnouncementService) { }
+  constructor(private announcementService: AnnouncementService) {}
 }

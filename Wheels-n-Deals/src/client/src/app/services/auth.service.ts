@@ -5,14 +5,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly baseUrl: string = 'http://localhost:7250/api/Users/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      Authorization: 'Bearer ' + sessionStorage.getItem('token'),
     }),
   };
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -23,11 +23,15 @@ export class AuthService {
     this.isAuthenticatedSubject.next(isAuthenticated);
   }
 
-  register(registerDto : RegisterDto): Observable<any> {
-    return this.httpClient.post<any>(this.baseUrl+'register', registerDto, this.httpOptions);
+  register(registerDto: RegisterDto): Observable<any> {
+    return this.httpClient.post<any>(
+      this.baseUrl + 'register',
+      registerDto,
+      this.httpOptions
+    );
   }
 
   login(loginData: { email: string; password: string }): Observable<any> {
-    return this.httpClient.post<any>(this.baseUrl+'login', loginData);
+    return this.httpClient.post<any>(this.baseUrl + 'login', loginData);
   }
 }

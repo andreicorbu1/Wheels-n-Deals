@@ -224,7 +224,7 @@ public class VehiclesController : ControllerBase
 
                 if (vehicleToUpdate is null) return BadRequest();
 
-                return Ok(vehicleToUpdate);
+                return Ok(vehicleToUpdate.ToVehicleDto());
             }
 
             return Unauthorized();
