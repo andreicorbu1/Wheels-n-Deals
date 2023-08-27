@@ -18,7 +18,7 @@ export class ProfileComponent {
   constructor(private announcementService: AnnouncementService, private userService: UserService) {}
 
   ngOnInit(): void {
-    const jwt: JwtClaims = jwt_decode(localStorage.getItem('token'));
+    const jwt: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
     console.log(jwt.nameid);
     this.announcementService.getAnnouncementsByUserId(jwt.nameid).subscribe((announcements) => (this.announcements = announcements));
     this.userService.getUserById(jwt.nameid).subscribe((user) => {

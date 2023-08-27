@@ -37,7 +37,7 @@ public class AuthService : IAuthService
             Issuer = "Backend",
             Audience = "Frontend",
             Subject = new ClaimsIdentity(new[] { roleClaim, idClaim, infoClaim }),
-            Expires = DateTime.Now.AddHours(1),
+            Expires = DateTime.Now.AddHours(6),
             SigningCredentials = credentials
         };
 

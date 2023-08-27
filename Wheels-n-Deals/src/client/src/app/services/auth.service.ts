@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RegisterDto } from './../models/registerDto.enum';
+import { RegisterDto } from '../models/Dto/registerDto';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user';
@@ -12,7 +12,7 @@ export class AuthService {
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
     }),
   };
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);

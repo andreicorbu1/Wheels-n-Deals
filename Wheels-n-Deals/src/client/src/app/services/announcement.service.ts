@@ -6,6 +6,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Announcement } from '../models/announcement';
+import { AddAnnouncementDto } from '../models/Dto/add-announcement-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AnnouncementService {
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
     }),
   };
   constructor(private httpClient: HttpClient) {}
@@ -42,6 +43,14 @@ export class AnnouncementService {
   deleteAnnouncementById(id: string): Observable<Announcement> {
     return this.httpClient.delete<Announcement>(
       `${this.baseUrl}${id}`,
+      this.httpOptions
+    );
+  }
+
+  addAnnouncement(announcement: AddAnnouncementDto): Observable<Announcement> {
+    return this.httpClient.post<Announcement>(
+      this.baseUrl+'add',
+      announcement,
       this.httpOptions
     );
   }

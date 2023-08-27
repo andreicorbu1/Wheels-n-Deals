@@ -1,0 +1,59 @@
+/* Add Announcement Container */
+.add-announcement-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Add Announcement Header */
+.add-announcement-header {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Add Announcement Form */
+.add-announcement-form {
+  display: grid;
+  gap: 10px;
+}
+
+/* Form Label */
+label {
+  font-weight: bold;
+}
+
+/* Input and Select Fields */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Submit Button */
+button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Disable button when form is invalid */
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

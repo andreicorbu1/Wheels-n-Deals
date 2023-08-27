@@ -31,12 +31,12 @@ export class AnnouncementDetailComponent {
         this.announcementService.getAnnouncementById(announcementId).subscribe(announcement => {
           this.announcement = announcement;
           this.updateCurrentImage();
-          const strToken: string = localStorage.getItem('token');
+          const strToken: string = sessionStorage.getItem('token');
           if(strToken === null || strToken === undefined || strToken === '') {
             this.isUserAdmin = this.isUserOwner = false;
             return;
           }
-          const token: JwtClaims = jwt_decode(localStorage.getItem('token'));
+          const token: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
           this.isUserOwner = token.nameid === this.announcement.user.id;
           if(!this.isUserOwner) {
             this.userService.getUserById(token.nameid).subscribe((user: User) => {

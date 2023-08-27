@@ -25,7 +25,7 @@ export class LoginComponent {
       this.authService.login(loginData).subscribe({
         next: (response) => {
               if (response && response.token) {
-                localStorage.setItem('token', response.token);
+                sessionStorage.setItem('token', response.token);
                 this.authService.setAuthenticated(true);
                 this.router.navigate(['/']);
               }

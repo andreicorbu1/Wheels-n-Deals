@@ -3,6 +3,9 @@
 <div class="navigation-bar">
   <div class="left-links">
     <a routerLink="/">Home</a>
+    <ng-container *ngIf="isAuthenticated();">
+      <a routerLink="/add">Add announcement</a>
+    </ng-container>
   </div>
   <div class="right-links">
     <ng-container *ngIf="!isAuthenticated(); else loggedInLinks">

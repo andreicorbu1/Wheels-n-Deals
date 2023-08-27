@@ -126,7 +126,7 @@ public class VehicleService : IVehicleService
     private static float CalculatePrice(float price, string priceCurrency)
     {
         if (priceCurrency == "RON")
-            return price * 5;
+            return price / 5;
         return price;
     }
 

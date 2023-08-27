@@ -1,7 +1,7 @@
 export enum Fuel {
-  Petrol,
-  Diesel,
-  LPG,
-  Hybrid,
-  Electricity
+  Petrol = 'Petrol',
+  Diesel = 'Diesel',
+  LPG = 'LPG',
+  Hybrid = 'Hybrid',
+  Electricity = 'Electricity'
 }

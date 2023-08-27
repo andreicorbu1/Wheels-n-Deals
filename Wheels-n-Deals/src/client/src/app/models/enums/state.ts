@@ -1,4 +1,4 @@
 export enum State {
-  New,
-  Used
+  New = 'New',
+  Used = 'Used'
 }

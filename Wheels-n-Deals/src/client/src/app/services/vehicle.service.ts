@@ -1,24 +1,26 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
-import { Observable } from 'rxjs';
+import { AddVehicleDto } from '../models/Dto/add-vehicle-dto';
+import { Vehicle } from '../models/vehicle';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
-  private readonly baseUrl: string = 'http://localhost:7250/api/Users/';
+export class VehicleService {
+  private readonly baseUrl: string = 'http://localhost:7250/api/Vehicles/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
     }),
   };
-
   constructor(private httpClient: HttpClient) {}
 
-  getUserById(id: string): Observable<User> {
-    const url = `${this.baseUrl}${id}`;
-    return this.httpClient.get<User>(url, this.httpOptions);
+  addVehicle(vehicle: AddVehicleDto) {
+    return this.httpClient.post<Vehicle>(
+      this.baseUrl+'add',
+      vehicle,
+      this.httpOptions
+    );
   }
 }

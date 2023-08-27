@@ -18,6 +18,7 @@ import { LoginComponent } from './login/login.component';
 import { DatepipePipe } from './datepipe.pipe';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AnnouncementDetailComponent } from './components/announcement-detail/announcement-detail.component';
+import { AddAnnouncementComponent } from './components/add-announcement/add-announcement.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,7 +30,8 @@ import { AnnouncementDetailComponent } from './components/announcement-detail/an
     LoginComponent,
     DatepipePipe,
     ProfileComponent,
-    AnnouncementDetailComponent
+    AnnouncementDetailComponent,
+    AddAnnouncementComponent
   ],
   imports: [
     BrowserModule,

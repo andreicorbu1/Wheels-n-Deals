@@ -9,10 +9,12 @@ export class NavigationComponent {
   userIsLoggedIn: boolean = false;
 
   isAuthenticated(): boolean {
-    return localStorage.getItem('token') !== '' && localStorage.getItem('token') !== null;
+    const hasToken: boolean = sessionStorage.getItem('token') !== '' && sessionStorage.getItem('token') !== null;
+
+    return hasToken
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
   }
 }
