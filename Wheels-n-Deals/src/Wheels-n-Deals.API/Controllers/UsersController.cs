@@ -131,13 +131,13 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto, [FromQuery] string originalEmail)
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto, [FromQuery] Guid userId)
     {
-        var user = await _userService.GetUserAsync(originalEmail);
+        var user = await _userService.GetUserAsync(userId);
 
         if (user is null) return NotFound();
 
-        if (User.IsInRole("Admin") || User.HasClaim(ClaimTypes.NameIdentifier, user.Id.ToString()))
+        if (User.IsInRole("Admin") || User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value == userId.ToString())
         {
             dto.Id = user.Id;
             user = await _userService.UpdateUserAsync(dto);

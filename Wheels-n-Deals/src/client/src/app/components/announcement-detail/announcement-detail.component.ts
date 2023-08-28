@@ -7,6 +7,7 @@ import { AnnouncementService } from 'src/app/services/announcement.service';
 import jwt_decode from 'jwt-decode';
 import { Role } from 'src/app/models/enums/role';
 import { UserService } from 'src/app/services/user.service';
+import { VehicleService } from 'src/app/services/vehicle.service';
 
 @Component({
   selector: 'app-announcement-detail',
@@ -17,15 +18,18 @@ export class AnnouncementDetailComponent {
   @Input() announcement: Announcement;
   currentImageIndex: number = 0;
   currentImage: string | undefined;
+  canBeRenewed: boolean = false;
   isUserAdmin: boolean = false;
   isUserOwner: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private announcementService: AnnouncementService,
-    private userService: UserService
+    private userService: UserService,
+    private vehicleService: VehicleService
   ) {}
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
+      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
       const announcementId = params.get('id');
       if (announcementId) {
         this.announcementService
@@ -42,6 +46,9 @@ export class AnnouncementDetailComponent {
               this.isUserAdmin = this.isUserOwner = false;
               return;
             }
+            const dateModified = new Date(this.announcement.dateModified);
+            this.canBeRenewed =
+              Date.now() - dateModified.getTime() >= oneDayInMilliseconds;
             const token: JwtClaims = jwt_decode(
               sessionStorage.getItem('token')
             );
@@ -66,6 +73,17 @@ export class AnnouncementDetailComponent {
     }
   }
 
+  renewAnnouncement(): void {
+    this.announcementService.renewAnnouncement(this.announcement.id).subscribe({
+      next: (response) => {
+        window.location.reload();
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
   nextImage(): void {
     this.currentImageIndex =
       (this.currentImageIndex + 1) % this.announcement.images.length;
@@ -80,10 +98,16 @@ export class AnnouncementDetailComponent {
   }
 
   deleteAnnouncement(): void {
-    this.announcementService
-      .deleteAnnouncementById(this.announcement.id)
-      .subscribe(() => {
-        window.location.href = '/';
+    this.announcementService.deleteAnnouncementById(this.announcement.id);
+    this.vehicleService
+      .deleteVehicle(this.announcement.vehicle.vinNumber)
+      .subscribe({
+        next: (response) => {
+          window.location.href = '/';
+        },
+        error: (error) => {
+          console.log(error);
+        },
       });
   }
 

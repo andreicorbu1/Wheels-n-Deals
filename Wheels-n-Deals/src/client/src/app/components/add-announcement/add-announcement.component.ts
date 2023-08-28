@@ -128,12 +128,16 @@ export class AddAnnouncementComponent {
         this.vehicleService.addVehicle(vehicle).subscribe({
           next: (vehicle: Vehicle) => {
             console.log(vehicle);
-            this.announcementService
-              .addAnnouncement(announcement)
-              .subscribe((announcement: Announcement) => {
+            this.announcementService.addAnnouncement(announcement).subscribe({
+              next: (announcement: Announcement) => {
                 console.log(announcement);
-              });
-            window.location.href = '/';
+                window.location.href = '/';
+              },
+              error: (error) => {
+                console.error('Add announcement failed:', error.error);
+                this.errorMessage = error.error.message;
+              },
+            });
           },
           error: (error) => {
             console.error('Add announcement failed:', error.error);

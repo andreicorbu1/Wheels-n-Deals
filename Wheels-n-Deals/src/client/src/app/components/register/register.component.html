@@ -26,7 +26,9 @@
 </div> -->
 <app-navigation></app-navigation>
 <div class="register-container">
-  <h2 class="register-header">Register</h2>
+  <h2 class="register-header">
+    {{ editMode ? "Edit Profile" : "Register" }}
+  </h2>
   <form
     class="register-form"
     [formGroup]="registerForm"
@@ -123,7 +125,9 @@
     <label for="address">Address:</label>
     <textarea id="address" formControlName="address"></textarea>
 
-    <button type="submit" [disabled]="!registerForm.valid">Register</button>
+    <button type="submit" [disabled]="!registerForm.valid">
+      {{ editMode ? "Save Changes" : "Register" }}
+    </button>
   </form>
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}

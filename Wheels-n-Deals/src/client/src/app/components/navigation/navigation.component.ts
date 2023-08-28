@@ -18,5 +18,6 @@ export class NavigationComponent {
 
   logout(): void {
     sessionStorage.removeItem('token');
+    window.location.href = '/';
   }
 }

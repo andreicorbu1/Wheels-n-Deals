@@ -59,14 +59,14 @@
   <p class="announcement-title">{{ announcement.title }}</p>
   <p class="announcement-description">{{ announcement.description }}</p>
   <p class="announcement-date">
-    {{ announcement.dateCreated | date : "dd-MMM-y HH:mm:ss" }}
+    {{ announcement.dateModified | date : "dd-MMM-y HH:mm:ss" }}
   </p>
   <p class="announcement-location">
     {{ announcement.city }}, {{ announcement.county }}
   </p>
 </div>
 <div class="user-details">
-  <a [routerLink]="['/announcement', announcement.id]">
+  <a [routerLink]="['/profile', announcement.user.id]">
     <p class="detail-label">Posted By:</p>
     <p class="detail-value">
       {{ announcement.user.firstName }} {{ announcement.user.lastName }}
@@ -78,11 +78,7 @@
   </a>
 </div>
 <div class="button-container">
-  <button
-    class="edit-button"
-    *ngIf="isUserAdmin || isUserOwner"
-    (click)="editAnnouncement()"
-  >
+  <button class="edit-button" *ngIf="isUserOwner" (click)="editAnnouncement()">
     Edit
   </button>
   <button
@@ -91,5 +87,12 @@
     (click)="deleteAnnouncement()"
   >
     Delete
+  </button>
+  <button
+    *ngIf="canBeRenewed"
+    class="renew-button"
+    (click)="renewAnnouncement()"
+  >
+    Renew
   </button>
 </div>

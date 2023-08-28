@@ -126,6 +126,17 @@
   margin-top: 10px;
 }
 
+.renew-button {
+  padding: 8px 12px;
+  background-color: #0d945c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
 .edit-button {
   padding: 8px 12px;
   background-color: #007bff; /* Blue */

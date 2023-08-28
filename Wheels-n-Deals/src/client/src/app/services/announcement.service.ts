@@ -65,12 +65,20 @@ export class AnnouncementService {
     );
   }
 
+  renewAnnouncement(id: string): Observable<Announcement> {
+    return this.httpClient.put<Announcement>(
+      `${this.baseUrl}renew/${id}`,
+      null,
+      this.httpOptions
+    );
+  }
+
   updateAnnouncement(
     id: string,
     announcement: AddAnnouncementDto
   ): Observable<Announcement> {
     return this.httpClient.put<Announcement>(
-      `${this.baseUrl}${id}`,
+      `${this.baseUrl}renew/${id}`,
       announcement,
       this.httpOptions
     );

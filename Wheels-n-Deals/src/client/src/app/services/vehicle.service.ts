@@ -39,4 +39,11 @@ export class VehicleService {
       this.httpOptions
     );
   }
+
+  deleteVehicle(vin: string) {
+    return this.httpClient.delete<Vehicle>(
+      `${this.baseUrl}/${vin}`,
+      this.httpOptions
+    );
+  }
 }
