@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wheels-n-Deals.API", "Wheels-n-Deals.API\Wheels-n-Deals.API.csproj", "{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wheels-n-Deals.Tests", "Wheels-n-Deals.Tests\Wheels-n-Deals.Tests.csproj", "{9297E01C-7D9C-475E-827A-3541F0934634}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4B8B709A-27BF-4D6A-A464-2D2FFE81929F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{67F69BAA-F948-40AF-95E9-9164C143341B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wheels-n-Deals.API", "src\Wheels-n-Deals.API\Wheels-n-Deals.API.csproj", "{F7A83354-D882-4543-BF37-B4CEF6DC76AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wheels-n-Deals.Tests", "tests\Wheels-n-Deals.Tests\Wheels-n-Deals.Tests.csproj", "{6606F174-2623-4C38-8391-F427570CBB69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,21 +17,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9297E01C-7D9C-475E-827A-3541F0934634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9297E01C-7D9C-475E-827A-3541F0934634}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9297E01C-7D9C-475E-827A-3541F0934634}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9297E01C-7D9C-475E-827A-3541F0934634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A83354-D882-4543-BF37-B4CEF6DC76AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A83354-D882-4543-BF37-B4CEF6DC76AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A83354-D882-4543-BF37-B4CEF6DC76AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A83354-D882-4543-BF37-B4CEF6DC76AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6606F174-2623-4C38-8391-F427570CBB69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6606F174-2623-4C38-8391-F427570CBB69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6606F174-2623-4C38-8391-F427570CBB69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6606F174-2623-4C38-8391-F427570CBB69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ED0C2483-D8B1-4A89-B1D7-ADDEDB6A2C2C} = {4B8B709A-27BF-4D6A-A464-2D2FFE81929F}
-		{9297E01C-7D9C-475E-827A-3541F0934634} = {67F69BAA-F948-40AF-95E9-9164C143341B}
+		{F7A83354-D882-4543-BF37-B4CEF6DC76AD} = {4B8B709A-27BF-4D6A-A464-2D2FFE81929F}
+		{6606F174-2623-4C38-8391-F427570CBB69} = {67F69BAA-F948-40AF-95E9-9164C143341B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39305B94-5D85-4BEF-BDB4-E91EE8387ED2}

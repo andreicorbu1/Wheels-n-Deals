@@ -1,0 +1,42 @@
+.card-container {
+  max-width: 400px;
+  background-color: white;
+  border: 2px solid #000000;
+  border-radius: 15px;
+}
+
+.card-header {
+  background-color: white;
+  border-radius: 15px 15px 0 0;
+}
+
+.avatar {
+  background-image: url("https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg");
+  background-size: cover;
+}
+
+.an-title {
+  font-size: 20px;
+}
+.author {
+  align-self: flex-start;
+  color: gray;
+}
+
+.an-description {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  display: flex;
+}
+
+.button-container {
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  gap: 25px;
+}
+
+.image {
+  margin: 5px 0 5px 0;
+}

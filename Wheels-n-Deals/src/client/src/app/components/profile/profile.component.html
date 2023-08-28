@@ -1,0 +1,36 @@
+<app-navigation></app-navigation>
+<div class="profile-delete-container">
+  <div class="profile-container">
+    <div *ngIf="user" class="profile-info">
+      <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+      <p><span class="info-label">Email:</span> {{ user.email }}</p>
+      <p><span class="info-label">Phone:</span> {{ user.phoneNumber }}</p>
+      <p><span class="info-label">Address:</span> {{ user.address }}</p>
+      <p><span class="info-label">Role:</span> {{ user.role }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="canEdit" class="edit-button-container">
+    <button class="edit-button" [routerLink]="['/profile/edit', user.id]">
+      Edit Profile
+    </button>
+  </div>
+  <div *ngIf="isAdmin" class="delete-button-container">
+    <button class="delete-button" (click)="deleteUser()">Delete</button>
+  </div>
+</div>
+
+<div class="ann-container">
+  <div
+    *ngFor="let announcement of announcements"
+    class="announcements-home-container"
+  >
+    <a [routerLink]="['/announcement', announcement.id]">
+      <app-announcement
+        class="announcement-container"
+        [announcement]="announcement"
+      >
+      </app-announcement>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,269 @@
+<app-navigation></app-navigation>
+<div class="add-announcement-container">
+  <h2 class="add-announcement-header">
+    {{ editMode ? "Edit Announcement" : "Add Announcement" }}
+  </h2>
+  <form
+    class="add-announcement-form"
+    [formGroup]="registerForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <label for="title">Titlu:</label>
+    <input type="text" id="title" formControlName="title" required />
+    <div
+      *ngIf="
+        registerForm.get('title').hasError('required') &&
+        registerForm.get('title').touched
+      "
+      class="error-message"
+    >
+      Titlul este obligatoriu.
+    </div>
+
+    <label for="description">Descriere:</label>
+    <input
+      type="text"
+      id="description"
+      formControlName="description"
+      required
+    />
+    <div
+      *ngIf="
+        registerForm.get('description').hasError('required') &&
+        registerForm.get('description').touched
+      "
+      class="error-message"
+    >
+      Descrierea este obligatorie.
+    </div>
+
+    <label for="images">Imagini:</label>
+    <input type="text" id="images" formControlName="images" required />
+    <div
+      *ngIf="
+        registerForm.get('images').hasError('required') &&
+        registerForm.get('images').touched
+      "
+      class="error-message"
+    >
+      Imaginile sunt obligatorii.
+    </div>
+
+    <label for="priceValue">Pret:</label>
+    <input type="text" id="priceValue" formControlName="priceValue" required />
+    <div
+      *ngIf="
+        registerForm.get('priceValue').hasError('required') &&
+        registerForm.get('priceValue').touched
+      "
+      class="error-message"
+    >
+      Pretul este obligatoriu.
+    </div>
+    <label for="priceCurrency">Moneda:</label>
+    <select id="priceCurrency" formControlName="priceCurrency" required>
+      <option value="" disabled selected>Selectati moneda</option>
+      <option value="RON">RON</option>
+      <option value="EURO">EURO</option>
+    </select>
+
+    <div
+      *ngIf="
+        registerForm.get('priceCurrency').hasError('required') &&
+        registerForm.get('priceCurrency').touched
+      "
+      class="error-message"
+    >
+      Moneda pretului este obligatorie.
+    </div>
+
+    <label for="city">Localitate:</label>
+    <input type="text" id="city" formControlName="city" required />
+    <div
+      *ngIf="
+        registerForm.get('city').hasError('required') &&
+        registerForm.get('city').touched
+      "
+      class="error-message"
+    >
+      Localitatea este obligatorie.
+    </div>
+
+    <label for="county">Judet:</label>
+    <input type="text" id="county" formControlName="county" required />
+    <div
+      *ngIf="
+        registerForm.get('county').hasError('required') &&
+        registerForm.get('county').touched
+      "
+      class="error-message"
+    >
+      Judetul este obligatoriu.
+    </div>
+
+    <label for="vin">Serie de sasiu:</label>
+    <input type="text" id="vin" formControlName="vin" required />
+    <div
+      *ngIf="
+        registerForm.get('vin').hasError('required') &&
+        registerForm.get('vin').touched
+      "
+      class="error-message"
+    >
+      Seria de sasiu este obligatorie.
+    </div>
+
+    <label for="make">Producator:</label>
+    <input type="text" id="make" formControlName="make" required />
+    <div
+      *ngIf="
+        registerForm.get('make').hasError('required') &&
+        registerForm.get('model').touched
+      "
+      class="error-message"
+    >
+      Producatorul este obligatoriu.
+    </div>
+
+    <label for="model">Model:</label>
+    <input type="text" id="model" formControlName="model" required />
+    <div
+      *ngIf="
+        registerForm.get('model').hasError('required') &&
+        registerForm.get('model').touched
+      "
+      class="error-message"
+    >
+      Modelul este obligatoriu.
+    </div>
+
+    <label for="year">An de fabricatie:</label>
+    <input type="number" id="year" formControlName="year" required />
+    <div
+      *ngIf="
+        registerForm.get('year').hasError('required') &&
+        registerForm.get('year').touched
+      "
+      class="error-message"
+    >
+      Anul de fabricatie este obligatoriu.
+    </div>
+
+    <label for="engineSize">Capacitate motor:</label>
+    <input
+      type="number"
+      id="engineSize"
+      formControlName="engineSize"
+      required
+    />
+    <div
+      *ngIf="
+        registerForm.get('engineSize').hasError('required') &&
+        registerForm.get('engineSize').touched
+      "
+      class="error-message"
+    >
+      Capacitatea motorului este obligatorie.
+    </div>
+
+    <label for="horsePower">Putere:</label>
+    <input
+      type="number"
+      id="horsePower"
+      formControlName="horsePower"
+      required
+    />
+    <div
+      *ngIf="
+        registerForm.get('horsePower').hasError('required') &&
+        registerForm.get('horsePower').touched
+      "
+      class="error-message"
+    >
+      Puterea motorului este obligatorie.
+    </div>
+
+    <label for="fuelType">Combustibil:</label>
+    <select id="fuelType" formControlName="fuelType" required>
+      <option value="" disabled selected>Selectati tipul de combustibil</option>
+      <option value="Petrol">Benzina</option>
+      <option value="Diesel">Diesel</option>
+      <option value="LPG">GPL</option>
+      <option value="Hybrid">Hybrid</option>
+      <option value="Electricity">Electric</option>
+    </select>
+
+    <div
+      *ngIf="
+        registerForm.get('fuelType').hasError('required') &&
+        registerForm.get('fuelType').touched
+      "
+      class="error-message"
+    >
+      Combustibilul este obligatoriu.
+    </div>
+
+    <label for="carBody">Caroserie:</label>
+    <input type="text" id="carBody" formControlName="carBody" required />
+    <div
+      *ngIf="
+        registerForm.get('carBody').hasError('required') &&
+        registerForm.get('carBody').touched
+      "
+      class="error-message"
+    >
+      Caroseria este obligatorie.
+    </div>
+
+    <label for="mileage">Rulaj:</label>
+    <input type="number" id="mileage" formControlName="mileage" required />
+    <div
+      *ngIf="
+        registerForm.get('mileage').hasError('required') &&
+        registerForm.get('mileage').touched
+      "
+      class="error-message"
+    >
+      Rulajul este obligatoriu.
+    </div>
+
+    <label for="technicalState">Stare tehnica:</label>
+    <select id="technicalState" formControlName="technicalState" required>
+      <option value="" disabled selected>Selectati starea tehnica</option>
+      <option value="New">Nou</option>
+      <option value="Used">Utilizat</option>
+    </select>
+    <div
+      *ngIf="
+        registerForm.get('mileage').hasError('required') &&
+        registerForm.get('mileage').touched
+      "
+      class="error-message"
+    >
+      Starea tehnica este obligatorie.
+    </div>
+
+    <label for="gearbox">Cutie de viteza:</label>
+    <select id="gearbox" formControlName="gearbox" required>
+      <option value="" disabled selected>Selectati cutia de viteza</option>
+      <option value="Manual">Manual</option>
+      <option value="Automatic">Automata</option>
+    </select>
+    <div
+      *ngIf="
+        registerForm.get('mileage').hasError('required') &&
+        registerForm.get('mileage').touched
+      "
+      class="error-message"
+    >
+      Starea tehnica este obligatorie.
+    </div>
+
+    <button type="submit" [disabled]="!registerForm.valid">
+      {{ editMode ? "Save Changes" : "Add Announcement" }}
+    </button>
+  </form>
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+</div>
