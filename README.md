@@ -8,7 +8,7 @@
 7. In fereastra Visual Studio Installer se selecteaza optiunile: ASP.NET and web development, .NET dekstop development
 ![Alt text](images/setupvs.png)
 8. Se asteapta terminarea instalarii
-9. Se descarca ultima versiune de Node LTS - [click](https://nodejs.org/en/download)
+9. Se descarca si se instaleaza ultima versiune de Node LTS - [click](https://nodejs.org/en/download)
 10. Se deschide Command Prompt cu drepturi de Administrator si se ruleaza comanda `npm install -g @angular/cli`
 11. Se intra in folderul unde s-a clonat repo-ul, mai exact in folderul *Wheels-n-Deals/src/client* si se ruleaza comanda `npm install` pentru a instala toate dependintele proiectului
 12. Se porneste Visual Studio dand double click pe fisieru *Wheels-n-Deals/Wheels-n-Deals.sln*
