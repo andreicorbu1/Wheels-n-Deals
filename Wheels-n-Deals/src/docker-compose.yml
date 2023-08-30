@@ -27,7 +27,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=AutoshopSiteDb
+      - POSTGRES_DB=AutoSiteDb
     ports:
       - "5433:5432"
     restart: always
