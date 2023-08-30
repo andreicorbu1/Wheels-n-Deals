@@ -8,7 +8,7 @@ import { RegisterDto } from '../models/Dto/registerDto';
   providedIn: 'root',
 })
 export class UserService {
-  private readonly baseUrl: string = 'http://localhost:7250/api/Users';
+  private readonly baseUrl: string = 'http://localhost:8088/api/Users';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',

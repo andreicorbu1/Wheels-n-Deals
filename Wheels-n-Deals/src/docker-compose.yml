@@ -13,10 +13,10 @@ services:
     ports:
       - "8088:80"
     build:
-      context: .
+      context: ./Wheels-n-Deals.API
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=root;Server=app_db;Port=5432;Database=AutoshopSiteDb;IntegratedSecurity=true;Pooling=true;
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=root;Server=app_db;Port=5432;Database=AutoSiteDb;IntegratedSecurity=true;Pooling=true;
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
@@ -33,6 +33,16 @@ services:
     restart: always
     volumes:
       - app_data:/var/lib/postgresql/data
+    networks:
+      - dev
+  angular_app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: angular-app
+    working_dir: /client
+    ports:
+      - "4200:4200"
     networks:
       - dev
 volumes:

@@ -12,7 +12,7 @@ import { AddAnnouncementDto } from '../models/Dto/add-announcement-dto';
   providedIn: 'root',
 })
 export class AnnouncementService {
-  private readonly baseUrl: string = 'http://localhost:7250/api/Announcement/';
+  private readonly baseUrl: string = 'http://localhost:8088/api/Announcement/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',

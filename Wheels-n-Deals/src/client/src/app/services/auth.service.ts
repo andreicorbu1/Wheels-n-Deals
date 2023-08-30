@@ -8,7 +8,7 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly baseUrl: string = 'http://localhost:7250/api/Users/';
+  private readonly baseUrl: string = 'http://localhost:8088/api/Users/';
   readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
