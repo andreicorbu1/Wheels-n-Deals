@@ -134,7 +134,7 @@ export class AddAnnouncementComponent {
                 window.location.href = '/';
               },
               error: (error) => {
-                console.error('Add announcement failed:', error.error);
+                console.error('Add announcement failed:', error);
                 this.errorMessage = error.error.message;
               },
             });
