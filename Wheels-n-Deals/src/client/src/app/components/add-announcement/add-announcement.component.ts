@@ -128,6 +128,7 @@ export class AddAnnouncementComponent {
         this.vehicleService.addVehicle(vehicle).subscribe({
           next: (vehicle: Vehicle) => {
             console.log(vehicle);
+            console.log(announcement);
             this.announcementService.addAnnouncement(announcement).subscribe({
               next: (announcement: Announcement) => {
                 console.log(announcement);
@@ -140,7 +141,7 @@ export class AddAnnouncementComponent {
             });
           },
           error: (error) => {
-            console.error('Add announcement failed:', error.error);
+            console.error('Add vehicle failed:', error);
             this.errorMessage = error.error.message;
           },
         });
@@ -165,7 +166,7 @@ export class AddAnnouncementComponent {
                   window.location.href = '/';
                 },
                 error: (error) => {
-                  console.error('Update announcement failed:', error.error);
+                  console.error('Update announcement failed:', error);
                   this.errorMessage = error.error.message;
                 },
               });
