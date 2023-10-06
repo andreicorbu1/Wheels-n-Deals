@@ -29,4 +29,8 @@
 7. Se repeta pasul 5
 8. Se porneste aplicatia in browser accesand adresa http://localhost:4200/
 
+![HomePage](images/homepage.png)
+![VehiclePage](images/vehiclepage.png)
+![ProfilePage](images/profilepage.png)
+
 Swagger link : http://localhost:8088/swagger/index.html
