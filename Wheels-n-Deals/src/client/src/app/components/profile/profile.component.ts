@@ -25,11 +25,6 @@ export class ProfileComponent {
   ) {}
 
   ngOnInit(): void {
-    const jwt: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
-    console.log(jwt.nameid);
-    this.userService.getUserById(jwt.nameid).subscribe((user) => {
-      this.isAdmin = user.role === 'Admin';
-    });
     let id: string;
 
     this.route.params.subscribe((params) => {
@@ -37,6 +32,11 @@ export class ProfileComponent {
         id = params['id'];
         this.canEdit = false;
       } else {
+        const jwt: JwtClaims = jwt_decode(sessionStorage.getItem('token'));
+        console.log(jwt.nameid);
+        this.userService.getUserById(jwt.nameid).subscribe((user) => {
+          this.isAdmin = user.role === 'Admin';
+        });
         id = jwt.nameid;
         this.canEdit = true;
       }

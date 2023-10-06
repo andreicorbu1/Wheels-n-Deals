@@ -432,3 +432,4 @@ _UpgradeReport_Files/
 Thumbs.db
 Desktop.ini
 .DS_Store
+/Wheels-n-Deals/src/client/.angular/cache/16.2.0
