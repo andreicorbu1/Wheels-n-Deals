@@ -15,7 +15,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
   styleUrls: ['./announcement-detail.component.scss'],
 })
 export class AnnouncementDetailComponent {
-  @Input() announcement: Announcement;
+  announcement: Announcement = null;
   currentImageIndex: number = 0;
   currentImage: string | undefined;
   canBeRenewed: boolean = false;

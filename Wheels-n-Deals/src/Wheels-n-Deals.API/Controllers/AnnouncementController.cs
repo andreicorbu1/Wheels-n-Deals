@@ -208,7 +208,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Announcement>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> GetAllAnnouncemenets([FromQuery] VehicleFiltersDto? vehicleFiltersDto)
+    public async Task<IActionResult> GetAllAnnouncements([FromQuery] VehicleFiltersDto? vehicleFiltersDto)
     {
         var vehicles = await _vehicleService.GetVehiclesAsync(vehicleFiltersDto);
         var announcements = await _announcementService.GetAnnouncementsAsync(vehicles);
@@ -235,7 +235,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesDefaultResponseType]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAllAnnouncemenets(Guid userId)
+    public async Task<IActionResult> GetAllAnnouncements(Guid userId)
     {
         var announcements = await _announcementService.GetUserAnnouncements(userId);
         

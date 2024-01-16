@@ -70,11 +70,11 @@ public class AnnouncementService : IAnnouncementService
         return await _unitOfWork.Announcements.GetByIdAsync(id);
     }
 
-    public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle> vehicles)
+    public async Task<List<Announcement>> GetAnnouncementsAsync(List<Vehicle>? vehicles)
     {
         var announcements = new List<Announcement>();
 
-        if (vehicles == null)
+        if (vehicles == null || vehicles.Count == 0)
             announcements = await _unitOfWork.Announcements.GetManyAsync(null, a => a.OrderByDescending(a => a.DateModified));
         else
             announcements = await _unitOfWork.Announcements.GetManyAsync(a => (a.Vehicle != null) && vehicles.Contains(a.Vehicle), a => a.OrderByDescending(a => a.DateModified));
@@ -159,9 +159,7 @@ public class AnnouncementService : IAnnouncementService
     private Vehicle GetVehicle(string vinNumber)
     {
         var vehicle = _unitOfWork.Vehicles.GetVehicleAsync(vinNumber).Result;
-        return vehicle is null
-            ? throw new ResourceMissingException("You need to add the vehicle with that VIN to the database first")
-            : vehicle;
+        return vehicle ?? throw new ResourceMissingException("You need to add the vehicle with that VIN to the database first");
     }
 
     private async Task<Announcement?> SaveUpdatedAnnouncementAsync(Announcement announcement)

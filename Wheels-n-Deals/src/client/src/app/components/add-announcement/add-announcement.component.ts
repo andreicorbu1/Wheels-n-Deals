@@ -110,6 +110,7 @@ export class AddAnnouncementComponent {
       const images: string[] = registerData.images.split(',');
 
       images.forEach((image: string) => {
+        image = image.trim();
         const imageDto: ImageDto = {
           imageUrl: image,
         };
@@ -136,17 +137,16 @@ export class AddAnnouncementComponent {
               },
               error: (error) => {
                 console.error('Add announcement failed:', error);
-                this.errorMessage = error.error.message;
+                this.errorMessage = error;
               },
             });
           },
           error: (error) => {
             console.error('Add vehicle failed:', error);
-            this.errorMessage = error.error.message;
+            this.errorMessage = error;
           },
         });
       } else {
-        let announcementDb: Announcement;
         this.announcementService
           .getAnnouncementById(this.route.snapshot.params['id'])
           .subscribe((announcementDb: Announcement) => {

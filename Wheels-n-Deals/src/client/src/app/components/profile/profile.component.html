@@ -11,7 +11,7 @@
   </div>
 
   <div *ngIf="canEdit" class="edit-button-container">
-    <button class="edit-button" [routerLink]="['/profile/edit', user.id]">
+    <button *ngIf="user" class="edit-button" [routerLink]="['/profile/edit', user.id]">
       Edit Profile
     </button>
   </div>

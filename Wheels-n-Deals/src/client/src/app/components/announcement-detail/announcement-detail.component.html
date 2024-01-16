@@ -6,7 +6,7 @@
   </div>
   <button class="nav-arrow right" (click)="nextImage()">&#8250;</button>
 </div>
-<div class="vehicle-details">
+<div class="vehicle-details" *ngIf="announcement">
   <div class="detail-box">
     <p class="detail-label">Pret</p>
     <p class="vehicle-price">
@@ -59,7 +59,7 @@
     <p class="detail-value">{{ announcement.vehicle.gearbox }}</p>
   </div>
 </div>
-<div class="announcement-details">
+<div class="announcement-details" *ngIf="announcement">
   <p class="announcement-title">{{ announcement.title }}</p>
   <p class="announcement-description">{{ announcement.description }}</p>
   <p class="announcement-date">
@@ -69,7 +69,7 @@
     {{ announcement.city }}, {{ announcement.county }}
   </p>
 </div>
-<div class="user-details">
+<div class="user-details" *ngIf="announcement">
   <a [routerLink]="['/profile', announcement.user.id]">
     <p class="detail-label">Posted By:</p>
     <p class="detail-value">
